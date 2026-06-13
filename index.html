@@ -344,6 +344,20 @@ select.form-input option{background:var(--card);}
 
 /* ── LOGIN / REGISTER SCREEN ── */
 #screen-login,#screen-register,#screen-forgot{background:var(--bg);z-index:450;}
+
+/* Success screen */
+#screen-success{background:var(--bg);z-index:460;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;}
+.success-icon{font-size:5rem;animation:popIn 0.5s cubic-bezier(.17,.67,.35,1.3);}
+@keyframes popIn{0%{transform:scale(0);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.success-title{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:800;color:var(--white);margin-top:20px;}
+.success-sub{font-size:0.88rem;color:var(--muted);margin-top:8px;line-height:1.5;}
+.success-email{font-size:0.82rem;color:var(--fire);font-weight:600;margin-top:6px;}
+
+/* Admin edit modal */
+.edit-modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.8);z-index:500;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.edit-modal-overlay.hidden{display:none;}
+.edit-modal-sheet{background:var(--card);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:430px;max-height:80vh;overflow-y:auto;}
+.edit-modal-sheet::-webkit-scrollbar{display:none;}
 .auth-form-header{padding:20px 16px 8px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
 .auth-form-title{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);}
 .auth-form-body{padding:20px 20px 40px;display:flex;flex-direction:column;gap:14px;}
@@ -505,6 +519,37 @@ select.form-input option{background:var(--card);}
     <div class="auth-error" id="forgot-err"></div>
     <button class="btn-primary" style="padding:15px;" onclick="doForgot()">Buscar cuenta 🔍</button>
     <div class="auth-link" onclick="showScreen('login')">Volver a <span>Iniciar sesión</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     CUENTA CREADA
+════════════════════════════════════ -->
+<div class="screen hidden" id="screen-success">
+  <div class="success-icon">✅</div>
+  <div class="success-title">¡Cuenta creada!</div>
+  <div class="success-sub">Tu cuenta fue registrada exitosamente.<br>Ahora completa tu perfil para comenzar.</div>
+  <div class="success-email" id="success-email-display"></div>
+  <div style="margin-top:32px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:12px;">
+    <button class="btn-primary" style="padding:15px;font-size:1rem;" onclick="goToOnboarding()">
+      Completar perfil 💪
+    </button>
+    <button class="btn-outline" onclick="goToLoginAfterRegister()">
+      Iniciar sesión más tarde
+    </button>
+  </div>
+</div>
+
+<!-- EDIT ATHLETE MODAL -->
+<div class="edit-modal-overlay hidden" id="edit-modal">
+  <div class="edit-modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:16px;" id="edit-modal-title">Editar usuario</div>
+    <div id="edit-modal-body"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn-secondary" onclick="closeEditModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveAthleteEdit()">Guardar cambios</button>
+    </div>
   </div>
 </div>
 
@@ -1546,9 +1591,12 @@ function renderAthleteCard(uid, u){
           <div class="admin-athlete-meta">${p.level||'—'} · ${p.age||'?'} años · IMC ${bmi}</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">${(p.goals||[]).map(g=>`<span class="pill" style="background:rgba(255,87,34,0.12);color:var(--fire2);font-size:0.58rem;">${g}</span>`).join('')}</div>
         </div>
-        <div style="text-align:center;flex-shrink:0;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--fire);">🔥${streak}</div>
-          <div style="font-size:0.6rem;color:var(--muted);">racha</div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:var(--fire);">🔥${streak}</div>
+          <div style="display:flex;gap:5px;">
+            <button onclick="event.stopPropagation();openEditAthlete('${uid}')" style="background:rgba(41,182,246,0.15);border:1px solid rgba(41,182,246,0.3);color:var(--ice);border-radius:6px;padding:4px 8px;font-size:0.7rem;cursor:pointer;">✏️ Editar</button>
+            <button onclick="event.stopPropagation();confirmDeleteAthlete('${uid}')" style="background:rgba(255,87,34,0.12);border:1px solid rgba(255,87,34,0.25);color:var(--fire);border-radius:6px;padding:4px 8px;font-size:0.7rem;cursor:pointer;">🗑</button>
+          </div>
         </div>
       </div>
 
@@ -1674,11 +1722,11 @@ function doRegister(){
   saveAuthDB(db);
 
   currentAuthUser = email;
-  onbStep=0; onbData={};
-  renderOnbStep();
-  showScreen('onboarding');
+
+  // Show success screen first
+  document.getElementById('success-email-display').textContent = email;
+  showScreen('success');
   document.getElementById('main-nav').style.display='none';
-  showToast('¡Cuenta creada! Completa tu perfil 💪');
 }
 
 function doLogin(){
@@ -1723,7 +1771,122 @@ function doLogout(){
   showScreen('auth');
 }
 
-function doForgot(){
+function goToOnboarding(){
+  onbStep=0; onbData={};
+  renderOnbStep();
+  showScreen('onboarding');
+  document.getElementById('main-nav').style.display='none';
+}
+
+function goToLoginAfterRegister(){
+  document.getElementById('login-user').value = currentAuthUser || '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-err').textContent = '';
+  showScreen('login');
+}
+
+/* ────────────────────────────────────
+   ADMIN EDIT / DELETE ATHLETES
+──────────────────────────────────── */
+let editingUid = null;
+
+function openEditAthlete(uid){
+  const db = getAllUsers();
+  const u = db[uid];
+  if(!u) return;
+  const p = u.profile || {};
+  editingUid = uid;
+
+  document.getElementById('edit-modal-title').textContent = `Editar — ${p.name||'Usuario'}`;
+  document.getElementById('edit-modal-body').innerHTML = `
+    <div class="form-group">
+      <label class="form-label">Nombre</label>
+      <input class="form-input" id="edit-name" type="text" value="${p.name||''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Edad</label>
+      <input class="form-input" id="edit-age" type="number" value="${p.age||''}">
+    </div>
+    <div class="row-2">
+      <div class="form-group">
+        <label class="form-label">Peso (kg)</label>
+        <input class="form-input" id="edit-weight" type="number" value="${p.weight||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Altura (cm)</label>
+        <input class="form-input" id="edit-height" type="number" value="${p.height||''}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nivel</label>
+      <select class="form-input" id="edit-level">
+        ${['Principiante','Intermedio','Avanzado'].map(l=>`<option ${p.level===l?'selected':''}>${l}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Días disponibles</label>
+      <select class="form-input" id="edit-days">
+        ${['2 días','3 días','4 días','5 días','6+ días'].map(l=>`<option ${p.days===l?'selected':''}>${l}</option>`).join('')}
+      </select>
+    </div>
+    <div class="divider"></div>
+    <button class="btn-secondary" style="width:100%;color:var(--fire);border-color:rgba(255,87,34,0.3);margin-top:4px;" onclick="confirmDeleteAthlete('${uid}')">
+      🗑 Eliminar este usuario
+    </button>
+  `;
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+
+function closeEditModal(){
+  document.getElementById('edit-modal').classList.add('hidden');
+  editingUid = null;
+}
+
+function saveAthleteEdit(){
+  if(!editingUid) return;
+  const db = getAllUsers();
+  if(!db[editingUid]) return;
+
+  db[editingUid].profile.name   = document.getElementById('edit-name').value.trim() || db[editingUid].profile.name;
+  db[editingUid].profile.age    = +document.getElementById('edit-age').value || db[editingUid].profile.age;
+  db[editingUid].profile.weight = +document.getElementById('edit-weight').value || db[editingUid].profile.weight;
+  db[editingUid].profile.height = +document.getElementById('edit-height').value || db[editingUid].profile.height;
+  db[editingUid].profile.level  = document.getElementById('edit-level').value;
+  db[editingUid].profile.days   = document.getElementById('edit-days').value;
+
+  saveAllUsers(db);
+  closeEditModal();
+  renderAdminPanel();
+  showToast('✅ Usuario actualizado');
+}
+
+function confirmDeleteAthlete(uid){
+  const db = getAllUsers();
+  const name = db[uid]?.profile?.name || 'este usuario';
+  if(!confirm(`¿Eliminar a ${name}? Se borrarán todos sus datos y progreso.`)) return;
+  deleteAthleteByUid(uid);
+}
+
+function deleteAthleteByUid(uid){
+  // Remove from users DB
+  const db = getAllUsers();
+  const name = db[uid]?.profile?.name || 'Usuario';
+  delete db[uid];
+  saveAllUsers(db);
+
+  // Remove from auth DB
+  const authDB = getAuthDB();
+  for(const [key, val] of Object.entries(authDB)){
+    if(val.uid === uid){ delete authDB[key]; break; }
+  }
+  saveAuthDB(authDB);
+
+  closeEditModal();
+  renderAdminPanel();
+  showToast(`🗑 ${name} eliminado`);
+}
+
+
   const input = document.getElementById('forgot-input').value.trim().toLowerCase();
   const err = document.getElementById('forgot-err');
   const result = document.getElementById('forgot-result');
