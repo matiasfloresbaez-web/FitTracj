@@ -582,6 +582,7 @@ select.form-input option{background:var(--card);}
       <div class="step-dot" id="dot-1"></div>
       <div class="step-dot" id="dot-2"></div>
       <div class="step-dot" id="dot-3"></div>
+      <div class="step-dot" id="dot-4"></div>
     </div>
   </div>
 
@@ -1428,6 +1429,7 @@ function renderOnbStep() {
   document.getElementById('onb-body').innerHTML = onbSteps[onbStep]();
   for(let i=0;i<ONB_STEPS;i++){
     const d=document.getElementById('dot-'+i);
+    if(!d) continue;
     d.classList.toggle('active',i===onbStep);
     d.classList.toggle('done',i<onbStep);
   }
