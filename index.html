@@ -4,15 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>FitTrack Pro</title>
-<script>
-// Force unregister all old service workers and clear all caches
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => {
-    regs.forEach(reg => reg.unregister());
-  });
-  caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-}
-</script>
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ff5722">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2212,10 +2204,7 @@ function installPWA(){
 function dismissInstall(){document.getElementById('install-banner').classList.remove('show');}
 window.addEventListener('appinstalled',()=>{showToast('✅ App instalada correctamente');dismissInstall();});
 
-/* ── SERVICE WORKER ── */
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
+/* Service Worker desactivado */
 
 /* ────────────────────────────────────
    ADMIN PANEL
@@ -2498,11 +2487,29 @@ function doLogout(){
   state = {uid:null,user:null,currentScreen:'auth',currentWorkout:null,tickets:{},history:[],streak:0};
   localStorage.removeItem(ACTIVE_KEY);
   document.getElementById('main-nav').style.display='none';
-  // Clear login fields
   document.getElementById('login-user').value='';
   document.getElementById('login-pass').value='';
   document.getElementById('login-err').textContent='';
   showScreen('auth');
+}
+
+function doForgot(){
+  const input = document.getElementById('forgot-input').value.trim().toLowerCase();
+  const err = document.getElementById('forgot-err');
+  const result = document.getElementById('forgot-result');
+  err.textContent=''; result.style.display='none';
+  if(!input){ err.textContent='Ingresa tu correo electrónico'; return; }
+  const db = getAuthDB();
+  const entry = db[input];
+  if(!entry){ err.textContent='No se encontró ninguna cuenta con ese correo'; return; }
+  const atIdx = input.indexOf('@');
+  const masked = input.slice(0,2)+'***'+input.slice(atIdx);
+  result.innerHTML = '<div style="margin-bottom:8px;">Cuenta encontrada</div>'
+    + '<div><strong>Correo:</strong> ' + masked + '</div>'
+    + '<div style="margin-top:10px;padding:10px;background:#1a1208;border-radius:6px;">'
+    + '<div style="font-size:0.75rem;color:var(--yellow);">Los datos se guardan en tu dispositivo. Si olvidaste tu contraseña, crea una cuenta nueva.</div>'
+    + '</div>';
+  result.style.display='block';
 }
 
 function goToOnboarding(){
@@ -2618,29 +2625,6 @@ function deleteAthleteByUid(uid){
   closeEditModal();
   renderAdminPanel();
   showToast(`🗑 ${name} eliminado`);
-}
-
-
-  const input = document.getElementById('forgot-input').value.trim().toLowerCase();
-  const err = document.getElementById('forgot-err');
-  const result = document.getElementById('forgot-result');
-  err.textContent=''; result.style.display='none';
-
-  if(!input){ err.textContent='Ingresa tu correo electrónico'; return; }
-
-  const db = getAuthDB();
-  const entry = db[input]; // email is the key
-
-  if(!entry){ err.textContent='❌ No se encontró ninguna cuenta con ese correo'; return; }
-
-  const masked = input.replace(/(.{2}).+(@.+)/, '$1***$2');
-  result.innerHTML = `
-    <div style="margin-bottom:8px;">✅ Cuenta encontrada</div>
-    <div><strong>Correo:</strong> ${masked}</div>
-    <div style="margin-top:10px;padding:10px;background:rgba(255,193,7,0.1);border-radius:6px;border:1px solid rgba(255,193,7,0.2);">
-      <div style="font-size:0.75rem;color:var(--yellow);">💡 Como los datos se guardan en tu dispositivo, para recuperar tu contraseña necesitas recordarla o crear una cuenta nueva.</div>
-    </div>`;
-  result.style.display='block';
 }
 
 let currentAuthUser = null;
