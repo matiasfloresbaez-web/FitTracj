@@ -77,7 +77,15 @@ select.form-input option{background:var(--card);}
 .chip-group{display:flex;flex-wrap:wrap;gap:8px;}
 .chip{padding:8px 14px;border-radius:20px;border:1px solid var(--border);font-size:0.8rem;cursor:pointer;transition:all 0.2s;background:var(--card);color:var(--muted);}
 .chip.selected{background:var(--fire);border-color:var(--fire);color:#fff;font-weight:600;}
-.onb-nav{display:flex;gap:10px;padding:16px 20px;border-top:1px solid var(--border);}
+/* ── ONBOARDING NAV — always visible ── */
+.onb-nav{
+  display:flex;gap:10px;padding:16px 20px;
+  border-top:1px solid var(--border);
+  position:sticky;bottom:0;
+  background:var(--bg);
+  z-index:10;
+  flex-shrink:0;
+}
 .btn-primary{flex:1;padding:14px;background:var(--fire);color:#fff;border:none;border-radius:var(--r-sm);font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.2s;letter-spacing:0.02em;}
 .btn-primary:active{opacity:0.8;}
 .btn-secondary{flex:1;padding:14px;background:var(--card2);color:var(--muted);border:1px solid var(--border);border-radius:var(--r-sm);font-weight:600;font-size:0.88rem;cursor:pointer;font-family:'Inter',sans-serif;}
@@ -586,7 +594,7 @@ select.form-input option{background:var(--card);}
     </div>
   </div>
 
-  <div class="scroll-body onb-body" id="onb-body">
+  <div class="scroll-body onb-body" id="onb-body" style="flex:1;overflow-y:auto;padding-bottom:20px;">
     <!-- Steps rendered by JS -->
   </div>
 
