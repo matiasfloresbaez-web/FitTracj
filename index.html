@@ -317,10 +317,203 @@ select.form-input option{background:var(--card);}
 .trainer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;}
 .trainer-card.selected{border-color:var(--fire);background:rgba(255,87,34,0.06);}
 .trainer-card:active{transform:scale(0.98);}
+
+/* ── SPLASH SCREEN ── */
+#screen-splash{background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;}
+.splash-logo{font-family:'Barlow Condensed',sans-serif;font-size:4rem;font-weight:800;color:var(--white);letter-spacing:-0.03em;opacity:0;transform:translateY(20px);transition:all 0.7s cubic-bezier(.4,0,.2,1);}
+.splash-logo span{color:var(--fire);}
+.splash-tagline{font-size:0.9rem;color:var(--muted);opacity:0;transform:translateY(10px);transition:all 0.6s cubic-bezier(.4,0,.2,1) 0.3s;margin-top:6px;}
+.splash-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--fire);animation:spin 1s linear infinite;opacity:0;transition:opacity 0.4s 0.8s;margin-top:40px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.splash-logo.show,.splash-tagline.show,.splash-ring.show{opacity:1;transform:translateY(0);}
+
+/* ── AUTH SCREEN ── */
+#screen-auth{background:var(--bg);z-index:400;}
+.auth-hero{padding:48px 24px 32px;text-align:center;}
+.auth-logo{font-family:'Barlow Condensed',sans-serif;font-size:3.2rem;font-weight:800;color:var(--white);letter-spacing:-0.03em;}
+.auth-logo span{color:var(--fire);}
+.auth-welcome{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:600;color:var(--text);margin-top:10px;line-height:1.3;}
+.auth-welcome em{color:var(--fire);font-style:normal;}
+.auth-sub{font-size:0.82rem;color:var(--muted);margin-top:6px;}
+.auth-body{padding:0 24px 40px;display:flex;flex-direction:column;gap:12px;}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:4px 0;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.auth-divider span{font-size:0.72rem;color:var(--muted);}
+.btn-outline{width:100%;padding:14px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:var(--r-sm);font-weight:600;font-size:0.88rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+.btn-outline:hover{border-color:var(--text);color:var(--text);}
+
+/* ── LOGIN / REGISTER SCREEN ── */
+#screen-login,#screen-register,#screen-forgot{background:var(--bg);z-index:450;}
+.auth-form-header{padding:20px 16px 8px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
+.auth-form-title{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);}
+.auth-form-body{padding:20px 20px 40px;display:flex;flex-direction:column;gap:14px;}
+.input-group{position:relative;}
+.input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none;}
+.form-input.with-icon{padding-left:38px;}
+.show-pwd{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.8rem;padding:4px;}
+.auth-error{font-size:0.78rem;color:var(--fire);text-align:center;min-height:20px;font-weight:500;}
+.auth-link{font-size:0.78rem;color:var(--muted);text-align:center;cursor:pointer;}
+.auth-link span{color:var(--fire);font-weight:600;}
+.strength-bar{height:4px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden;}
+.strength-fill{height:100%;border-radius:2px;transition:width 0.3s,background 0.3s;}
 </style>
 </head>
 <body>
 <div id="app">
+
+<!-- ═══════════════════════════════════
+     SPLASH SCREEN
+════════════════════════════════════ -->
+<div class="screen" id="screen-splash">
+  <div class="splash-logo" id="splash-logo">Fit<span>Track</span></div>
+  <div class="splash-tagline" id="splash-tagline">Tu entrenamiento. Tu ritmo.</div>
+  <div class="splash-ring" id="splash-ring"></div>
+</div>
+
+<!-- ═══════════════════════════════════
+     AUTH WELCOME
+════════════════════════════════════ -->
+<div class="screen hidden" id="screen-auth">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;overflow-y:auto;">
+    <div class="auth-hero">
+      <div style="font-size:4rem;margin-bottom:16px;">🔥</div>
+      <div class="auth-logo">Fit<span>Track</span> Pro</div>
+      <div class="auth-welcome">Bienvenido/a <em>máquina</em>,<br>vamos a entrenar</div>
+      <div class="auth-sub">Tu app de entrenamiento personal</div>
+    </div>
+    <div class="auth-body">
+      <button class="btn-primary" style="font-size:1rem;padding:16px;letter-spacing:0.04em;" onclick="showScreen('login')">
+        💪 Iniciar sesión
+      </button>
+      <button class="btn-outline" onclick="showScreen('register')" style="border-color:var(--fire);color:var(--fire);">
+        ✨ Crear cuenta nueva
+      </button>
+      <div class="auth-divider"><span>o</span></div>
+      <button class="btn-outline" onclick="showScreen('forgot')">
+        🔑 Olvidé mi contraseña
+      </button>
+      <div style="text-align:center;margin-top:8px;font-size:0.7rem;color:var(--muted);">
+        FitTrack Pro · Todos los datos se guardan en tu dispositivo
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     LOGIN
+════════════════════════════════════ -->
+<div class="screen hidden" id="screen-login">
+  <div class="auth-form-header">
+    <div class="back-btn" onclick="showScreen('auth')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="auth-form-title">Iniciar sesión</div>
+  </div>
+  <div class="auth-form-body">
+    <div style="text-align:center;padding:8px 0 16px;">
+      <div style="font-size:2.5rem;">👤</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;color:var(--muted);margin-top:4px;">¿Listo para entrenar?</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Usuario</label>
+      <div class="input-group">
+        <span class="input-icon">👤</span>
+        <input class="form-input with-icon" type="text" id="login-user" placeholder="Tu nombre de usuario" autocomplete="username">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <div class="input-group">
+        <span class="input-icon">🔒</span>
+        <input class="form-input with-icon" type="password" id="login-pass" placeholder="Tu contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="show-pwd" onclick="togglePwd('login-pass',this)">Ver</button>
+      </div>
+    </div>
+    <div class="auth-error" id="login-err"></div>
+    <button class="btn-primary" style="padding:15px;font-size:0.95rem;" onclick="doLogin()">Entrar 🔥</button>
+    <div class="auth-link" onclick="showScreen('forgot')">¿Olvidaste tu contraseña? <span>Recupérala aquí</span></div>
+    <div class="auth-link" onclick="showScreen('register')">¿No tienes cuenta? <span>Crear cuenta</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     REGISTER
+════════════════════════════════════ -->
+<div class="screen hidden" id="screen-register">
+  <div class="auth-form-header">
+    <div class="back-btn" onclick="showScreen('auth')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="auth-form-title">Crear cuenta</div>
+  </div>
+  <div class="auth-form-body scroll-body" style="padding-bottom:60px;">
+    <div class="form-group">
+      <label class="form-label">Nombre de usuario</label>
+      <div class="input-group">
+        <span class="input-icon">👤</span>
+        <input class="form-input with-icon" type="text" id="reg-user" placeholder="Ej: matias_fit" autocomplete="username" oninput="checkUsername()">
+      </div>
+      <div id="reg-user-msg" style="font-size:0.72rem;margin-top:4px;min-height:16px;"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Correo electrónico <span style="color:var(--muted);font-weight:400;">(para recuperar contraseña)</span></label>
+      <div class="input-group">
+        <span class="input-icon">📧</span>
+        <input class="form-input with-icon" type="email" id="reg-email" placeholder="tu@correo.com" autocomplete="email">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <div class="input-group">
+        <span class="input-icon">🔒</span>
+        <input class="form-input with-icon" type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password" oninput="checkStrength()">
+        <button class="show-pwd" onclick="togglePwd('reg-pass',this)">Ver</button>
+      </div>
+      <div class="strength-bar"><div class="strength-fill" id="strength-fill" style="width:0%;"></div></div>
+      <div id="strength-label" style="font-size:0.68rem;color:var(--muted);margin-top:3px;"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirmar contraseña</label>
+      <div class="input-group">
+        <span class="input-icon">🔒</span>
+        <input class="form-input with-icon" type="password" id="reg-pass2" placeholder="Repite tu contraseña" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()">
+        <button class="show-pwd" onclick="togglePwd('reg-pass2',this)">Ver</button>
+      </div>
+    </div>
+    <div class="auth-error" id="reg-err"></div>
+    <button class="btn-primary" style="padding:15px;font-size:0.95rem;" onclick="doRegister()">Crear cuenta ✨</button>
+    <div class="auth-link" onclick="showScreen('login')">¿Ya tienes cuenta? <span>Iniciar sesión</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     FORGOT PASSWORD
+════════════════════════════════════ -->
+<div class="screen hidden" id="screen-forgot">
+  <div class="auth-form-header">
+    <div class="back-btn" onclick="showScreen('auth')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="auth-form-title">Recuperar contraseña</div>
+  </div>
+  <div class="auth-form-body">
+    <div style="text-align:center;padding:8px 0 16px;">
+      <div style="font-size:2.5rem;">🔑</div>
+      <div style="font-size:0.85rem;color:var(--muted);margin-top:8px;line-height:1.5;">Ingresa tu nombre de usuario o correo y te mostraremos una pista para recuperar tu contraseña.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Usuario o correo</label>
+      <div class="input-group">
+        <span class="input-icon">📧</span>
+        <input class="form-input with-icon" type="text" id="forgot-input" placeholder="Usuario o correo electrónico">
+      </div>
+    </div>
+    <div id="forgot-result" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;font-size:0.82rem;color:var(--text);display:none;line-height:1.5;"></div>
+    <div class="auth-error" id="forgot-err"></div>
+    <button class="btn-primary" style="padding:15px;" onclick="doForgot()">Buscar cuenta 🔍</button>
+    <div class="auth-link" onclick="showScreen('login')">Volver a <span>Iniciar sesión</span></div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════
      ONBOARDING / ANAMNESIS
@@ -925,7 +1118,6 @@ function showScreen(id){
   if(mainNav)mainNav.style.display=mainScreens.includes(id)?'flex':'none';
   state.currentScreen=id;
 }
-
 let previousScreen = 'workouts';
 
 function goBack(){
@@ -1175,6 +1367,9 @@ function renderProfile(){
         <div class="settings-item" onclick="if(confirm('¿Eliminar este usuario y sus datos?'))deleteCurrentUser()"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">🗑</div><div class="settings-label" style="color:var(--fire);">Eliminar mi cuenta</div><div class="settings-arrow">›</div></div>
       </div>
 
+        <div class="settings-item" onclick="doLogout()"><div class="settings-icon" style="background:rgba(107,114,128,0.1);">🚪</div><div class="settings-label">Cerrar sesión</div><div class="settings-arrow">›</div></div>
+      </div>
+
       <div class="section-head"><h2>🔐 Administrador</h2></div>
       <div class="settings-group">
         <div class="settings-item" onclick="openAdminPanel()">
@@ -1413,27 +1608,224 @@ function toggleAthleteExpand(uid){
 
 
 /* ────────────────────────────────────
-   INIT
+   AUTH SYSTEM
 ──────────────────────────────────── */
-(function init(){
-  const db=getAllUsers();
-  const uids=Object.keys(db);
-  const activeUid=getActiveUid();
+const AUTH_DB_KEY = 'fittrack_auth_v1';
 
-  if(uids.length===0){
-    // No users — go to onboarding
-    onbStep=0;onbData={};renderOnbStep();showScreen('onboarding');
-    document.getElementById('main-nav').style.display='none';
-  } else if(activeUid && db[activeUid]){
-    // Auto-login last user
-    loadActiveUser(activeUid);
+function getAuthDB(){ try{ return JSON.parse(localStorage.getItem(AUTH_DB_KEY))||{}; }catch(e){ return {}; } }
+function saveAuthDB(db){ try{ localStorage.setItem(AUTH_DB_KEY, JSON.stringify(db)); }catch(e){} }
+
+function hashPass(str){
+  // Simple deterministic hash (not cryptographic, but functional for local app)
+  let h = 0;
+  for(let i=0;i<str.length;i++){ h = Math.imul(31,h)+str.charCodeAt(i)|0; }
+  return h.toString(36);
+}
+
+function togglePwd(id, btn){
+  const el = document.getElementById(id);
+  if(el.type==='password'){ el.type='text'; btn.textContent='Ocultar'; }
+  else { el.type='password'; btn.textContent='Ver'; }
+}
+
+function checkUsername(){
+  const val = document.getElementById('reg-user').value.trim();
+  const msg = document.getElementById('reg-user-msg');
+  if(!val){ msg.textContent=''; return; }
+  const db = getAuthDB();
+  if(db[val.toLowerCase()]){ msg.textContent='❌ Ese usuario ya existe'; msg.style.color='var(--fire)'; }
+  else if(val.length<3){ msg.textContent='Mínimo 3 caracteres'; msg.style.color='var(--muted)'; }
+  else { msg.textContent='✅ Disponible'; msg.style.color='var(--green)'; }
+}
+
+function checkStrength(){
+  const pass = document.getElementById('reg-pass').value;
+  const fill = document.getElementById('strength-fill');
+  const label = document.getElementById('strength-label');
+  let score = 0;
+  if(pass.length>=6) score++;
+  if(pass.length>=10) score++;
+  if(/[A-Z]/.test(pass)) score++;
+  if(/[0-9]/.test(pass)) score++;
+  if(/[^A-Za-z0-9]/.test(pass)) score++;
+  const levels = [
+    {w:'0%',c:'var(--border)',t:''},
+    {w:'25%',c:'var(--fire)',t:'Débil'},
+    {w:'50%',c:'var(--yellow)',t:'Regular'},
+    {w:'75%',c:'var(--fire2)',t:'Buena'},
+    {w:'100%',c:'var(--green)',t:'Excelente'},
+  ];
+  const l = levels[Math.min(score,4)];
+  fill.style.width=l.w; fill.style.background=l.c;
+  label.textContent=l.t; label.style.color=l.c;
+}
+
+function doRegister(){
+  const username = document.getElementById('reg-user').value.trim().toLowerCase();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pass = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  const err = document.getElementById('reg-err');
+  err.textContent='';
+
+  if(!username || username.length<3){ err.textContent='El usuario debe tener al menos 3 caracteres'; return; }
+  if(!/^[a-z0-9_]+$/.test(username)){ err.textContent='Solo letras, números y guión bajo'; return; }
+  if(!email || !email.includes('@')){ err.textContent='Ingresa un correo válido'; return; }
+  if(pass.length<6){ err.textContent='La contraseña debe tener al menos 6 caracteres'; return; }
+  if(pass!==pass2){ err.textContent='Las contraseñas no coinciden'; return; }
+
+  const db = getAuthDB();
+  if(db[username]){ err.textContent='Ese nombre de usuario ya existe'; return; }
+
+  // Create auth entry
+  db[username] = { hash: hashPass(pass), email, uid: null, createdAt: new Date().toISOString() };
+  saveAuthDB(db);
+
+  // Now go to onboarding for profile setup
+  currentAuthUser = username;
+  onbStep=0; onbData={};
+  renderOnbStep();
+  showScreen('onboarding');
+  document.getElementById('main-nav').style.display='none';
+  showToast('¡Cuenta creada! Completa tu perfil 💪');
+}
+
+function doLogin(){
+  const username = document.getElementById('login-user').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-err');
+  err.textContent='';
+
+  if(!username){ err.textContent='Ingresa tu usuario'; return; }
+  if(!pass){ err.textContent='Ingresa tu contraseña'; return; }
+
+  const db = getAuthDB();
+  const entry = db[username];
+  if(!entry){ err.textContent='❌ Usuario no encontrado'; return; }
+  if(entry.hash !== hashPass(pass)){ err.textContent='❌ Contraseña incorrecta'; return; }
+
+  // Find the linked user profile
+  const userDB = getAllUsers();
+  if(entry.uid && userDB[entry.uid]){
+    loadActiveUser(entry.uid);
+    setActiveUid(entry.uid);
+    currentAuthUser = username;
     launchApp();
   } else {
-    // Show user selector
-    renderUsersScreen();
-    showScreen('users');
+    // No profile yet — go to onboarding
+    currentAuthUser = username;
+    onbStep=0; onbData={};
+    renderOnbStep();
+    showScreen('onboarding');
     document.getElementById('main-nav').style.display='none';
   }
+}
+
+function doLogout(){
+  if(!confirm('¿Cerrar sesión?')) return;
+  currentAuthUser = null;
+  state = {uid:null,user:null,currentScreen:'auth',currentWorkout:null,tickets:{},history:[],streak:0};
+  localStorage.removeItem(ACTIVE_KEY);
+  document.getElementById('main-nav').style.display='none';
+  // Clear login fields
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-err').textContent='';
+  showScreen('auth');
+}
+
+function doForgot(){
+  const input = document.getElementById('forgot-input').value.trim().toLowerCase();
+  const err = document.getElementById('forgot-err');
+  const result = document.getElementById('forgot-result');
+  err.textContent=''; result.style.display='none';
+
+  if(!input){ err.textContent='Ingresa tu usuario o correo'; return; }
+
+  const db = getAuthDB();
+  let found = null, foundUser = '';
+
+  // Search by username or email
+  for(const [u,d] of Object.entries(db)){
+    if(u===input || d.email===input){ found=d; foundUser=u; break; }
+  }
+
+  if(!found){ err.textContent='❌ No se encontró ninguna cuenta con ese dato'; return; }
+
+  const masked = found.email.replace(/(.{2}).+(@.+)/, '$1***$2');
+  result.innerHTML = `
+    <div style="margin-bottom:8px;">✅ Cuenta encontrada</div>
+    <div><strong>Usuario:</strong> ${foundUser}</div>
+    <div><strong>Correo:</strong> ${masked}</div>
+    <div style="margin-top:10px;padding:10px;background:rgba(255,193,7,0.1);border-radius:6px;border:1px solid rgba(255,193,7,0.2);">
+      <div style="font-size:0.75rem;color:var(--yellow);">💡 Como los datos se guardan en tu dispositivo, para recuperar tu contraseña necesitas recordarla o crear una cuenta nueva.</div>
+    </div>`;
+  result.style.display='block';
+}
+
+let currentAuthUser = null;
+
+// Override save for new user to link auth
+const _origOnbNext = onbNext;
+function onbNextWithAuth(){
+  // After onboarding finishes, link the uid to the auth entry
+  const origOnbNext = window._origOnbNextFn;
+  if(origOnbNext) origOnbNext();
+}
+
+// Patch onboarding save to link auth account
+const _patchedOnbNext = onbNext;
+window.onbNext = function(){
+  const wasLastStep = onbStep === ONB_STEPS-1;
+  _patchedOnbNext();
+  // After save, link auth to uid
+  if(wasLastStep && currentAuthUser){
+    const authDB = getAuthDB();
+    if(authDB[currentAuthUser]){
+      authDB[currentAuthUser].uid = state.uid;
+      saveAuthDB(authDB);
+    }
+  }
+};
+
+/* ────────────────────────────────────
+   SPLASH + INIT
+──────────────────────────────────── */
+function showSplash(cb){
+  showScreen('splash');
+  setTimeout(()=>{
+    document.getElementById('splash-logo').classList.add('show');
+    document.getElementById('splash-tagline').classList.add('show');
+  },100);
+  setTimeout(()=>{
+    document.getElementById('splash-ring').classList.add('show');
+  },600);
+  setTimeout(cb, 2200);
+}
+
+(function init(){
+  showSplash(()=>{
+    const authDB = getAuthDB();
+    const hasAccounts = Object.keys(authDB).length > 0;
+
+    // Migrate old users that have no auth entry
+    const userDB = getAllUsers();
+    const activeUid = getActiveUid();
+
+    if(hasAccounts && activeUid && userDB[activeUid]){
+      // Find auth entry for this uid
+      const authEntry = Object.entries(authDB).find(([,d])=>d.uid===activeUid);
+      if(authEntry){
+        currentAuthUser = authEntry[0];
+        loadActiveUser(activeUid);
+        launchApp();
+        return;
+      }
+    }
+    // Show welcome auth screen
+    showScreen('auth');
+    document.getElementById('main-nav').style.display='none';
+  });
 })();
 </script>
 
