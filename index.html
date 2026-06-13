@@ -415,10 +415,10 @@ select.form-input option{background:var(--card);}
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;color:var(--muted);margin-top:4px;">¿Listo para entrenar?</div>
     </div>
     <div class="form-group">
-      <label class="form-label">Usuario</label>
+      <label class="form-label">Correo electrónico</label>
       <div class="input-group">
-        <span class="input-icon">👤</span>
-        <input class="form-input with-icon" type="text" id="login-user" placeholder="Tu nombre de usuario" autocomplete="username">
+        <span class="input-icon">📧</span>
+        <input class="form-input with-icon" type="email" id="login-user" placeholder="tu@correo.com" autocomplete="email">
       </div>
     </div>
     <div class="form-group">
@@ -448,19 +448,12 @@ select.form-input option{background:var(--card);}
   </div>
   <div class="auth-form-body scroll-body" style="padding-bottom:60px;">
     <div class="form-group">
-      <label class="form-label">Nombre de usuario</label>
-      <div class="input-group">
-        <span class="input-icon">👤</span>
-        <input class="form-input with-icon" type="text" id="reg-user" placeholder="Ej: matias_fit" autocomplete="username" oninput="checkUsername()">
-      </div>
-      <div id="reg-user-msg" style="font-size:0.72rem;margin-top:4px;min-height:16px;"></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Correo electrónico <span style="color:var(--muted);font-weight:400;">(para recuperar contraseña)</span></label>
+      <label class="form-label">Correo electrónico <span style="color:var(--fire);font-weight:600;">(será tu usuario)</span></label>
       <div class="input-group">
         <span class="input-icon">📧</span>
-        <input class="form-input with-icon" type="email" id="reg-email" placeholder="tu@correo.com" autocomplete="email">
+        <input class="form-input with-icon" type="email" id="reg-email" placeholder="tu@correo.com" autocomplete="email" oninput="checkEmail()">
       </div>
+      <div id="reg-user-msg" style="font-size:0.72rem;margin-top:4px;min-height:16px;"></div>
     </div>
     <div class="form-group">
       <label class="form-label">Contraseña</label>
@@ -499,13 +492,13 @@ select.form-input option{background:var(--card);}
   <div class="auth-form-body">
     <div style="text-align:center;padding:8px 0 16px;">
       <div style="font-size:2.5rem;">🔑</div>
-      <div style="font-size:0.85rem;color:var(--muted);margin-top:8px;line-height:1.5;">Ingresa tu nombre de usuario o correo y te mostraremos una pista para recuperar tu contraseña.</div>
+      <div style="font-size:0.85rem;color:var(--muted);margin-top:8px;line-height:1.5;">Ingresa tu correo electrónico y te mostraremos si existe una cuenta asociada.</div>
     </div>
     <div class="form-group">
-      <label class="form-label">Usuario o correo</label>
+      <label class="form-label">Correo electrónico</label>
       <div class="input-group">
         <span class="input-icon">📧</span>
-        <input class="form-input with-icon" type="text" id="forgot-input" placeholder="Usuario o correo electrónico">
+        <input class="form-input with-icon" type="email" id="forgot-input" placeholder="tu@correo.com">
       </div>
     </div>
     <div id="forgot-result" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;font-size:0.82rem;color:var(--text);display:none;line-height:1.5;"></div>
@@ -1628,15 +1621,17 @@ function togglePwd(id, btn){
   else { el.type='password'; btn.textContent='Ver'; }
 }
 
-function checkUsername(){
-  const val = document.getElementById('reg-user').value.trim();
+function checkEmail(){
+  const val = document.getElementById('reg-email').value.trim().toLowerCase();
   const msg = document.getElementById('reg-user-msg');
   if(!val){ msg.textContent=''; return; }
+  if(!val.includes('@') || !val.includes('.')){ msg.textContent='Ingresa un correo válido'; msg.style.color='var(--muted)'; return; }
   const db = getAuthDB();
-  if(db[val.toLowerCase()]){ msg.textContent='❌ Ese usuario ya existe'; msg.style.color='var(--fire)'; }
-  else if(val.length<3){ msg.textContent='Mínimo 3 caracteres'; msg.style.color='var(--muted)'; }
-  else { msg.textContent='✅ Disponible'; msg.style.color='var(--green)'; }
+  if(db[val]){ msg.textContent='❌ Ya existe una cuenta con ese correo'; msg.style.color='var(--fire)'; }
+  else { msg.textContent='✅ Correo disponible'; msg.style.color='var(--green)'; }
 }
+
+function checkUsername(){ checkEmail(); } // alias por compatibilidad
 
 function checkStrength(){
   const pass = document.getElementById('reg-pass').value;
@@ -1661,28 +1656,24 @@ function checkStrength(){
 }
 
 function doRegister(){
-  const username = document.getElementById('reg-user').value.trim().toLowerCase();
   const email = document.getElementById('reg-email').value.trim().toLowerCase();
   const pass = document.getElementById('reg-pass').value;
   const pass2 = document.getElementById('reg-pass2').value;
   const err = document.getElementById('reg-err');
   err.textContent='';
 
-  if(!username || username.length<3){ err.textContent='El usuario debe tener al menos 3 caracteres'; return; }
-  if(!/^[a-z0-9_]+$/.test(username)){ err.textContent='Solo letras, números y guión bajo'; return; }
-  if(!email || !email.includes('@')){ err.textContent='Ingresa un correo válido'; return; }
+  if(!email || !email.includes('@') || !email.includes('.')){ err.textContent='Ingresa un correo electrónico válido'; return; }
   if(pass.length<6){ err.textContent='La contraseña debe tener al menos 6 caracteres'; return; }
   if(pass!==pass2){ err.textContent='Las contraseñas no coinciden'; return; }
 
   const db = getAuthDB();
-  if(db[username]){ err.textContent='Ese nombre de usuario ya existe'; return; }
+  if(db[email]){ err.textContent='Ya existe una cuenta con ese correo'; return; }
 
-  // Create auth entry
-  db[username] = { hash: hashPass(pass), email, uid: null, createdAt: new Date().toISOString() };
+  // Create auth entry using email as key
+  db[email] = { hash: hashPass(pass), email, uid: null, createdAt: new Date().toISOString() };
   saveAuthDB(db);
 
-  // Now go to onboarding for profile setup
-  currentAuthUser = username;
+  currentAuthUser = email;
   onbStep=0; onbData={};
   renderOnbStep();
   showScreen('onboarding');
@@ -1691,29 +1682,27 @@ function doRegister(){
 }
 
 function doLogin(){
-  const username = document.getElementById('login-user').value.trim().toLowerCase();
+  const email = document.getElementById('login-user').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value;
   const err = document.getElementById('login-err');
   err.textContent='';
 
-  if(!username){ err.textContent='Ingresa tu usuario'; return; }
+  if(!email){ err.textContent='Ingresa tu correo'; return; }
   if(!pass){ err.textContent='Ingresa tu contraseña'; return; }
 
   const db = getAuthDB();
-  const entry = db[username];
-  if(!entry){ err.textContent='❌ Usuario no encontrado'; return; }
+  const entry = db[email];
+  if(!entry){ err.textContent='❌ No existe cuenta con ese correo'; return; }
   if(entry.hash !== hashPass(pass)){ err.textContent='❌ Contraseña incorrecta'; return; }
 
-  // Find the linked user profile
   const userDB = getAllUsers();
   if(entry.uid && userDB[entry.uid]){
     loadActiveUser(entry.uid);
     setActiveUid(entry.uid);
-    currentAuthUser = username;
+    currentAuthUser = email;
     launchApp();
   } else {
-    // No profile yet — go to onboarding
-    currentAuthUser = username;
+    currentAuthUser = email;
     onbStep=0; onbData={};
     renderOnbStep();
     showScreen('onboarding');
@@ -1740,22 +1729,16 @@ function doForgot(){
   const result = document.getElementById('forgot-result');
   err.textContent=''; result.style.display='none';
 
-  if(!input){ err.textContent='Ingresa tu usuario o correo'; return; }
+  if(!input){ err.textContent='Ingresa tu correo electrónico'; return; }
 
   const db = getAuthDB();
-  let found = null, foundUser = '';
+  const entry = db[input]; // email is the key
 
-  // Search by username or email
-  for(const [u,d] of Object.entries(db)){
-    if(u===input || d.email===input){ found=d; foundUser=u; break; }
-  }
+  if(!entry){ err.textContent='❌ No se encontró ninguna cuenta con ese correo'; return; }
 
-  if(!found){ err.textContent='❌ No se encontró ninguna cuenta con ese dato'; return; }
-
-  const masked = found.email.replace(/(.{2}).+(@.+)/, '$1***$2');
+  const masked = input.replace(/(.{2}).+(@.+)/, '$1***$2');
   result.innerHTML = `
     <div style="margin-bottom:8px;">✅ Cuenta encontrada</div>
-    <div><strong>Usuario:</strong> ${foundUser}</div>
     <div><strong>Correo:</strong> ${masked}</div>
     <div style="margin-top:10px;padding:10px;background:rgba(255,193,7,0.1);border-radius:6px;border:1px solid rgba(255,193,7,0.2);">
       <div style="font-size:0.75rem;color:var(--yellow);">💡 Como los datos se guardan en tu dispositivo, para recuperar tu contraseña necesitas recordarla o crear una cuenta nueva.</div>
