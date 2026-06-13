@@ -277,6 +277,46 @@ select.form-input option{background:var(--card);}
 .user-card .uc-del{width:32px;height:32px;border-radius:8px;background:rgba(255,87,34,0.1);border:none;color:var(--fire);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .add-user-btn{margin:10px 20px;width:calc(100% - 40px);padding:14px;background:transparent;border:2px dashed var(--border);border-radius:var(--r);color:var(--muted);font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
 .add-user-btn:hover{border-color:var(--fire);color:var(--fire);}
+
+/* ── ADMIN PANEL ── */
+#screen-admin{background:var(--bg);z-index:300;}
+.admin-header{background:linear-gradient(135deg,#1a0a00,#2d1500);border-bottom:1px solid var(--fire);padding:20px 16px 16px;display:flex;align-items:center;gap:12px;}
+.admin-badge{background:var(--fire);color:#fff;font-size:0.62rem;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.1em;text-transform:uppercase;}
+.admin-title{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);flex:1;}
+.admin-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;}
+.admin-card-header{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.admin-card-header:active{background:var(--card2);}
+.admin-athlete-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#2980b9);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;flex-shrink:0;}
+.admin-athlete-info{flex:1;}
+.admin-athlete-name{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;color:var(--white);}
+.admin-athlete-meta{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+.admin-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.admin-stat{background:var(--card2);padding:12px 8px;text-align:center;}
+.admin-stat-val{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);}
+.admin-stat-label{font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+.admin-progress-section{padding:12px 16px;border-top:1px solid var(--border);}
+.admin-progress-title{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;font-weight:600;}
+.admin-mini-history{max-height:150px;overflow-y:auto;}
+.admin-mini-history::-webkit-scrollbar{display:none;}
+.admin-expanded{display:none;}
+.admin-expanded.open{display:block;}
+.admin-summary-bar{display:flex;gap:8px;padding:12px 16px;background:linear-gradient(135deg,rgba(255,87,34,0.05),transparent);border-bottom:1px solid var(--border);}
+.admin-sum-item{flex:1;text-align:center;}
+.admin-sum-val{font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--fire);}
+.admin-sum-label{font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;}
+
+/* Login modal */
+.login-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.85);z-index:400;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.login-overlay.hidden{display:none;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px 24px;width:calc(100% - 48px);max-width:340px;}
+.login-title{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--white);text-align:center;margin-bottom:4px;}
+.login-sub{font-size:0.78rem;color:var(--muted);text-align:center;margin-bottom:20px;}
+.login-error{font-size:0.75rem;color:var(--fire);text-align:center;margin-top:8px;min-height:18px;}
+
+/* Trainer card */
+.trainer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;}
+.trainer-card.selected{border-color:var(--fire);background:rgba(255,87,34,0.06);}
+.trainer-card:active{transform:scale(0.98);}
 </style>
 </head>
 <body>
@@ -398,6 +438,35 @@ select.form-input option{background:var(--card);}
   <div class="user-card-list" id="user-card-list"></div>
   <button class="add-user-btn" onclick="addNewUser()">＋ Crear nuevo usuario</button>
   <div style="text-align:center;padding:16px;font-size:0.7rem;color:var(--muted);">Todos los datos se guardan en este dispositivo</div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="screen hidden" id="screen-admin">
+  <div class="admin-header">
+    <div class="back-btn" onclick="closeAdmin()" style="background:rgba(255,87,34,0.15);border-color:rgba(255,87,34,0.3);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="admin-title">Panel Admin</div>
+    <div class="admin-badge">🔒 PRIVADO</div>
+  </div>
+  <div class="scroll-body" id="admin-body" style="padding-top:12px;"></div>
+</div>
+
+<!-- LOGIN ADMIN -->
+<div class="login-overlay hidden" id="login-overlay">
+  <div class="login-box">
+    <div class="login-title">🔐 Área Admin</div>
+    <div class="login-sub">Solo para entrenadores autorizados</div>
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <input class="form-input" type="password" id="admin-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminLogin()">
+    </div>
+    <div class="login-error" id="login-error"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn-secondary" onclick="closeLoginOverlay()">Cancelar</button>
+      <button class="btn-primary" onclick="checkAdminLogin()">Entrar</button>
+    </div>
+  </div>
 </div>
 
 <!-- INSTALL BANNER -->
@@ -598,7 +667,7 @@ const WORKOUTS = [
    ONBOARDING
 ──────────────────────────────────── */
 let onbStep = 0;
-const ONB_STEPS = 4;
+const ONB_STEPS = 5;
 let onbData = {};
 
 const onbSteps = [
@@ -637,8 +706,8 @@ const onbSteps = [
     </div>`,
   () => `
     <div class="onb-section-title">🎯 Tu Objetivo</div>
-    <div class="form-group"><label class="form-label">¿Qué quieres lograr?</label>
-      <div class="chip-group">${['Perder peso','Ganar músculo','Mejorar resistencia','Fuerza máxima','Bienestar general','Rendimiento deportivo'].map(l=>`<div class="chip${onbData.goal===l?' selected':''}" onclick="toggleChipSingle(this,'goal')">${l}</div>`).join('')}</div>
+    <div class="form-group"><label class="form-label">¿Qué quieres lograr? <span style="font-size:0.68rem;color:var(--fire);font-weight:400;">(puedes elegir varios)</span></label>
+      <div class="chip-group">${['Perder peso','Ganar músculo','Mejorar resistencia','Fuerza máxima','Bienestar general','Rendimiento deportivo','Flexibilidad','Definición muscular'].map(l=>`<div class="chip${(onbData.goals||[]).includes(l)?' selected':''}" onclick="toggleChipMulti(this,'goals')">${l}</div>`).join('')}</div>
     </div>
     <div class="form-group"><label class="form-label">Modalidades que te interesan</label>
       <div class="chip-group">${[{v:'gym',l:'🏋️ Gym'},{v:'calistenia',l:'🤸 Calistenia'},{v:'crossfit',l:'🔥 CrossFit'},{v:'running',l:'🏃 Running'}].map(({v,l})=>`<div class="chip${(onbData.modalities||[]).includes(v)?' selected':''}" onclick="toggleChipMulti(this,'modalities')" data-val="${v}">${l}</div>`).join('')}</div>
@@ -646,6 +715,33 @@ const onbSteps = [
     <div class="form-group"><label class="form-label">Duración preferida por sesión</label>
       <div class="chip-group">${['30 min','45 min','60 min','75 min','90+ min'].map(l=>`<div class="chip${onbData.duration===l?' selected':''}" onclick="toggleChipSingle(this,'duration')">${l}</div>`).join('')}</div>
     </div>`,
+  // STEP 3 — Entrenador
+  () => `
+    <div class="onb-section-title">🏅 Tu Entrenador</div>
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:16px;line-height:1.5;">¿Tienes un entrenador personal? Selecciónalo para que pueda hacer seguimiento de tu progreso.</p>
+    <div class="form-group">
+      <label class="form-label">Selecciona entrenador</label>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="trainer-card ${onbData.trainer==='Matias Flores'?'selected':''}" onclick="selectTrainer('Matias Flores')" id="trainer-mf">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--fire),var(--fire2));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:#fff;flex-shrink:0;">MF</div>
+          <div style="flex:1;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;color:var(--white);">Matias Flores</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Entrenador Personal · Gym · Calistenia · CrossFit · Running</div>
+          </div>
+          <div style="font-size:1.2rem;">${onbData.trainer==='Matias Flores'?'✅':''}</div>
+        </div>
+        <div class="trainer-card ${onbData.trainer==='Sin entrenador'?'selected':''}" onclick="selectTrainer('Sin entrenador')" id="trainer-none">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🏋️</div>
+          <div style="flex:1;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;color:var(--white);">Entreno por mi cuenta</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Sin entrenador asignado</div>
+          </div>
+          <div style="font-size:1.2rem;">${onbData.trainer==='Sin entrenador'?'✅':''}</div>
+        </div>
+      </div>
+    </div>
+  `,
+  // STEP 4 — Resumen
   () => {
     const bmi = onbData.weight && onbData.height ? (onbData.weight/Math.pow(onbData.height/100,2)).toFixed(1) : '—';
     return `
@@ -654,12 +750,19 @@ const onbSteps = [
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div><div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">IMC</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;color:var(--white);">${bmi}</div></div>
         <div><div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Nivel</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;color:var(--fire);">${onbData.level||'—'}</div></div>
-        <div><div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Objetivo</div><div style="font-size:0.82rem;color:var(--text);">${onbData.goal||'—'}</div></div>
         <div><div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Días/sem</div><div style="font-size:0.82rem;color:var(--text);">${onbData.days||'—'}</div></div>
       </div>
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+        <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Entrenador</div>
+        <div style="font-size:0.85rem;color:${onbData.trainer==='Matias Flores'?'var(--fire2)':'var(--text)'};">${onbData.trainer||'No seleccionado'} ${onbData.trainer==='Matias Flores'?'🏅':''}</div>
+      </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+        <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Objetivos</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">${(onbData.goals||[]).map(g=>`<span class="pill" style="background:rgba(255,87,34,0.15);color:var(--fire2);">${g}</span>`).join('')||'<span style="color:var(--muted);font-size:0.8rem;">—</span>'}</div>
+      </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
         <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Modalidades</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">${(onbData.modalities||[]).map(m=>`<span class="pill" style="background:rgba(255,87,34,0.15);color:var(--fire2);">${m}</span>`).join('')||'<span style="color:var(--muted);font-size:0.8rem;">Ninguna</span>'}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">${(onbData.modalities||[]).map(m=>`<span class="pill" style="background:rgba(41,182,246,0.15);color:var(--ice);">${m}</span>`).join('')||'<span style="color:var(--muted);font-size:0.8rem;">Ninguna</span>'}</div>
       </div>
     </div>
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;text-align:center;">Tu plan está personalizado según tu anamnesis. ¡Empecemos!</p>`
@@ -675,6 +778,12 @@ function renderOnbStep() {
   }
   document.getElementById('onb-back-btn').style.display = onbStep>0?'block':'none';
   document.getElementById('onb-next-btn').textContent = onbStep===ONB_STEPS-1?'¡Entrenar! 🔥':'Siguiente →';
+}
+
+function selectTrainer(name){
+  onbData.trainer=name;
+  // Re-render step to update checkmarks
+  document.getElementById('onb-body').innerHTML=onbSteps[onbStep]();
 }
 
 function toggleChipSingle(el,field){
@@ -704,7 +813,8 @@ function collectStep0(){
 function onbNext(){
   if(onbStep===0&&!collectStep0())return;
   if(onbStep===1&&!onbData.level){showToast('Selecciona tu nivel','fire');return;}
-  if(onbStep===2&&!onbData.goal){showToast('Selecciona un objetivo','fire');return;}
+  if(onbStep===2&&(!onbData.goals||onbData.goals.length===0)){showToast('Selecciona al menos un objetivo','fire');return;}
+  if(onbStep===3&&!onbData.trainer){showToast('Selecciona un entrenador o "Por mi cuenta"','fire');return;}
   if(onbStep<ONB_STEPS-1){onbStep++;renderOnbStep();return;}
   // Save new user
   const uid=newUid();
@@ -816,11 +926,13 @@ function showScreen(id){
   state.currentScreen=id;
 }
 
+let previousScreen = 'workouts';
+
 function goBack(){
-  showScreen('workouts');
+  showScreen(previousScreen);
   buildNav();
   NAV_ITEMS.forEach(n=>document.getElementById('nav-'+n.id)?.classList.remove('active'));
-  document.getElementById('nav-workouts')?.classList.add('active');
+  document.getElementById('nav-'+previousScreen)?.classList.add('active');
 }
 
 /* ────────────────────────────────────
@@ -901,6 +1013,7 @@ function renderWorkoutCard(w){
 function openWorkout(key){
   const w=WORKOUTS.find(x=>x.key===key);
   if(!w)return;
+  previousScreen = state.currentScreen;
   state.currentWorkout=key;
   document.getElementById('detail-title').textContent=w.name;
   document.getElementById('detail-tag').innerHTML=`<span class="wk-tag ${w.type}">${w.type.toUpperCase()}</span> <span style="font-size:0.72rem;color:var(--muted);margin-left:6px;">⏱ ${w.duration}</span>`;
@@ -1048,7 +1161,7 @@ function renderProfile(){
 
       <div class="section-head"><h2>🩺 Anamnesis</h2></div>
       <div class="settings-group">
-        <div class="settings-item"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">🎯</div><div><div class="settings-label">Objetivo</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${u.goal||'No definido'}</div></div></div>
+        <div class="settings-item"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">🎯</div><div><div class="settings-label">Objetivos</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${(u.goals||[u.goal]||['No definido']).filter(Boolean).join(' · ')||'No definido'}</div></div></div>
         <div class="settings-item"><div class="settings-icon" style="background:rgba(41,182,246,0.1);">🗓</div><div><div class="settings-label">Disponibilidad</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${u.days||'No definida'} por semana</div></div></div>
         <div class="settings-item"><div class="settings-icon" style="background:rgba(255,193,7,0.1);">⚠️</div><div><div class="settings-label">Lesiones</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${(u.injuries||['Ninguna']).join(', ')}</div></div></div>
         <div class="settings-item"><div class="settings-icon" style="background:rgba(156,39,176,0.1);">🏥</div><div><div class="settings-label">Condiciones médicas</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${(u.conditions||['Ninguna']).join(', ')}</div></div></div>
@@ -1060,6 +1173,15 @@ function renderProfile(){
         <div class="settings-item" onclick="switchUser()"><div class="settings-icon" style="background:rgba(41,182,246,0.1);">🔄</div><div class="settings-label">Cambiar de usuario</div><div class="settings-arrow">›</div></div>
         <div class="settings-item" onclick="addNewUser()"><div class="settings-icon" style="background:rgba(76,175,80,0.1);">➕</div><div class="settings-label">Crear nuevo usuario</div><div class="settings-arrow">›</div></div>
         <div class="settings-item" onclick="if(confirm('¿Eliminar este usuario y sus datos?'))deleteCurrentUser()"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">🗑</div><div class="settings-label" style="color:var(--fire);">Eliminar mi cuenta</div><div class="settings-arrow">›</div></div>
+      </div>
+
+      <div class="section-head"><h2>🔐 Administrador</h2></div>
+      <div class="settings-group">
+        <div class="settings-item" onclick="openAdminPanel()">
+          <div class="settings-icon" style="background:linear-gradient(135deg,rgba(255,87,34,0.2),rgba(255,138,80,0.1));">👨‍💼</div>
+          <div style="flex:1;"><div class="settings-label">Panel de Entrenador</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Ver progreso de tus entrenados</div></div>
+          <div class="settings-arrow" style="color:var(--fire);">›</div>
+        </div>
       </div>
 
       <div style="text-align:center;padding:20px 0 8px;">
@@ -1127,6 +1249,168 @@ window.addEventListener('appinstalled',()=>{showToast('✅ App instalada correct
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
+
+/* ────────────────────────────────────
+   ADMIN PANEL
+──────────────────────────────────── */
+const ADMIN_PASSWORD = 'MatiasAdmin2024';
+let adminAuthenticated = false;
+
+function openAdminLogin(){
+  document.getElementById('login-overlay').classList.remove('hidden');
+  document.getElementById('admin-pwd').value='';
+  document.getElementById('login-error').textContent='';
+  setTimeout(()=>document.getElementById('admin-pwd').focus(),200);
+}
+
+function closeLoginOverlay(){
+  document.getElementById('login-overlay').classList.add('hidden');
+}
+
+function checkAdminLogin(){
+  const pwd = document.getElementById('admin-pwd').value;
+  if(pwd === ADMIN_PASSWORD){
+    adminAuthenticated = true;
+    closeLoginOverlay();
+    openAdminPanel();
+  } else {
+    document.getElementById('login-error').textContent = '❌ Contraseña incorrecta';
+    document.getElementById('admin-pwd').value='';
+    document.getElementById('admin-pwd').focus();
+  }
+}
+
+function openAdminPanel(){
+  if(!adminAuthenticated){ openAdminLogin(); return; }
+  renderAdminPanel();
+  showScreen('admin');
+}
+
+function closeAdmin(){
+  showScreen('profile');
+  buildNav();
+  NAV_ITEMS.forEach(n=>document.getElementById('nav-'+n.id)?.classList.remove('active'));
+  document.getElementById('nav-profile')?.classList.add('active');
+}
+
+function renderAdminPanel(){
+  const db = getAllUsers();
+  const myAthletes = Object.entries(db).filter(([uid,u])=>
+    u.profile && u.profile.trainer === 'Matias Flores'
+  );
+
+  const totalAthletes = myAthletes.length;
+  const totalSessions = myAthletes.reduce((s,[,u])=>s+(u.history||[]).length,0);
+  const totalStreak = myAthletes.reduce((s,[,u])=>s+(u.streak||0),0);
+
+  const summaryHTML = `
+    <div style="padding:0 16px 12px;">
+      <div style="background:linear-gradient(135deg,rgba(255,87,34,0.1),rgba(255,138,80,0.05));border:1px solid rgba(255,87,34,0.2);border-radius:var(--r);padding:16px;margin-bottom:16px;">
+        <div style="font-size:0.65rem;color:var(--fire);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px;">📊 Resumen General</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--white);">${totalAthletes}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Entrenados</div></div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--fire);">${totalSessions}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Sesiones</div></div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--green);">${totalStreak}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Racha total</div></div>
+        </div>
+      </div>
+
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:10px;">👥 Mis Entrenados</div>
+
+      ${myAthletes.length===0 ? `
+        <div class="empty-state">
+          <div class="es-icon">🏋️</div>
+          <p>Aún no tienes entrenados.<br>Cuando alguien te seleccione como entrenador aparecerá aquí.</p>
+        </div>
+      ` : myAthletes.map(([uid,u])=>renderAthleteCard(uid,u)).join('')}
+    </div>
+  `;
+
+  document.getElementById('admin-body').innerHTML = summaryHTML;
+}
+
+function renderAthleteCard(uid, u){
+  const p = u.profile||{};
+  const history = u.history||[];
+  const streak = u.streak||0;
+  const initials = (p.name||'U').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  const total = history.length;
+  const complete = history.filter(h=>h.done===h.total).length;
+  const thisWeek = history.filter(h=>{const d=new Date(h.date),now=new Date();return(now-d)/86400000<7;}).length;
+  const bmi = p.weight&&p.height?(p.weight/Math.pow(p.height/100,2)).toFixed(1):'—';
+  const pct = total>0?Math.round(complete/total*100):0;
+
+  const recentHistory = [...history].reverse().slice(0,5).map(h=>{
+    const d=new Date(h.date);
+    const ok=h.done===h.total;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:0.9rem;">${ok?'✅':'⚡'}</span>
+      <div style="flex:1;"><div style="font-size:0.78rem;color:var(--text);font-weight:500;">${h.workoutName}</div><div style="font-size:0.65rem;color:var(--muted);">${d.toLocaleDateString('es-CL')} · ${h.done}/${h.total} ej.</div></div>
+      <span class="wk-tag ${h.type}" style="font-size:0.6rem;padding:1px 6px;">${h.type}</span>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="admin-card" style="margin-bottom:12px;">
+      <div class="admin-card-header" onclick="toggleAthleteExpand('${uid}')">
+        <div class="admin-athlete-avatar">${initials}</div>
+        <div class="admin-athlete-info">
+          <div class="admin-athlete-name">${p.name||'Sin nombre'}</div>
+          <div class="admin-athlete-meta">${p.level||'—'} · ${p.age||'?'} años · IMC ${bmi}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">${(p.goals||[]).map(g=>`<span class="pill" style="background:rgba(255,87,34,0.12);color:var(--fire2);font-size:0.58rem;">${g}</span>`).join('')}</div>
+        </div>
+        <div style="text-align:center;flex-shrink:0;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--fire);">🔥${streak}</div>
+          <div style="font-size:0.6rem;color:var(--muted);">racha</div>
+        </div>
+      </div>
+
+      <div class="admin-stat-row">
+        <div class="admin-stat"><div class="admin-stat-val">${total}</div><div class="admin-stat-label">Sesiones</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--green);">${complete}</div><div class="admin-stat-label">Completas</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--ice);">${thisWeek}</div><div class="admin-stat-label">Esta sem.</div></div>
+      </div>
+
+      <div style="padding:8px 16px;background:var(--card2);">
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;margin-bottom:4px;">
+          <span style="color:var(--muted);">Tasa de completitud</span>
+          <span style="color:var(--white);font-weight:600;">${pct}%</span>
+        </div>
+        <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--fire),var(--fire2));border-radius:3px;"></div>
+        </div>
+      </div>
+
+      <div class="admin-expanded" id="expand-${uid}">
+        <div class="admin-progress-section">
+          <div class="admin-progress-title">Anamnesis</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+            <div style="background:var(--card2);border-radius:6px;padding:8px;"><div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;margin-bottom:2px;">Modalidades</div><div style="font-size:0.75rem;color:var(--text);">${(p.modalities||[]).join(', ')||'—'}</div></div>
+            <div style="background:var(--card2);border-radius:6px;padding:8px;"><div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;margin-bottom:2px;">Disponibilidad</div><div style="font-size:0.75rem;color:var(--text);">${p.days||'—'}</div></div>
+            <div style="background:var(--card2);border-radius:6px;padding:8px;"><div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;margin-bottom:2px;">Lesiones</div><div style="font-size:0.75rem;color:var(--text);">${(p.injuries||['—']).join(', ')}</div></div>
+            <div style="background:var(--card2);border-radius:6px;padding:8px;"><div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;margin-bottom:2px;">Condiciones</div><div style="font-size:0.75rem;color:var(--text);">${(p.conditions||['—']).join(', ')}</div></div>
+          </div>
+          <div class="admin-progress-title">Últimas sesiones</div>
+          <div class="admin-mini-history">
+            ${recentHistory||'<div style="font-size:0.8rem;color:var(--muted);padding:8px 0;">Sin sesiones aún</div>'}
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding:10px 16px;text-align:center;cursor:pointer;font-size:0.75rem;color:var(--muted);" onclick="toggleAthleteExpand('${uid}')" id="expand-btn-${uid}">
+        Ver detalle ▼
+      </div>
+    </div>`;
+}
+
+function toggleAthleteExpand(uid){
+  const el=document.getElementById('expand-'+uid);
+  const btn=document.getElementById('expand-btn-'+uid);
+  if(!el)return;
+  const open=el.classList.toggle('open');
+  btn.textContent=open?'Ocultar detalle ▲':'Ver detalle ▼';
+}
+
+
 
 /* ────────────────────────────────────
    INIT
