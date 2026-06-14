@@ -47,7 +47,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .scroll-body::-webkit-scrollbar{display:none;}
 
 /* ── NAV BAR ── */
-.nav-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(13,14,20,0.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0);}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;background:rgba(13,14,20,0.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom,0);}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;cursor:pointer;color:var(--muted);transition:color 0.2s;font-size:0.62rem;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;}
 .nav-item.active{color:var(--fire);}
 .nav-item svg{width:22px;height:22px;stroke-width:1.8;}
@@ -611,8 +611,7 @@ select.form-input option{background:var(--card);}
 
 <!-- HOME -->
 <div class="screen hidden" id="screen-home" style="display:flex;flex-direction:column;overflow:hidden;">
-  <div class="scroll-body" id="home-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
-  <nav class="nav-bar" id="main-nav"></nav>
+  <div class="scroll-body" id="home-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px;"></div>
 </div>
 
 <!-- WORKOUTS LIST -->
@@ -620,7 +619,7 @@ select.form-input option{background:var(--card);}
   <div class="top-bar" style="flex-shrink:0;">
     <div><div class="page-title">Entrenamientos</div><div class="page-subtitle">Elige tu rutina</div></div>
   </div>
-  <div class="scroll-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div class="scroll-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px;">
     <div class="workout-filter" id="workout-filter"></div>
     <div id="workout-list"></div>
   </div>
@@ -657,7 +656,7 @@ select.form-input option{background:var(--card);}
   <div class="top-bar" style="flex-shrink:0;">
     <div><div class="page-title">Mi Progreso</div><div class="page-subtitle">Historial de actividad</div></div>
   </div>
-  <div class="scroll-body" id="progress-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
+  <div class="scroll-body" id="progress-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px;"></div>
 </div>
 
 <!-- PROFILE -->
@@ -665,7 +664,7 @@ select.form-input option{background:var(--card);}
   <div class="top-bar" style="flex-shrink:0;">
     <div><div class="page-title">Perfil</div><div class="page-subtitle">Tu información</div></div>
   </div>
-  <div class="scroll-body" id="profile-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
+  <div class="scroll-body" id="profile-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px;"></div>
 </div>
 
 <!-- TIMER MODAL -->
@@ -728,6 +727,9 @@ select.form-input option{background:var(--card);}
     </div>
   </div>
 </div>
+
+<!-- GLOBAL NAV BAR -->
+<nav class="nav-bar" id="main-nav" style="display:none;"></nav>
 
 <!-- INSTALL BANNER -->
 <div id="install-banner">
