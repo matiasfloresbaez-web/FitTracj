@@ -60,11 +60,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* ── ONBOARDING / ANAMNESIS ── */
 #screen-onboarding{background:var(--bg);z-index:200;display:flex;flex-direction:column;overflow:hidden;}
 #screen-onboarding .onb-nav{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;z-index:999;}
-.onb-header{padding:24px 24px 0;text-align:center;flex-shrink:0;}
-.onb-logo{font-family:'Barlow Condensed',sans-serif;font-size:3rem;font-weight:800;letter-spacing:-0.03em;color:var(--white);}
+.onb-header{padding:14px 20px 0;text-align:center;flex-shrink:0;}
+.onb-logo{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-0.02em;color:var(--white);}
 .onb-logo span{color:var(--fire);}
 .onb-tagline{font-size:0.85rem;color:var(--muted);margin-top:4px;}
-.onb-step-indicator{display:flex;gap:6px;justify-content:center;margin:20px 0;}
+.onb-step-indicator{display:flex;gap:6px;justify-content:center;margin:10px 0;}
 .step-dot{width:28px;height:4px;border-radius:2px;background:var(--border);transition:background 0.3s;}
 .step-dot.active{background:var(--fire);}
 .step-dot.done{background:var(--fire2);}
@@ -330,7 +330,7 @@ select.form-input option{background:var(--card);}
 
 /* ── SPLASH SCREEN ── */
 #screen-splash{background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;}
-.splash-logo{font-family:'Barlow Condensed',sans-serif;font-size:4rem;font-weight:800;color:var(--white);letter-spacing:-0.03em;opacity:0;transform:translateY(20px);transition:all 0.7s cubic-bezier(.4,0,.2,1);}
+.splash-logo{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:800;color:var(--white);letter-spacing:-0.02em;opacity:0;transform:translateY(20px);transition:all 0.7s cubic-bezier(.4,0,.2,1);text-align:center;padding:0 16px;}
 .splash-logo span{color:var(--fire);}
 .splash-tagline{font-size:0.9rem;color:var(--muted);opacity:0;transform:translateY(10px);transition:all 0.6s cubic-bezier(.4,0,.2,1) 0.3s;margin-top:6px;}
 .splash-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--fire);animation:spin 1s linear infinite;opacity:0;transition:opacity 0.4s 0.8s;margin-top:40px;}
@@ -353,7 +353,7 @@ select.form-input option{background:var(--card);}
 .btn-outline:hover{border-color:var(--text);color:var(--text);}
 
 /* ── LOGIN / REGISTER SCREEN ── */
-#screen-login,#screen-register,#screen-forgot{background:var(--bg);z-index:450;}
+#screen-login,#screen-register,#screen-forgot{background:var(--bg);z-index:450;display:flex;flex-direction:column;overflow:hidden;}
 
 /* Success screen */
 #screen-success{background:var(--bg);z-index:460;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;}
@@ -370,7 +370,7 @@ select.form-input option{background:var(--card);}
 .edit-modal-sheet::-webkit-scrollbar{display:none;}
 .auth-form-header{padding:20px 16px 8px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
 .auth-form-title{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);}
-.auth-form-body{padding:20px 20px 40px;display:flex;flex-direction:column;gap:14px;}
+.auth-form-body{padding:20px 20px 40px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;}
 .input-group{position:relative;}
 .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none;}
 .form-input.with-icon{padding-left:38px;}
@@ -582,8 +582,8 @@ select.form-input option{background:var(--card);}
 <!-- ═══════════════════════════════════
      ONBOARDING / ANAMNESIS
 ════════════════════════════════════ -->
-<div class="screen" id="screen-onboarding" style="overflow-y:auto;display:block;">
-  <div style="min-height:100%;display:flex;flex-direction:column;">
+<div class="screen" id="screen-onboarding" style="display:flex;flex-direction:column;overflow:hidden;">
+  <div style="display:flex;flex-direction:column;height:100%;overflow:hidden;">
     <div class="onb-header">
       <div class="onb-logo">Conce<span>Fit</span>Training</div>
       <div class="onb-tagline">Entrena con propósito. Supera tus límites.</div>
@@ -595,7 +595,7 @@ select.form-input option{background:var(--card);}
         <div class="step-dot" id="dot-4"></div>
       </div>
     </div>
-    <div class="onb-body" id="onb-body" style="flex:1;padding:0 20px 8px;">
+    <div class="onb-body" id="onb-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 20px 8px;">
       <!-- Steps rendered by JS -->
     </div>
     <div class="onb-nav" id="onb-nav" style="padding:14px 20px 32px;border-top:1px solid var(--border);background:var(--bg);flex-shrink:0;">
