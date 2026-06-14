@@ -1040,14 +1040,18 @@ function renderExerciseVisual(name, muscle) {
     row:'Remo',curl:'Curl',dip:'Fondos',pushup:'Flexión',plank:'Isométrico',hip:'Hip Thrust',
     lunge:'Zancada',crunch:'Abdominal',burpee:'Cardio total','press-v':'Press vertical',
     lateral:'Elevación',climber:'Cardio core',ext:'Extensión',kb:'Kettlebell',generic:'Ejercicio'};
-  // Add CSS animation
-  const cssAnim = `<style>
-    .${uid}{animation:move_${uid} 1.6s ease-in-out infinite;}
-    @keyframes move_${uid}{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(${['squat','lunge','hip'].includes(anim)?'8':'−5'}px) rotate(${['bench','row','curl'].includes(anim)?'10':'0'}deg)}}
-  </style>`;
+
+  // Inject animation CSS into head (works unlike innerHTML style tags)
+  if (!document.getElementById('exanim_'+uid)) {
+    const s = document.createElement('style');
+    s.id = 'exanim_'+uid;
+    const dy = ['squat','lunge','hip'].includes(anim) ? '8' : '-5';
+    s.textContent = `.${uid}{animation:mv${uid} 1.6s ease-in-out infinite;} @keyframes mv${uid}{0%,100%{transform:translateY(0)}50%{transform:translateY(${dy}px)}}`;
+    document.head.appendChild(s);
+  }
+
   return `<div style="background:var(--card2);border-bottom:1px solid var(--border);position:relative;height:155px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
     <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 55%, ${color}18, transparent 65%);"></div>
-    ${cssAnim}
     <svg viewBox="0 0 200 145" width="200" height="145">${svg}</svg>
     <div style="position:absolute;top:7px;left:8px;background:rgba(0,0,0,0.75);color:${color};font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:4px;">${muscle}</div>
     <div style="position:absolute;bottom:7px;right:8px;background:rgba(0,0,0,0.75);color:#888;font-size:0.6rem;padding:2px 6px;border-radius:4px;">${labels[anim]||'Ejercicio'}</div>
