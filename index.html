@@ -863,198 +863,139 @@ function saveActiveUser() {
 ──────────────────────────────────── */
 
 
-/* ── EXERCISE VISUALS (CSS animated SVG) ── */
-const ANIM_MAP = {
-  'squat':'squat','sentadilla':'squat','press banca':'bench','bench':'bench',
-  'peso muerto':'deadlift','deadlift':'deadlift','dominadas':'pullup','pull':'pullup',
-  'jalón':'pullup','remo':'row','curl':'curl','fondos':'dip','dip':'dip',
-  'flexion':'pushup','push':'pushup','plancha':'plank','plank':'plank',
-  'crunch':'crunch','hip thrust':'hip','zancada':'lunge','lunge':'lunge',
-  'press militar':'press-v','lateral':'lateral','burpee':'burpee',
-  'kettlebell':'kb','mountain':'climber','extensión':'ext',
+/* ── EXERCISE IMAGES ── */
+const EX_IMGS = {
+  'Press banca plano con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca plano': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press inclinado con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca inclinado con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press declinado con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Barbell_Bench_Press/0.jpg',
+  'Press declinado con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Barbell_Bench_Press/0.jpg',
+  'Press banca agarre cerrado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Barbell_Bench_Press/0.jpg',
+  'Aperturas con mancuernas plano': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Flyes/0.jpg',
+  'Aperturas en cable cruzado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
+  'Cruce de poleas alto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
+  'Cable fly bajo a alto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
+  'Pullover con mancuerna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Pullover/0.jpg',
+  'Fondos en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chest_Dips/0.jpg',
+  'Fondos lastrados': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chest_Dips/0.jpg',
+  'Fondos en banco': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
+  'Flexiones estándar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Flexiones con palmada': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plyometric_Push-Ups/0.jpg',
+  'Flexiones diamante': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Diamond_Push-Up/0.jpg',
+  'Flexiones arquero': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Archer_Push_Up/0.jpg',
+  'Flexiones rodillas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Dominadas agarre prono': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas asistidas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas lastradas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas agarre supino': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin-Up/0.jpg',
+  'Dominadas archer': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Jalón al pecho agarre ancho': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Front_Lat_Pulldown/0.jpg',
+  'Jalón al pecho agarre cerrado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Front_Lat_Pulldown/0.jpg',
+  'Jalón al pecho': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Front_Lat_Pulldown/0.jpg',
+  'Remo con barra pronado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
+  'Remo con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
+  'Remo Pendlay': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
+  'Remo con mancuerna a 1 brazo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Two-Dumbbell_Row/0.jpg',
+  'Remo en polea baja sentado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg',
+  'Face pulls': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg',
+  'Face pulls con cuerda': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg',
+  'Peso muerto convencional': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto rumano': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg',
+  'Hiperextensiones': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions__Back_Extensions_/0.jpg',
+  'Shrugs con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shrug/0.jpg',
+  'Shrugs con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg',
+  'Sentadilla con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla goblet': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla goblet con kettlebell': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla búlgara': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Single_Leg_Squat/0.jpg',
+  'Sentadilla búlgara con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Single_Leg_Squat/0.jpg',
+  'Sentadilla frontal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Front_Squat/0.jpg',
+  'Sentadillas con peso corporal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Prensa de piernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg',
+  'Extensión de piernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg',
+  'Curl femoral tumbado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg',
+  'Curl femoral nórdico': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Leg_Curl/0.jpg',
+  'Hack squat': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hack_Squat/0.jpg',
+  'Zancadas con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
+  'Zancadas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
+  'Step-up con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Step_Ups/0.jpg',
+  'Hip thrust con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Hip thrust': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Puente de glúteo con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Elevación de gemelos de pie': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocking_Standing_Calf_Raise/0.jpg',
+  'Gemelos en prensa': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Press_On_The_Leg_Press_Machine/0.jpg',
+  'Press militar con barra de pie': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
+  'Press militar con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shoulder_Press/0.jpg',
+  'Press Arnold': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Arnold_Dumbbell_Press/0.jpg',
+  'Elevaciones laterales': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/0.jpg',
+  'Elevaciones laterales en cable': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Lateral_Raise/0.jpg',
+  'Elevaciones frontales alternas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Front_Raise/0.jpg',
+  'Pájaro con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Flyes/0.jpg',
+  'Upright row con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Upright_Row/0.jpg',
+  'Curl con barra Z': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg',
+  'Curl con mancuernas alterno': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bicep_Curl/0.jpg',
+  'Curl con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bicep_Curl/0.jpg',
+  'Curl martillo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Hammer_Curl/0.jpg',
+  'Curl en banco Scott': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Preacher_Curl/0.jpg',
+  'Curl concentrado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Concentration_Curls/0.jpg',
+  'Curl en cable con barra recta': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Curl/0.jpg',
+  'Curl bíceps 21s': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg',
+  'Extensión tríceps en polea alta': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
+  'Extensión tríceps polea': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
+  'Press francés con mancuerna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Skullcrusher/0.jpg',
+  'Press francés con barra EZ': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Skullcrusher/0.jpg',
+  'Plancha frontal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
+  'Plancha': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
+  'Plancha lateral': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg',
+  'Crunch abdominal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch/0.jpg',
+  'Elevación de piernas tumbado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Raise/0.jpg',
+  'Russian twist': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Russian_Twist/0.jpg',
+  'Ab wheel rollout': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Roller/0.jpg',
+  'Mountain climbers': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Mountain_Climbers/0.jpg',
+  'Toes to bar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'L-sit en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/L-Pull_Up/0.jpg',
+  'Pistol squat': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pistol_Squat/0.jpg',
+  'Pistol squat asistido': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pistol_Squat/0.jpg',
+  'Pistol squat libre': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pistol_Squat/0.jpg',
+  'Burpees': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Burpee/0.jpg',
+  'Box jump': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Jump_Multiple_Response/0.jpg',
+  'Kettlebell swing': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Swings/0.jpg',
+  'Thruster con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Thruster/0.jpg',
+  'Pull-up': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Muscle-up': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
 };
+
 const MUSCLE_CLR = {
   'Pecho':'#ff5722','Espalda':'#2196f3','Piernas':'#4caf50','Hombros':'#ff9800',
   'Bíceps':'#9c27b0','Tríceps':'#e91e63','Core':'#00bcd4','Glúteos':'#8bc34a',
   'Isquios':'#607d8b','Cardio':'#f44336','General':'#9e9e9e','Full body':'#ff5722',
   'Cuádriceps':'#4caf50','Gemelos':'#795548','Lumbar':'#ff9800','Trapecio':'#2196f3',
+  'Pecho alto':'#ff7043','Pecho inferior':'#e64a19','Pecho/Tríceps':'#ff5722',
+  'Dorsal':'#1976d2','Romboides':'#0d47a1','Full upper':'#ff5722','Explosividad':'#f44336',
 };
-function getAnimType(name) {
+
+function getExerciseImg(name) {
+  if (EX_IMGS[name]) return EX_IMGS[name];
   const n = name.toLowerCase();
-  return Object.keys(ANIM_MAP).find(k => n.includes(k)) 
-    ? ANIM_MAP[Object.keys(ANIM_MAP).find(k => n.includes(k))] 
-    : 'generic';
+  const key = Object.keys(EX_IMGS).find(k => n.includes(k.toLowerCase().split(' ').slice(0,2).join(' ')));
+  return key ? EX_IMGS[key] : null;
 }
+
 function renderExerciseVisual(name, muscle) {
-  const anim = getAnimType(name);
+  const img = getExerciseImg(name);
   const color = MUSCLE_CLR[muscle] || '#ff5722';
-  const uid = 'ex_' + Math.random().toString(36).slice(2,7);
-  const svgs = {
-    bench: (c)=>`<circle cx="55" cy="72" r="10" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <rect x="30" y="100" width="140" height="6" rx="3" fill="#333"/>
-      <rect x="40" y="106" width="8" height="20" rx="2" fill="#333"/><rect x="152" y="106" width="8" height="20" rx="2" fill="#333"/>
-      <ellipse cx="100" cy="93" rx="32" ry="8" fill="${c}20" stroke="${c}" stroke-width="1.5"/>
-      <rect x="50" y="62" width="100" height="4" rx="2" fill="${c}" opacity="0.8"/>
-      <circle cx="50" cy="64" r="8" fill="none" stroke="${c}" stroke-width="2"/><circle cx="150" cy="64" r="8" fill="none" stroke="${c}" stroke-width="2"/>
-      <line x1="78" y1="90" x2="78" y2="65" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="122" y1="90" x2="122" y2="65" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>`,
-    squat: (c)=>`<circle cx="100" cy="28" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="39" x2="100" y2="82" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <rect x="65" y="43" width="70" height="4" rx="2" fill="${c}" opacity="0.7"/>
-      <line x1="100" y1="58" x2="78" y2="50" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="58" x2="122" y2="50" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="82" x2="78" y2="115" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="82" x2="122" y2="115" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="78" y1="115" x2="70" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="122" y1="115" x2="130" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`,
-    pullup: (c)=>`<rect x="50" y="15" width="100" height="5" rx="2.5" fill="${c}" opacity="0.8"/>
-      <rect x="45" y="8" width="6" height="25" rx="2" fill="#333"/><rect x="149" y="8" width="6" height="25" rx="2" fill="#333"/>
-      <line x1="82" y1="20" x2="82" y2="52" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="118" y1="20" x2="118" y2="52" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <circle cx="100" cy="63" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="74" x2="100" y2="112" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="112" x2="85" y2="138" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="112" x2="115" y2="138" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`,
-    deadlift: (c)=>`<circle cx="100" cy="28" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="39" x2="100" y2="95" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="60" x2="78" y2="80" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="60" x2="122" y2="80" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="95" x2="82" y2="125" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="95" x2="118" y2="125" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <rect x="48" y="122" width="104" height="5" rx="2" fill="${c}" opacity="0.8"/>
-      <circle cx="48" cy="124" r="10" fill="none" stroke="${c}" stroke-width="2"/><circle cx="152" cy="124" r="10" fill="none" stroke="${c}" stroke-width="2"/>`,
-    row: (c)=>`<circle cx="62" cy="45" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="62" y1="56" x2="55" y2="95" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="55" y1="95" x2="40" y2="130" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="55" y1="95" x2="70" y2="130" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="62" y1="70" x2="42" y2="80" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="62" y1="70" x2="130" y2="85" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <circle cx="138" cy="87" r="8" fill="none" stroke="${c}" stroke-width="2" class="${uid}"/>`,
-    curl: (c)=>`<circle cx="100" cy="30" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="41" x2="100" y2="92" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="62" x2="75" y2="75" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="62" x2="125" y2="75" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <line x1="125" y1="75" x2="130" y2="108" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <circle cx="132" cy="115" r="7" fill="none" stroke="${c}" stroke-width="2" class="${uid}"/>
-      <line x1="100" y1="92" x2="83" y2="130" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="92" x2="117" y2="130" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`,
-    dip: (c)=>`<circle cx="100" cy="35" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="65" y1="55" x2="65" y2="130" stroke="#333" stroke-width="5" stroke-linecap="round"/>
-      <line x1="135" y1="55" x2="135" y2="130" stroke="#333" stroke-width="5" stroke-linecap="round"/>
-      <line x1="100" y1="46" x2="100" y2="90" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="65" x2="65" y2="62" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="65" x2="135" y2="62" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="90" x2="85" y2="125" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="90" x2="115" y2="125" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`,
-    pushup: (c)=>`<circle cx="52" cy="68" r="10" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="62" y1="72" x2="100" y2="82" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="82" x2="148" y2="78" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="72" y1="77" x2="68" y2="115" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <line x1="128" y1="80" x2="132" y2="115" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <line x1="40" y1="115" x2="170" y2="115" stroke="#333" stroke-width="3"/>`,
-    plank: (c)=>`<circle cx="52" cy="65" r="10" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="62" y1="70" x2="155" y2="70" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
-      <rect x="88" y="65" width="45" height="10" rx="5" fill="${c}" opacity="0.3"/>
-      <line x1="75" y1="70" x2="70" y2="108" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="140" y1="70" x2="148" y2="108" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="40" y1="108" x2="170" y2="108" stroke="#333" stroke-width="3"/>`,
-    hip: (c)=>`<rect x="35" y="88" width="20" height="42" rx="4" fill="#333"/>
-      <circle cx="148" cy="65" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="148" y1="76" x2="105" y2="92" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="105" y1="92" x2="55" y2="90" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="105" y1="92" x2="100" y2="130" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="105" y1="92" x2="120" y2="130" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="40" y1="130" x2="170" y2="130" stroke="#333" stroke-width="3"/>`,
-    lunge: (c)=>`<circle cx="100" cy="28" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="39" x2="100" y2="85" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="60" x2="78" y2="73" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="60" x2="122" y2="73" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="85" x2="72" y2="112" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="85" x2="132" y2="112" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="72" y1="112" x2="60" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="132" y1="112" x2="140" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="132" y1="112" x2="115" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`,
-    crunch: (c)=>`<line x1="30" y1="118" x2="170" y2="118" stroke="#333" stroke-width="3"/>
-      <line x1="65" y1="118" x2="55" y2="98" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="135" y1="118" x2="145" y2="98" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="98" x2="100" y2="65" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <circle cx="100" cy="54" r="11" fill="none" stroke="${c}" stroke-width="2.5" class="${uid}"/>
-      <line x1="100" y1="80" x2="78" y2="92" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="80" x2="122" y2="92" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>`,
-    burpee: (c)=>`<circle cx="100" cy="30" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="41" x2="100" y2="88" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="62" x2="75" y2="52" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="62" x2="125" y2="52" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="88" x2="80" y2="130" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="88" x2="120" y2="130" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="40" y1="130" x2="160" y2="130" stroke="#333" stroke-width="3"/>`,
-    'press-v': (c)=>`<circle cx="100" cy="45" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="56" x2="100" y2="100" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <rect x="55" y="58" width="90" height="4" rx="2" fill="${c}" opacity="0.7"/>
-      <line x1="100" y1="70" x2="60" y2="62" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="70" x2="140" y2="62" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="100" x2="82" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="100" x2="118" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="40" y1="135" x2="160" y2="135" stroke="#333" stroke-width="3"/>`,
-    lateral: (c)=>`<circle cx="100" cy="35" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="46" x2="100" y2="95" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="65" x2="60" y2="75" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="65" x2="140" y2="75" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="95" x2="83" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="95" x2="117" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="40" y1="135" x2="160" y2="135" stroke="#333" stroke-width="3"/>`,
-    climber: (c)=>`<circle cx="55" cy="62" r="10" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="65" y1="67" x2="148" y2="72" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="75" y1="70" x2="68" y2="108" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="138" y1="72" x2="145" y2="108" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="70" x2="90" y2="100" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="115" y1="70" x2="125" y2="100" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="40" y1="108" x2="170" y2="108" stroke="#333" stroke-width="3"/>`,
-    ext: (c)=>`<circle cx="100" cy="32" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="43" x2="100" y2="90" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="60" x2="78" y2="52" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="78" y1="52" x2="72" y2="90" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="60" x2="122" y2="52" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="122" y1="52" x2="128" y2="90" stroke="${c}" stroke-width="2.5" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="90" x2="83" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="90" x2="117" y2="135" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="40" y1="135" x2="160" y2="135" stroke="#333" stroke-width="3"/>`,
-    kb: (c)=>`<circle cx="100" cy="30" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="41" x2="100" y2="88" stroke="${c}" stroke-width="3" stroke-linecap="round" class="${uid}"/>
-      <line x1="100" y1="62" x2="78" y2="75" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="62" x2="122" y2="75" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="88" x2="80" y2="125" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="88" x2="120" y2="125" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="100" cy="78" r="9" fill="none" stroke="${c}" stroke-width="2" class="${uid}"/>
-      <line x1="40" y1="125" x2="160" y2="125" stroke="#333" stroke-width="3"/>`,
-    generic: (c)=>`<circle cx="100" cy="32" r="11" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="100" y1="43" x2="100" y2="95" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="62" x2="75" y2="78" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="62" x2="125" y2="78" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="100" y1="95" x2="83" y2="132" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="100" y1="95" x2="117" y2="132" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="40" y1="132" x2="160" y2="132" stroke="#333" stroke-width="3"/>`,
-  };
-  const svg = (svgs[anim]||svgs['generic'])(color);
-  const labels = {bench:'Empuje horiz.',squat:'Sentadilla',pullup:'Jalón/Tirón',deadlift:'Peso muerto',
-    row:'Remo',curl:'Curl',dip:'Fondos',pushup:'Flexión',plank:'Isométrico',hip:'Hip Thrust',
-    lunge:'Zancada',crunch:'Abdominal',burpee:'Cardio total','press-v':'Press vertical',
-    lateral:'Elevación',climber:'Cardio core',ext:'Extensión',kb:'Kettlebell',generic:'Ejercicio'};
-
-  // Inject animation CSS into head (works unlike innerHTML style tags)
-  if (!document.getElementById('exanim_'+uid)) {
-    const s = document.createElement('style');
-    s.id = 'exanim_'+uid;
-    const dy = ['squat','lunge','hip'].includes(anim) ? '8' : '-5';
-    s.textContent = `.${uid}{animation:mv${uid} 1.6s ease-in-out infinite;} @keyframes mv${uid}{0%,100%{transform:translateY(0)}50%{transform:translateY(${dy}px)}}`;
-    document.head.appendChild(s);
+  if (img) {
+    return `<div style="position:relative;height:200px;overflow:hidden;border-bottom:1px solid var(--border);">
+      <img src="${img}" alt="${name}" loading="lazy"
+        style="width:100%;height:100%;object-fit:cover;object-position:top center;filter:brightness(0.9);"
+        onerror="this.closest('div').innerHTML='<div style=height:80px;background:linear-gradient(135deg,'+color+'20,'+color+'05);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px;><div style=color:'+color+';font-weight:700;font-size:0.85rem;>💪 '+muscle+'</div></div>'">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 55%,rgba(0,0,0,0.55));pointer-events:none;"></div>
+      <div style="position:absolute;top:8px;left:8px;background:${color};color:#fff;font-size:0.65rem;font-weight:800;padding:3px 10px;border-radius:20px;">${muscle}</div>
+    </div>`;
   }
-
-  return `<div style="background:var(--card2);border-bottom:1px solid var(--border);position:relative;height:155px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-    <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 55%, ${color}18, transparent 65%);"></div>
-    <svg viewBox="0 0 200 145" width="200" height="145">${svg}</svg>
-    <div style="position:absolute;top:7px;left:8px;background:rgba(0,0,0,0.75);color:${color};font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:4px;">${muscle}</div>
-    <div style="position:absolute;bottom:7px;right:8px;background:rgba(0,0,0,0.75);color:#888;font-size:0.6rem;padding:2px 6px;border-radius:4px;">${labels[anim]||'Ejercicio'}</div>
+  return `<div style="height:70px;background:linear-gradient(135deg,${color}20,${color}05);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:8px;">
+    <div style="color:${color};font-weight:700;font-size:0.85rem;">💪 ${muscle}</div>
   </div>`;
 }
 
