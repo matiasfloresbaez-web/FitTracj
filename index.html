@@ -405,6 +405,25 @@ html { font-size: 16px; }
 @media (min-width: 600px) { html { font-size: 17px; } }
 @media (min-width: 900px) { html { font-size: 18px; } }
 
+
+/* ── PAYWALL ── */
+#screen-paywall{background:var(--bg);z-index:600;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
+.paywall-logo{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--white);margin-bottom:4px;}
+.paywall-logo span{color:var(--fire);}
+.paywall-badge{display:inline-block;background:var(--fire);color:#fff;font-size:0.7rem;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:0.08em;margin-bottom:20px;}
+.paywall-title{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--white);line-height:1.2;margin-bottom:8px;}
+.paywall-sub{font-size:0.85rem;color:var(--muted);margin-bottom:28px;line-height:1.5;}
+.paywall-price{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px;width:100%;}
+.paywall-amount{font-family:'Barlow Condensed',sans-serif;font-size:3rem;font-weight:800;color:var(--fire);line-height:1;}
+.paywall-period{font-size:0.8rem;color:var(--muted);margin-top:4px;}
+.paywall-features{text-align:left;margin-bottom:24px;width:100%;}
+.paywall-feature{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem;color:var(--text);}
+.paywall-feature:last-child{border:none;}
+.paywall-btn{width:100%;padding:16px;background:var(--fire);color:#fff;border:none;border-radius:var(--r-sm);font-size:1.1rem;font-weight:800;font-family:'Barlow Condensed',sans-serif;cursor:pointer;letter-spacing:0.04em;text-decoration:none;display:block;margin-bottom:12px;}
+.paywall-trial{font-size:0.78rem;color:var(--muted);margin-top:8px;}
+.trial-banner{position:fixed;top:0;left:0;right:0;max-width:900px;margin:0 auto;background:linear-gradient(135deg,var(--fire),#ff8a50);color:#fff;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;z-index:150;font-size:0.78rem;font-weight:600;}
+.trial-banner.hidden{display:none;}
+
 </style>
 </head>
 <body>
@@ -756,6 +775,42 @@ html { font-size: 16px; }
 <!-- GLOBAL NAV BAR -->
 <nav class="nav-bar" id="main-nav" style="display:none;"></nav>
 
+<!-- ═══════════════════════════════════
+     PAYWALL
+════════════════════════════════════ -->
+<div class="screen hidden" id="screen-paywall">
+  <div class="paywall-logo">Conce<span>Fit</span>Training</div>
+  <div class="paywall-badge">⚡ ACCESO COMPLETO</div>
+  <div class="paywall-title" id="paywall-title">Tu prueba gratuita<br>ha terminado</div>
+  <div class="paywall-sub" id="paywall-sub">Continúa entrenando con acceso a todas las rutinas, tu progreso y el plan personalizado.</div>
+
+  <div class="paywall-price">
+    <div class="paywall-amount">$9.990</div>
+    <div class="paywall-period">CLP / mes · cancela cuando quieras</div>
+  </div>
+
+  <div class="paywall-features">
+    <div class="paywall-feature">✅ 33 rutinas: Gym, Calistenia, CrossFit y Running</div>
+    <div class="paywall-feature">✅ Plan de running personalizado con ritmos</div>
+    <div class="paywall-feature">✅ Seguimiento de progreso y rachas</div>
+    <div class="paywall-feature">✅ Timer de descanso y tickets de ejercicios</div>
+    <div class="paywall-feature">✅ Ilustraciones y fotos de cada ejercicio</div>
+    <div class="paywall-feature">✅ Acceso desde cualquier dispositivo</div>
+  </div>
+
+  <a href="https://mpago.li/22x8fd3" target="_blank" class="paywall-btn">
+    💳 Pagar con Mercado Pago
+  </a>
+  <div style="font-size:0.72rem;color:var(--muted);">Serás redirigido a Mercado Pago de forma segura</div>
+  <div class="paywall-trial">¿Ya pagaste? <span onclick="checkPayment()" style="color:var(--fire);cursor:pointer;font-weight:600;">Verificar pago →</span></div>
+</div>
+
+<!-- TRIAL BANNER -->
+<div class="trial-banner hidden" id="trial-banner">
+  <span id="trial-text">🎁 Prueba gratuita: 3 días restantes</span>
+  <span onclick="showPaywall()" style="cursor:pointer;text-decoration:underline;opacity:0.9;">Ver plan →</span>
+</div>
+
 <!-- INSTALL BANNER -->
 <div id="install-banner">
   <span class="ib-icon">📲</span>
@@ -876,14 +931,14 @@ const EX_IMGS = {
   'Aperturas en cable cruzado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
   'Cruce de poleas alto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
   'Cable fly bajo a alto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
-  'Pullover con mancuerna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Pullover/0.jpg',
-  'Fondos en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chest_Dips/0.jpg',
-  'Fondos lastrados': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chest_Dips/0.jpg',
+  'Pullover con mancuerna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent-Arm_Barbell_Pullover/0.jpg',
+  'Fondos en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
+  'Fondos lastrados': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
   'Fondos en banco': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
   'Flexiones estándar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
-  'Flexiones con palmada': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plyometric_Push-Ups/0.jpg',
-  'Flexiones diamante': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Diamond_Push-Up/0.jpg',
-  'Flexiones arquero': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Archer_Push_Up/0.jpg',
+  'Flexiones con palmada': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/0.jpg',
+  'Flexiones diamante': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Barbell_Bench_Press/0.jpg',
+  'Flexiones arquero': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
   'Flexiones rodillas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
   'Dominadas agarre prono': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
   'Dominadas asistidas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
@@ -908,8 +963,8 @@ const EX_IMGS = {
   'Sentadilla con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
   'Sentadilla goblet': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
   'Sentadilla goblet con kettlebell': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
-  'Sentadilla búlgara': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Single_Leg_Squat/0.jpg',
-  'Sentadilla búlgara con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Single_Leg_Squat/0.jpg',
+  'Sentadilla búlgara': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Split_Squat/0.jpg',
+  'Sentadilla búlgara con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Split_Squat/0.jpg',
   'Sentadilla frontal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Front_Squat/0.jpg',
   'Sentadillas con peso corporal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
   'Prensa de piernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg',
@@ -919,7 +974,7 @@ const EX_IMGS = {
   'Hack squat': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hack_Squat/0.jpg',
   'Zancadas con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
   'Zancadas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
-  'Step-up con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Step_Ups/0.jpg',
+  'Step-up con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg',
   'Hip thrust con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
   'Hip thrust': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
   'Puente de glúteo con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
@@ -943,8 +998,8 @@ const EX_IMGS = {
   'Curl bíceps 21s': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg',
   'Extensión tríceps en polea alta': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
   'Extensión tríceps polea': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
-  'Press francés con mancuerna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Skullcrusher/0.jpg',
-  'Press francés con barra EZ': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Skullcrusher/0.jpg',
+  'Press francés con mancuerna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Skull_Crusher/0.jpg',
+  'Press francés con barra EZ': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Skull_Crusher/0.jpg',
   'Plancha frontal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
   'Plancha': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
   'Plancha lateral': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg',
@@ -954,16 +1009,16 @@ const EX_IMGS = {
   'Ab wheel rollout': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Roller/0.jpg',
   'Mountain climbers': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Mountain_Climbers/0.jpg',
   'Toes to bar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
-  'L-sit en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/L-Pull_Up/0.jpg',
-  'Pistol squat': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pistol_Squat/0.jpg',
-  'Pistol squat asistido': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pistol_Squat/0.jpg',
-  'Pistol squat libre': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pistol_Squat/0.jpg',
-  'Burpees': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Burpee/0.jpg',
+  'L-sit en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'Pistol squat': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Pistol squat asistido': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Pistol squat libre': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Burpees': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg',
   'Box jump': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Jump_Multiple_Response/0.jpg',
   'Kettlebell swing': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Swings/0.jpg',
-  'Thruster con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Thruster/0.jpg',
+  'Thruster con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Thruster/0.jpg',
   'Pull-up': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
-  'Muscle-up': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Muscle-up': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kipping_Muscle_Up/0.jpg',
 };
 
 const MUSCLE_CLR = {
@@ -1952,6 +2007,7 @@ function launchApp(){
   renderWorkouts();
   renderProgress();
   renderProfile();
+  if(!isAdminUser()) setTimeout(initTrial, 500);
 }
 
 /* ────────────────────────────────────
@@ -2150,6 +2206,11 @@ function renderWorkoutCard(w){
    EXERCISE DETAIL + TICKETS
 ──────────────────────────────────── */
 function openWorkout(key){
+  const acct = getAccountStatus();
+  if(acct.status === 'suspended' || acct.status === 'expired_trial'){
+    showPaywall(acct.status);
+    return;
+  }
   const w=WORKOUTS.find(x=>x.key===key);
   if(!w)return;
   previousScreen = state.currentScreen;
@@ -2309,6 +2370,29 @@ function renderProfile(){
         <div class="settings-item"><div class="settings-icon" style="background:rgba(255,193,7,0.1);">⚠️</div><div><div class="settings-label">Lesiones</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${(u.injuries||['Ninguna']).join(', ')}</div></div></div>
         <div class="settings-item"><div class="settings-icon" style="background:rgba(156,39,176,0.1);">🏥</div><div><div class="settings-label">Condiciones médicas</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${(u.conditions||['Ninguna']).join(', ')}</div></div></div>
         <div class="settings-item"><div class="settings-icon" style="background:rgba(76,175,80,0.1);">💪</div><div><div class="settings-label">Modalidades</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${(u.modalities||[]).join(', ')||'No definidas'}</div></div></div>
+      </div>
+
+      <div class="section-head"><h2>💳 Suscripción</h2></div>
+      <div class="settings-group" id="sub-status-block">
+        ${(()=>{
+          const acct = getAccountStatus();
+          if(acct.status==='admin') return '<div class="settings-item"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">👑</div><div class="settings-label">Acceso Admin — Sin restricciones</div></div>';
+          if(acct.status==='active'){
+            const exp = new Date(acct.sub.expiresAt).toLocaleDateString('es-CL');
+            return `<div class="settings-item"><div class="settings-icon" style="background:rgba(76,175,80,0.1);">✅</div><div><div class="settings-label">Suscripción activa</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Vence el ${exp} · ${acct.daysLeft} días restantes</div></div></div>
+            <div class="settings-item" onclick="showPaywall('renew')"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">🔄</div><div class="settings-label">Renovar anticipadamente</div><div class="settings-arrow">›</div></div>`;
+          }
+          if(acct.status==='trial'){
+            return `<div class="settings-item"><div class="settings-icon" style="background:rgba(255,193,7,0.1);">🎁</div><div><div class="settings-label">Prueba gratuita activa</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${acct.daysLeft} día${acct.daysLeft===1?'':'s'} restantes</div></div></div>
+            <div class="settings-item" onclick="showPaywall()"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">💳</div><div class="settings-label">Activar plan — $9.990/mes</div><div class="settings-arrow" style="color:var(--fire);">›</div></div>`;
+          }
+          if(acct.status==='suspended'){
+            const exp = new Date(acct.sub.expiresAt).toLocaleDateString('es-CL');
+            return `<div class="settings-item"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">⏸</div><div><div class="settings-label" style="color:var(--fire);">Cuenta suspendida</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Venció el ${exp} · Tu progreso está guardado</div></div></div>
+            <div class="settings-item" onclick="showPaywall('suspended')"><div class="settings-icon" style="background:rgba(76,175,80,0.1);">🔓</div><div class="settings-label" style="color:var(--green);">Reactivar — $9.990/mes</div><div class="settings-arrow" style="color:var(--green);">›</div></div>`;
+          }
+          return `<div class="settings-item" onclick="showPaywall()"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">💳</div><div class="settings-label">Activar plan — $9.990/mes</div><div class="settings-arrow" style="color:var(--fire);">›</div></div>`;
+        })()}
       </div>
 
       <div class="section-head"><h2>👥 Cuenta</h2></div>
@@ -2813,6 +2897,175 @@ function deleteAthleteByUid(uid){
 }
 
 let currentAuthUser = null;
+
+
+/* ────────────────────────────────────
+   PAYWALL / TRIAL SYSTEM
+──────────────────────────────────── */
+/* ────────────────────────────────────
+   SISTEMA DE SUSCRIPCIÓN
+   - 3 días trial gratuito
+   - Pago $9.990/mes (30 días corridos)
+   - Suspensión real si no paga
+   - Progreso siempre guardado
+   - Reactivación en cualquier momento
+──────────────────────────────────── */
+const TRIAL_KEY   = 'cft_trial_start';
+const SUB_KEY     = 'cft_subscription'; // {paidAt, expiresAt, history:[]}
+const TRIAL_DAYS  = 3;
+const SUB_DAYS    = 30;
+
+function getSubscription(){
+  try { return JSON.parse(localStorage.getItem(SUB_KEY)) || null; }
+  catch(e){ return null; }
+}
+function saveSubscription(sub){
+  localStorage.setItem(SUB_KEY, JSON.stringify(sub));
+}
+
+function getAccountStatus(){
+  if(isAdminUser()) return {status:'admin'};
+
+  const sub = getSubscription();
+  const now = Date.now();
+
+  // Active subscription
+  if(sub && sub.expiresAt && now < sub.expiresAt){
+    const daysLeft = Math.ceil((sub.expiresAt - now)/(1000*60*60*24));
+    return {status:'active', daysLeft, sub};
+  }
+
+  // Expired subscription (suspended)
+  if(sub && sub.expiresAt && now >= sub.expiresAt){
+    const daysSince = Math.floor((now - sub.expiresAt)/(1000*60*60*24));
+    return {status:'suspended', daysSince, sub};
+  }
+
+  // Trial logic
+  if(!localStorage.getItem(TRIAL_KEY)){
+    localStorage.setItem(TRIAL_KEY, now.toString());
+  }
+  const trialStart = parseInt(localStorage.getItem(TRIAL_KEY));
+  const trialElapsed = (now - trialStart)/(1000*60*60*24);
+  const trialLeft = Math.max(0, TRIAL_DAYS - Math.floor(trialElapsed));
+
+  if(trialElapsed < TRIAL_DAYS){
+    return {status:'trial', daysLeft: trialLeft};
+  }
+
+  return {status:'expired_trial'};
+}
+
+function initTrial(){
+  const acct = getAccountStatus();
+
+  if(acct.status === 'admin' || acct.status === 'active'){
+    updateTrialBanner(acct);
+    return;
+  }
+
+  if(acct.status === 'trial'){
+    updateTrialBanner(acct);
+    return;
+  }
+
+  // suspended or expired_trial → show paywall
+  showPaywall(acct.status);
+}
+
+function updateTrialBanner(acct){
+  const banner = document.getElementById('trial-banner');
+  const txt = document.getElementById('trial-text');
+  if(!banner || !txt) return;
+
+  if(acct.status === 'admin') return;
+
+  if(acct.status === 'active'){
+    if(acct.daysLeft <= 5){
+      banner.classList.remove('hidden');
+      banner.style.background = 'linear-gradient(135deg,#ff9800,#f57c00)';
+      txt.textContent = `⚠️ Tu suscripción vence en ${acct.daysLeft} día${acct.daysLeft===1?'':'s'}`;
+    }
+    return;
+  }
+
+  if(acct.status === 'trial'){
+    banner.classList.remove('hidden');
+    txt.textContent = acct.daysLeft === 1
+      ? '⚡ ¡Último día de prueba! Activa tu plan'
+      : `🎁 Prueba gratuita: ${acct.daysLeft} día${acct.daysLeft===1?'':'s'} restantes`;
+    return;
+  }
+}
+
+function showPaywall(reason){
+  // Update paywall text based on reason
+  const title = document.getElementById('paywall-title');
+  const sub = document.getElementById('paywall-sub');
+  const acct = getAccountStatus();
+
+  if(reason === 'suspended' && title && sub){
+    const daysSince = acct.daysSince || 0;
+    title.innerHTML = '⏸ Cuenta suspendida';
+    sub.innerHTML = `Tu suscripción venció hace <strong>${daysSince} día${daysSince===1?'':'s'}</strong>.<br>
+    Tu progreso está guardado y seguro. Reactiva tu plan para continuar entrenando.`;
+  } else if(title && sub){
+    title.innerHTML = 'Tu prueba gratuita<br>ha terminado';
+    sub.innerHTML = 'Continúa entrenando con acceso a todas las rutinas, tu progreso y el plan personalizado.';
+  }
+
+  showScreen('paywall');
+  document.getElementById('main-nav').style.display = 'none';
+  const banner = document.getElementById('trial-banner');
+  if(banner) banner.classList.add('hidden');
+}
+
+function checkPayment(){
+  const code = prompt('Ingresa el número de operación de tu pago en Mercado Pago\n(lo encuentras en tu email de confirmación):');
+  if(!code){ return; }
+  if(code.trim().length < 4){
+    showToast('Código muy corto. Intenta de nuevo.','fire');
+    return;
+  }
+
+  // Register payment - 30 days from now
+  const now = Date.now();
+  const sub = getSubscription() || {history:[]};
+  const newSub = {
+    paidAt: now,
+    expiresAt: now + (SUB_DAYS * 24 * 60 * 60 * 1000),
+    operationCode: code.trim(),
+    history: [...(sub.history||[]), {
+      paidAt: now,
+      expiresAt: now + (SUB_DAYS * 24 * 60 * 60 * 1000),
+      code: code.trim()
+    }]
+  };
+  saveSubscription(newSub);
+
+  showToast('✅ ¡Pago registrado! Bienvenido/a de vuelta 🔥');
+  const banner = document.getElementById('trial-banner');
+  if(banner) banner.classList.add('hidden');
+
+  setTimeout(()=>{ launchApp(); }, 1200);
+}
+
+// Block workout access if suspended
+function checkAccessBeforeWorkout(key){
+  const acct = getAccountStatus();
+  if(acct.status === 'suspended' || acct.status === 'expired_trial'){
+    showPaywall(acct.status);
+    return false;
+  }
+  return true;
+}
+
+// Admin override
+function isAdminUser(){
+  return currentAuthUser && currentAuthUser.includes('matiasfloresbaez');
+}
+
+
 
 /* ────────────────────────────────────
    SPLASH + INIT
