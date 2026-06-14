@@ -3675,231 +3675,327 @@ function isAdminUser(){
 /* ────────────────────────────────────
    AVATAR SYSTEM
 ──────────────────────────────────── */
-const AVATARS = {
-  // ── RUNNING ──────────────────────────
-  runner_m: {
-    name:'Corredor', type:'running', gender:'m',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="40" cy="${lvl>2?12:14}" r="${lvl>2?9:8}" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="40" y1="${lvl>2?21:22}" x2="${lvl>2?48:45}" y2="${lvl>2?42:45}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="40" y1="28" x2="${lvl>1?25:28}" y2="${lvl>1?35:38}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="42" y1="30" x2="${lvl>1?55:52}" y2="${lvl>1?25:28}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="45" y1="42" x2="${lvl>2?30:32}" y2="${lvl>2?62:65}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="46" y1="44" x2="${lvl>2?60:58}" y2="${lvl>2?55:58}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      ${lvl>1?`<line x1="8" y1="35" x2="22" y2="35" stroke="${c}" stroke-width="1.5" opacity="0.5"/>
-      <line x1="5" y1="42" x2="18" y2="42" stroke="${c}" stroke-width="1.5" opacity="0.4"/>`:''}
-      <ellipse cx="${lvl>2?28:31}" cy="${lvl>2?64:67}" rx="7" ry="3" fill="${c}" opacity="0.8"/>
-    </svg>`
-  },
-  runner_f: {
-    name:'Corredora', type:'running', gender:'f',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <!-- Head with ponytail -->
-      <circle cx="40" cy="${lvl>2?12:14}" r="${lvl>2?9:8}" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <path d="M${lvl>2?49:48},${lvl>2?8:10} Q58,5 55,15" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"/>
-      <!-- Body lean forward -->
-      <line x1="40" y1="${lvl>2?21:22}" x2="${lvl>2?47:44}" y2="${lvl>2?40:43}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <!-- Arms pumping -->
-      <line x1="40" y1="27" x2="${lvl>1?25:28}" y2="${lvl>1?34:37}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="42" y1="29" x2="${lvl>1?54:51}" y2="${lvl>1?24:27}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <!-- Legs stride -->
-      <line x1="44" y1="40" x2="${lvl>2?29:31}" y2="${lvl>2?60:63}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="45" y1="42" x2="${lvl>2?59:57}" y2="${lvl>2?53:56}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      ${lvl>1?`<line x1="8" y1="33" x2="22" y2="33" stroke="${c}" stroke-width="1.5" opacity="0.5"/>
-      <line x1="5" y1="40" x2="18" y2="40" stroke="${c}" stroke-width="1.5" opacity="0.4"/>`:''}
-      <ellipse cx="${lvl>2?27:30}" cy="${lvl>2?62:65}" rx="7" ry="3" fill="${c}" opacity="0.8"/>
-    </svg>`
-  },
 
-  // ── GYM ──────────────────────────────
-  lifter_m: {
-    name:'Levantador', type:'gym', gender:'m',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="40" cy="12" r="${lvl>1?10:8}" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <rect x="${lvl>2?27:30}" y="22" width="${lvl>2?26:20}" height="${lvl>1?22:18}" rx="4" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <rect x="10" y="${lvl>1?18:22}" width="60" height="5" rx="2.5" fill="${c}" opacity="0.8"/>
-      <circle cx="10" cy="${lvl>1?20:24}" r="${lvl>2?7:5}" fill="none" stroke="${c}" stroke-width="2"/>
-      <circle cx="70" cy="${lvl>1?20:24}" r="${lvl>2?7:5}" fill="none" stroke="${c}" stroke-width="2"/>
-      <line x1="${lvl>2?27:30}" y1="28" x2="15" y2="${lvl>1?22:24}" stroke="${c}" stroke-width="${lvl>2?4:3}" stroke-linecap="round"/>
-      <line x1="${lvl>2?53:50}" y1="28" x2="65" y2="${lvl>1?22:24}" stroke="${c}" stroke-width="${lvl>2?4:3}" stroke-linecap="round"/>
-      <line x1="36" y1="44" x2="28" y2="68" stroke="${c}" stroke-width="${lvl>1?4:3}" stroke-linecap="round"/>
-      <line x1="44" y1="44" x2="52" y2="68" stroke="${c}" stroke-width="${lvl>1?4:3}" stroke-linecap="round"/>
-      <ellipse cx="26" cy="70" rx="${lvl>1?8:6}" ry="3" fill="${c}" opacity="0.8"/>
-      <ellipse cx="54" cy="70" rx="${lvl>1?8:6}" ry="3" fill="${c}" opacity="0.8"/>
-    </svg>`
-  },
-  lifter_f: {
-    name:'Levantadora', type:'gym', gender:'f',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <!-- Head with bun -->
-      <circle cx="40" cy="12" r="${lvl>1?9:8}" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <circle cx="40" cy="5" r="4" fill="none" stroke="${c}" stroke-width="2"/>
-      <!-- Feminine torso (narrower waist) -->
-      <path d="M${lvl>2?30:32},22 L${lvl>2?50:48},22 L${lvl>2?46:44},44 L${lvl>2?34:36},44 Z" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <!-- Barbell -->
-      <rect x="10" y="${lvl>1?18:22}" width="60" height="4" rx="2" fill="${c}" opacity="0.8"/>
-      <circle cx="10" cy="${lvl>1?20:24}" r="${lvl>2?6:4}" fill="none" stroke="${c}" stroke-width="2"/>
-      <circle cx="70" cy="${lvl>1?20:24}" r="${lvl>2?6:4}" fill="none" stroke="${c}" stroke-width="2"/>
-      <!-- Arms -->
-      <line x1="${lvl>2?30:32}" y1="27" x2="15" y2="${lvl>1?22:24}" stroke="${c}" stroke-width="${lvl>2?3.5:2.5}" stroke-linecap="round"/>
-      <line x1="${lvl>2?50:48}" y1="27" x2="65" y2="${lvl>1?22:24}" stroke="${c}" stroke-width="${lvl>2?3.5:2.5}" stroke-linecap="round"/>
-      <!-- Legs -->
-      <line x1="37" y1="44" x2="30" y2="68" stroke="${c}" stroke-width="${lvl>1?3.5:3}" stroke-linecap="round"/>
-      <line x1="43" y1="44" x2="50" y2="68" stroke="${c}" stroke-width="${lvl>1?3.5:3}" stroke-linecap="round"/>
-      <ellipse cx="28" cy="70" rx="${lvl>1?7:5}" ry="3" fill="${c}" opacity="0.8"/>
-      <ellipse cx="52" cy="70" rx="${lvl>1?7:5}" ry="3" fill="${c}" opacity="0.8"/>
-    </svg>`
-  },
+/* ════════════════════════════════════
+   SISTEMA DE AVATAR RPG
+   4 niveles de progresión con ropa,
+   accesorios y animaciones
+════════════════════════════════════ */
 
-  // ── CROSSFIT ─────────────────────────
-  athlete_m: {
-    name:'Atleta', type:'crossfit', gender:'m',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="40" cy="11" r="${lvl>1?9:8}" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <path d="M${lvl>2?28:31},20 L${lvl>2?52:49},20 L${lvl>2?47:45},42 L${lvl>2?33:35},42 Z" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="${lvl>2?28:31}" y1="25" x2="${lvl>2?14:17}" y2="${lvl>2?14:17}" stroke="${c}" stroke-width="${lvl>2?3.5:2.5}" stroke-linecap="round"/>
-      <line x1="${lvl>2?52:49}" y1="25" x2="${lvl>2?66:63}" y2="${lvl>2?14:17}" stroke="${c}" stroke-width="${lvl>2?3.5:2.5}" stroke-linecap="round"/>
-      <line x1="37" y1="42" x2="28" y2="65" stroke="${c}" stroke-width="${lvl>1?4:3}" stroke-linecap="round"/>
-      <line x1="43" y1="42" x2="52" y2="65" stroke="${c}" stroke-width="${lvl>1?4:3}" stroke-linecap="round"/>
-      <ellipse cx="27" cy="67" rx="7" ry="3" fill="${c}" opacity="0.8"/>
-      <ellipse cx="53" cy="67" rx="7" ry="3" fill="${c}" opacity="0.8"/>
-    </svg>`
-  },
-  athlete_f: {
-    name:'Atleta', type:'crossfit', gender:'f',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <!-- Head with ponytail -->
-      <circle cx="40" cy="11" r="${lvl>1?9:8}" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <path d="M${lvl>2?49:48},8 Q57,5 54,16" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"/>
-      <!-- Feminine athletic torso -->
-      <path d="M${lvl>2?30:32},20 L${lvl>2?50:48},20 L${lvl>2?45:43},42 L${lvl>2?35:37},42 Z" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <!-- Arms up dynamic -->
-      <line x1="${lvl>2?30:32}" y1="25" x2="${lvl>2?15:18}" y2="${lvl>2?15:18}" stroke="${c}" stroke-width="${lvl>2?3:2.5}" stroke-linecap="round"/>
-      <line x1="${lvl>2?50:48}" y1="25" x2="${lvl>2?65:62}" y2="${lvl>2?15:18}" stroke="${c}" stroke-width="${lvl>2?3:2.5}" stroke-linecap="round"/>
-      <!-- Legs -->
-      <line x1="38" y1="42" x2="29" y2="65" stroke="${c}" stroke-width="${lvl>1?3.5:3}" stroke-linecap="round"/>
-      <line x1="42" y1="42" x2="51" y2="65" stroke="${c}" stroke-width="${lvl>1?3.5:3}" stroke-linecap="round"/>
-      <ellipse cx="28" cy="67" rx="6" ry="3" fill="${c}" opacity="0.8"/>
-      <ellipse cx="52" cy="67" rx="6" ry="3" fill="${c}" opacity="0.8"/>
-    </svg>`
-  },
-
-  // ── CALISTENIA ───────────────────────
-  ninja_m: {
-    name:'Ninja', type:'calistenia', gender:'m',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="40" cy="10" r="8" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <path d="M32,10 Q40,6 48,10" fill="none" stroke="${c}" stroke-width="2"/>
-      <line x1="40" y1="18" x2="40" y2="45" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="40" y1="25" x2="${lvl>1?22:24}" y2="${lvl>1?18:20}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="40" y1="25" x2="${lvl>1?58:56}" y2="${lvl>1?18:20}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      ${lvl>2
-        ?`<line x1="40" y1="45" x2="15" y2="55" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-           <line x1="40" y1="45" x2="65" y2="55" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`
-        :`<line x1="40" y1="45" x2="30" y2="68" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-           <line x1="40" y1="45" x2="50" y2="68" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>`}
-    </svg>`
-  },
-  ninja_f: {
-    name:'Ninja', type:'calistenia', gender:'f',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <!-- Head with bun -->
-      <circle cx="40" cy="10" r="8" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <circle cx="40" cy="3" r="3.5" fill="none" stroke="${c}" stroke-width="1.8"/>
-      <!-- Bandana -->
-      <path d="M32,10 Q40,6 48,10" fill="none" stroke="${c}" stroke-width="2"/>
-      <!-- Slim body -->
-      <path d="M38,18 L42,18 L43,45 L37,45 Z" fill="none" stroke="${c}" stroke-width="2"/>
-      <!-- Arms -->
-      <line x1="38" y1="25" x2="${lvl>1?21:23}" y2="${lvl>1?18:20}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="42" y1="25" x2="${lvl>1?59:57}" y2="${lvl>1?18:20}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <!-- Legs -->
-      ${lvl>2
-        ?`<line x1="40" y1="45" x2="14" y2="55" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-           <line x1="40" y1="45" x2="66" y2="55" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>`
-        :`<line x1="40" y1="45" x2="31" y2="68" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-           <line x1="40" y1="45" x2="49" y2="68" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>`}
-    </svg>`
-  },
-
-  // ── GUERRERO/A ────────────────────────
-  warrior_m: {
-    name:'Guerrero', type:'any', gender:'m',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="40" cy="12" r="${lvl>1?10:8}" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <path d="M31,8 Q40,2 49,8" fill="none" stroke="${c}" stroke-width="2"/>
-      <path d="M${lvl>2?27:30},22 L${lvl>2?53:50},22 L${lvl>2?53:50},44 Q40,52 ${lvl>2?27:30},44 Z" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <line x1="${lvl>2?53:50}" y1="28" x2="${lvl>2?68:65}" y2="${lvl>2?12:15}" stroke="${c}" stroke-width="${lvl>2?3.5:2.5}" stroke-linecap="round"/>
-      <line x1="${lvl>2?27:30}" y1="28" x2="${lvl>2?15:18}" y2="35" stroke="${c}" stroke-width="${lvl>2?3.5:2.5}" stroke-linecap="round"/>
-      <line x1="36" y1="44" x2="30" y2="68" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <line x1="44" y1="44" x2="50" y2="68" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      ${lvl>2?`<text x="40" y="76" text-anchor="middle" fill="${c}" font-size="8">⭐</text>`:''}
-    </svg>`
-  },
-  warrior_f: {
-    name:'Guerrera', type:'any', gender:'f',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <!-- Head with crown -->
-      <circle cx="40" cy="12" r="${lvl>1?9:8}" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <path d="M33,7 L35,3 L40,6 L45,3 L47,7" fill="none" stroke="${c}" stroke-width="1.8"/>
-      <!-- Armor with feminine shape -->
-      <path d="M${lvl>2?30:32},22 L${lvl>2?50:48},22 L${lvl>2?48:46},42 Q40,48 ${lvl>2?32:34},42 Z" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <!-- Sword -->
-      <line x1="${lvl>2?50:48}" y1="27" x2="${lvl>2?66:63}" y2="${lvl>2?12:15}" stroke="${c}" stroke-width="${lvl>2?3:2.5}" stroke-linecap="round"/>
-      <!-- Shield -->
-      <line x1="${lvl>2?30:32}" y1="27" x2="${lvl>2?16:18}" y2="34" stroke="${c}" stroke-width="${lvl>2?3:2.5}" stroke-linecap="round"/>
-      <!-- Legs -->
-      <line x1="37" y1="42" x2="31" y2="67" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="43" y1="42" x2="49" y2="67" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      ${lvl>2?`<text x="40" y="75" text-anchor="middle" fill="${c}" font-size="8">👑</text>`:''}
-    </svg>`
-  },
-
-  // ── FÉNIX ────────────────────────────
-  phoenix_m: {
-    name:'Fénix', type:'any', gender:'m',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      ${lvl>1?`<path d="M40,40 Q20,20 5,30 Q20,35 40,40" fill="${c}" opacity="0.15"/>
-      <path d="M40,40 Q60,20 75,30 Q60,35 40,40" fill="${c}" opacity="0.15"/>`:''} 
-      <circle cx="40" cy="15" r="${lvl>2?10:8}" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <path d="M35,10 Q37,4 40,8 Q42,2 45,8 Q47,4 48,10" fill="none" stroke="${c}" stroke-width="2"/>
-      <line x1="40" y1="23" x2="40" y2="55" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
-      <path d="M40,32 Q25,22 ${lvl>2?8:12},28" fill="none" stroke="${c}" stroke-width="${lvl>2?3:2}" stroke-linecap="round"/>
-      <path d="M40,32 Q55,22 ${lvl>2?72:68},28" fill="none" stroke="${c}" stroke-width="${lvl>2?3:2}" stroke-linecap="round"/>
-      <line x1="40" y1="55" x2="30" y2="72" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="40" y1="55" x2="50" y2="72" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M38,55 Q35,65 32,72 Q38,60 40,68 Q42,60 48,72 Q45,65 42,55" fill="${c}" opacity="0.3"/>
-    </svg>`
-  },
-  phoenix_f: {
-    name:'Fénix', type:'any', gender:'f',
-    svg:(lvl,c)=>`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      ${lvl>1?`<path d="M40,38 Q18,18 3,28 Q18,33 40,38" fill="${c}" opacity="0.15"/>
-      <path d="M40,38 Q62,18 77,28 Q62,33 40,38" fill="${c}" opacity="0.15"/>`:''} 
-      <!-- Head with flowing hair -->
-      <circle cx="40" cy="14" r="${lvl>2?9:8}" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <path d="M35,10 Q37,4 40,8 Q42,2 45,8 Q47,5 47,10" fill="none" stroke="${c}" stroke-width="2"/>
-      <!-- Hair flowing -->
-      <path d="M48,12 Q56,10 54,22" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>
-      <!-- Slim body -->
-      <path d="M38,22 L42,22 L43,52 L37,52 Z" fill="none" stroke="${c}" stroke-width="2.5"/>
-      <!-- Wings graceful -->
-      <path d="M40,30 Q23,18 ${lvl>2?6:10},26" fill="none" stroke="${c}" stroke-width="${lvl>2?2.5:2}" stroke-linecap="round"/>
-      <path d="M40,30 Q57,18 ${lvl>2?74:70},26" fill="none" stroke="${c}" stroke-width="${lvl>2?2.5:2}" stroke-linecap="round"/>
-      <!-- Second wing arc -->
-      <path d="M40,36 Q22,28 ${lvl>2?8:12},34" fill="none" stroke="${c}" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
-      <path d="M40,36 Q58,28 ${lvl>2?72:68},34" fill="none" stroke="${c}" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
-      <line x1="40" y1="52" x2="31" y2="70" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="40" y1="52" x2="49" y2="70" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M38,52 Q35,62 32,70 Q38,58 40,66 Q42,58 48,70 Q45,62 42,52" fill="${c}" opacity="0.3"/>
-    </svg>`
-  },
-}
+const AVATAR_LEVELS = [
+  { min:0,   name:'Principiante', color:'#888',    ring:'none',    stars:0 },
+  { min:10,  name:'Intermedio',   color:'#ff9800', ring:'orange',  stars:1 },
+  { min:30,  name:'Avanzado',     color:'#ff5722', ring:'fire',    stars:2 },
+  { min:60,  name:'Elite',        color:'#ffd700', ring:'gold',    stars:3 },
+];
 
 const AVATAR_COLORS = {
-  running:'#29b6f6', gym:'#ff5722', crossfit:'#ff9800', 
+  running:'#29b6f6', gym:'#ff5722', crossfit:'#ff9800',
   calistenia:'#4caf50', any:'#9c27b0'
 };
+
+function getAvatarLevel(streak, sessions){
+  const val = Math.max(streak, Math.floor(sessions/3));
+  if(val >= 60) return 3;
+  if(val >= 30) return 2;
+  if(val >= 10) return 1;
+  return 0;
+}
+function getAvatarLevelName(lvl){ return AVATAR_LEVELS[lvl]?.name || 'Principiante'; }
+function getAvatarLevelColor(lvl){ return AVATAR_LEVELS[lvl]?.color || '#888'; }
+function getUserGender(){
+  return (state.user?.sex || state.user?.gender || 'm').toLowerCase().startsWith('f') ? 'f' : 'm';
+}
+
+/* ── SVG AVATAR BUILDER ─────────────────
+   Draws character with level-appropriate
+   gear: clothes, accessories, aura
+──────────────────────────────────── */
+function buildAvatarSVG(type, gender, level, color){
+  const isFem = gender === 'f';
+  const lvl = level; // 0-3
+  const c = color;
+  const lc = getAvatarLevelColor(lvl); // level color
+  const uid = 'av_'+Math.random().toString(36).slice(2,6);
+
+  // Animation keyframes based on level
+  const animCSS = lvl === 0 ? '' :
+    lvl === 1 ? `@keyframes breathe_${uid}{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.03)}}` :
+    lvl === 2 ? `@keyframes bounce_${uid}{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}` :
+    `@keyframes power_${uid}{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.04)}}`;
+
+  const animStyle = lvl === 0 ? '' :
+    lvl === 1 ? `animation:breathe_${uid} 3s ease-in-out infinite;transform-origin:40px 40px;` :
+    lvl === 2 ? `animation:bounce_${uid} 2s ease-in-out infinite;transform-origin:40px 40px;` :
+    `animation:power_${uid} 1.5s ease-in-out infinite;transform-origin:40px 40px;`;
+
+  // ── AURA (level 2+) ──
+  const aura = lvl >= 2 ? `
+    <ellipse cx="40" cy="72" rx="${lvl>=3?22:16}" ry="5" fill="${lc}" opacity="${lvl>=3?0.25:0.15}"/>
+    ${lvl>=3 ? `
+    <ellipse cx="40" cy="72" rx="26" ry="6" fill="${lc}" opacity="0.08"/>
+    <circle cx="40" cy="40" r="34" fill="none" stroke="${lc}" stroke-width="1" opacity="0.15" stroke-dasharray="4 4"/>
+    ` : ''}
+  ` : '';
+
+  // ── HEAD ──
+  const headR = lvl >= 2 ? 9 : 8;
+  const headY = type === 'runner' ? 13 : 12;
+
+  // Hair/head accessory by gender and level
+  const hairAcc = isFem ? 
+    (lvl >= 2 
+      ? `<circle cx="${type==='runner'?49:40}" cy="${type==='runner'?headY-4:headY-6}" r="4" fill="none" stroke="${c}" stroke-width="1.8"/>` // bun
+      : `<path d="M${40+headR-2},${headY-3} Q${40+headR+6},${headY-6} ${40+headR+4},${headY+4}" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>`) // ponytail
+    : (lvl >= 3 
+      ? `<rect x="${40-headR+1}" y="${headY-headR-2}" width="${headR*2-2}" height="4" rx="2" fill="${lc}" opacity="0.8"/>` // headband elite
+      : '');
+
+  // ── BODY TYPE SPECIFIC ──
+  let bodyParts = '';
+  let clothes = '';
+  let accessories = '';
+
+  if(type === 'runner'){
+    // Leaning forward body
+    bodyParts = `
+      <line x1="40" y1="${headY+headR}" x2="47" y2="44" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <line x1="40" y1="${headY+headR+8}" x2="${lvl>=1?24:26}" y2="${lvl>=1?36:38}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="42" y1="${headY+headR+10}" x2="${lvl>=1?56:54}" y2="${lvl>=1?26:28}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="45" y1="44" x2="${lvl>=2?28:30}" y2="${lvl>=2?64:66}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <line x1="46" y1="46" x2="${lvl>=2?62:60}" y2="${lvl>=2?56:58}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+    `;
+    // Clothes by level
+    if(lvl >= 1){ // Polera deportiva
+      clothes = `<path d="M37,${headY+headR} L43,${headY+headR} L46,${headY+headR+14} L34,${headY+headR+14} Z" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="1"/>`;
+    }
+    if(lvl >= 2){ // Shorts + zapatillas
+      clothes += `
+        <path d="M34,${headY+headR+14} L38,${headY+headR+22} L42,${headY+headR+22} L46,${headY+headR+14} Z" fill="${c}" opacity="0.25" stroke="${c}" stroke-width="1"/>
+        <ellipse cx="${lvl>=3?26:28}" cy="${lvl>=2?66:68}" rx="8" ry="3.5" fill="${lc}" opacity="0.7"/>
+      `;
+    }
+    if(lvl >= 3){ // Número de corredor + medalla
+      clothes += `
+        <rect x="36" y="${headY+headR+2}" width="8" height="6" rx="1" fill="${lc}" opacity="0.6"/>
+        <text x="40" y="${headY+headR+7}" text-anchor="middle" fill="#000" font-size="4" font-weight="800">1</text>
+      `;
+      accessories = `
+        <circle cx="40" cy="${headY+headR+28}" r="4" fill="none" stroke="${lc}" stroke-width="1.5"/>
+        <line x1="40" y1="${headY+headR+24}" x2="40" y2="${headY+headR+20}" stroke="${lc}" stroke-width="1.5"/>
+      `;
+    }
+    // Speed lines
+    if(lvl >= 1){
+      accessories += `
+        <line x1="6" y1="36" x2="${lvl>=2?20:18}" y2="36" stroke="${c}" stroke-width="1.5" opacity="${lvl>=2?0.6:0.4}"/>
+        <line x1="4" y1="42" x2="${lvl>=2?17:15}" y2="42" stroke="${c}" stroke-width="1.5" opacity="${lvl>=2?0.5:0.3}"/>
+        ${lvl>=2?`<line x1="8" y1="48" x2="20" y2="48" stroke="${c}" stroke-width="1.5" opacity="0.3"/>`:''}
+      `;
+    }
+
+  } else if(type === 'gym'){
+    // Wide stance power
+    bodyParts = `
+      <line x1="40" y1="${headY+headR}" x2="40" y2="45" stroke="${c}" stroke-width="${lvl>=2?4:3}" stroke-linecap="round"/>
+      <rect x="10" y="${lvl>=1?18:22}" width="60" height="5" rx="2.5" fill="${c}" opacity="0.85"/>
+      <circle cx="10" cy="${lvl>=1?20:24}" r="${lvl>=2?8:6}" fill="none" stroke="${c}" stroke-width="2"/>
+      <circle cx="70" cy="${lvl>=1?20:24}" r="${lvl>=2?8:6}" fill="none" stroke="${c}" stroke-width="2"/>
+      ${lvl>=3?`<circle cx="10" cy="20" r="12" fill="none" stroke="${lc}" stroke-width="1" opacity="0.4"/>
+               <circle cx="70" cy="20" r="12" fill="none" stroke="${lc}" stroke-width="1" opacity="0.4"/>`:``}
+      <line x1="${lvl>=2?28:31}" y1="25" x2="12" y2="${lvl>=1?21:24}" stroke="${c}" stroke-width="${lvl>=2?4:3}" stroke-linecap="round"/>
+      <line x1="${lvl>=2?52:49}" y1="25" x2="68" y2="${lvl>=1?21:24}" stroke="${c}" stroke-width="${lvl>=2?4:3}" stroke-linecap="round"/>
+      <line x1="36" y1="45" x2="28" y2="68" stroke="${c}" stroke-width="${lvl>=1?4:3}" stroke-linecap="round"/>
+      <line x1="44" y1="45" x2="52" y2="68" stroke="${c}" stroke-width="${lvl>=1?4:3}" stroke-linecap="round"/>
+    `;
+    if(lvl >= 1){ // Tank top
+      clothes = `
+        <path d="M${isFem?'32':'29'},${headY+headR} L${isFem?'48':'51'},${headY+headR} L${isFem?'46':'49'},45 L${isFem?'34':'31'},45 Z" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="1"/>
+      `;
+    }
+    if(lvl >= 2){ // Cinturón + zapatillas
+      clothes += `
+        <rect x="${isFem?33:30}" y="38" width="${isFem?14:20}" height="4" rx="2" fill="${lc}" opacity="0.6"/>
+        <ellipse cx="28" cy="70" rx="${lvl>=3?9:7}" ry="3.5" fill="${lc}" opacity="0.7"/>
+        <ellipse cx="52" cy="70" rx="${lvl>=3?9:7}" ry="3.5" fill="${lc}" opacity="0.7"/>
+      `;
+      if(lvl >= 3){ // Guantes + chaleco
+        accessories = `
+          <rect x="9" y="17" width="8" height="6" rx="3" fill="${lc}" opacity="0.5"/>
+          <rect x="63" y="17" width="8" height="6" rx="3" fill="${lc}" opacity="0.5"/>
+          <text x="40" y="76" text-anchor="middle" fill="${lc}" font-size="9">🏆</text>
+        `;
+      }
+    }
+
+  } else if(type === 'crossfit'){
+    bodyParts = `
+      <path d="M${lvl>=2?28:31},${headY+headR} L${lvl>=2?52:49},${headY+headR} L${lvl>=2?47:45},44 L${lvl>=2?33:35},44 Z" fill="none" stroke="${c}" stroke-width="${lvl>=2?3:2.5}"/>
+      <line x1="${lvl>=2?28:31}" y1="${headY+headR+6}" x2="${lvl>=2?13:16}" y2="${lvl>=2?13:16}" stroke="${c}" stroke-width="${lvl>=2?3.5:2.5}" stroke-linecap="round"/>
+      <line x1="${lvl>=2?52:49}" y1="${headY+headR+6}" x2="${lvl>=2?67:64}" y2="${lvl>=2?13:16}" stroke="${c}" stroke-width="${lvl>=2?3.5:2.5}" stroke-linecap="round"/>
+      <line x1="37" y1="44" x2="28" y2="67" stroke="${c}" stroke-width="${lvl>=1?4:3}" stroke-linecap="round"/>
+      <line x1="43" y1="44" x2="52" y2="67" stroke="${c}" stroke-width="${lvl>=1?4:3}" stroke-linecap="round"/>
+    `;
+    if(lvl >= 1){
+      clothes = `<path d="M${isFem?30:28},${headY+headR} L${isFem?50:52},${headY+headR} L${isFem?46:48},44 L${isFem?34:32},44 Z" fill="${c}" opacity="0.15" stroke="${c}" stroke-width="0.5"/>`;
+    }
+    if(lvl >= 2){
+      clothes += `
+        <ellipse cx="28" cy="69" rx="7" ry="3" fill="${lc}" opacity="0.7"/>
+        <ellipse cx="52" cy="69" rx="7" ry="3" fill="${lc}" opacity="0.7"/>
+        <rect x="${isFem?31:29}" y="37" width="${isFem?18:22}" height="4" rx="2" fill="${lc}" opacity="0.5"/>
+      `;
+    }
+    if(lvl >= 3){
+      accessories = `
+        <text x="40" y="76" text-anchor="middle" fill="${lc}" font-size="9">⚡</text>
+        <circle cx="40" cy="30" r="18" fill="none" stroke="${lc}" stroke-width="1" opacity="0.2" stroke-dasharray="3 3"/>
+      `;
+    }
+
+  } else if(type === 'calistenia'){
+    bodyParts = `
+      <line x1="40" y1="${headY+headR}" x2="40" y2="46" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="40" y1="${headY+headR+8}" x2="${lvl>=1?20:22}" y2="${lvl>=1?headY+headR+2:headY+headR+4}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="40" y1="${headY+headR+8}" x2="${lvl>=1?60:58}" y2="${lvl>=1?headY+headR+2:headY+headR+4}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+      ${lvl >= 2
+        ? `<line x1="40" y1="46" x2="14" y2="56" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+           <line x1="40" y1="46" x2="66" y2="56" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>`
+        : `<line x1="40" y1="46" x2="30" y2="68" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+           <line x1="40" y1="46" x2="50" y2="68" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>`}
+    `;
+    if(lvl >= 1){
+      clothes = `<path d="M36,${headY+headR} L44,${headY+headR} L44,${headY+headR+20} L36,${headY+headR+20} Z" fill="${c}" opacity="0.2"/>`;
+    }
+    if(lvl >= 2){
+      accessories = `
+        <rect x="35" y="${headY+headR-4}" width="10" height="3" rx="1.5" fill="${lc}" opacity="0.7"/>
+      `;
+    }
+    if(lvl >= 3){
+      accessories += `
+        <circle cx="40" cy="35" r="22" fill="none" stroke="${lc}" stroke-width="1" opacity="0.25" stroke-dasharray="4 2"/>
+        <text x="40" y="76" text-anchor="middle" fill="${lc}" font-size="9">🥋</text>
+      `;
+    }
+
+  } else { // warrior / phoenix / any
+    bodyParts = `
+      <line x1="40" y1="${headY+headR}" x2="40" y2="52" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <line x1="40" y1="${headY+headR+10}" x2="${lvl>=1?20:24}" y2="${lvl>=1?headY+headR+18:headY+headR+20}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="40" y1="${headY+headR+10}" x2="${lvl>=1?60:56}" y2="${lvl>=1?headY+headR+18:headY+headR+20}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="40" y1="52" x2="30" y2="70" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <line x1="40" y1="52" x2="50" y2="70" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+    `;
+    if(lvl >= 1){
+      clothes = `
+        <path d="M34,${headY+headR} L46,${headY+headR} L48,52 L32,52 Z" fill="${c}" opacity="0.18" stroke="${c}" stroke-width="1"/>
+        ${lvl>=2?`<rect x="33" y="42" width="14" height="4" rx="2" fill="${lc}" opacity="0.6"/>`:''}
+      `;
+    }
+    if(lvl >= 2){
+      // Sword or wings
+      accessories = `
+        <line x1="52" y1="${headY+headR+8}" x2="68" y2="${headY+headR-8}" stroke="${lc}" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+        <ellipse cx="28" cy="70" rx="7" ry="3" fill="${lc}" opacity="0.7"/>
+        <ellipse cx="52" cy="70" rx="7" ry="3" fill="${lc}" opacity="0.7"/>
+      `;
+    }
+    if(lvl >= 3){
+      accessories += `
+        <path d="M40,30 Q20,18 4,26" fill="none" stroke="${lc}" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+        <path d="M40,30 Q60,18 76,26" fill="none" stroke="${lc}" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+        <path d="M38,52 Q34,62 30,70 Q38,58 40,66 Q42,58 50,70 Q46,62 42,52" fill="${lc}" opacity="0.25"/>
+        <text x="40" y="78" text-anchor="middle" fill="${lc}" font-size="8">👑</text>
+      `;
+    }
+  }
+
+  // Shoes (level 1+)
+  const shoes = lvl >= 1 && type !== 'runner' ? '' : '';
+
+  return `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <style>
+      .body_${uid}{ ${animStyle} }
+      ${animCSS}
+    </style>
+    ${aura}
+    <g class="body_${uid}">
+      ${hairAcc}
+      <circle cx="40" cy="${headY}" r="${headR}" fill="none" stroke="${c}" stroke-width="2.5"/>
+      ${clothes}
+      ${bodyParts}
+      ${accessories}
+    </g>
+  </svg>`;
+}
+
+/* ── AVATAR DEFINITIONS ─────────────── */
+const AVATARS = {
+  runner_m:    { name:'Corredor',    type:'running',    gender:'m' },
+  runner_f:    { name:'Corredora',   type:'running',    gender:'f' },
+  lifter_m:    { name:'Levantador',  type:'gym',        gender:'m' },
+  lifter_f:    { name:'Levantadora', type:'gym',        gender:'f' },
+  athlete_m:   { name:'Atleta',      type:'crossfit',   gender:'m' },
+  athlete_f:   { name:'Atleta',      type:'crossfit',   gender:'f' },
+  ninja_m:     { name:'Ninja',       type:'calistenia', gender:'m' },
+  ninja_f:     { name:'Ninja',       type:'calistenia', gender:'f' },
+  warrior_m:   { name:'Guerrero',    type:'any',        gender:'m' },
+  warrior_f:   { name:'Guerrera',    type:'any',        gender:'f' },
+  phoenix_m:   { name:'Fénix',       type:'any',        gender:'m' },
+  phoenix_f:   { name:'Fénix',       type:'any',        gender:'f' },
+};
+
+function renderAvatarSVG(avatarKey, streak=0, sessions=0){
+  const g = getUserGender();
+  let key = avatarKey;
+  // Resolve key to correct gender
+  if(!AVATARS[key]){
+    const base = (key||'warrior').replace(/_[mf]$/,'');
+    key = base+'_'+g;
+  }
+  if(AVATARS[key] && AVATARS[key].gender !== g){
+    const base = key.replace(/_[mf]$/,'');
+    key = base+'_'+g;
+  }
+  const av = AVATARS[key] || AVATARS['warrior_'+g] || Object.values(AVATARS)[0];
+  const lvl = getAvatarLevel(streak, sessions);
+  const color = AVATAR_COLORS[av.type] || '#ff5722';
+  return buildAvatarSVG(av.type, av.gender, lvl, color);
+}
+
+function getGenderedAvatars(){
+  const g = getUserGender();
+  return Object.entries(AVATARS).filter(([k,v]) => v.gender === g);
+}
+
+function openAvatarPicker(){
+  const grid = document.getElementById('avatar-picker-grid');
+  const current = state.user?.avatar || '';
+  const streak = state.streak || 0;
+  const sessions = state.history?.length || 0;
+  const lvl = getAvatarLevel(streak, sessions);
+  const lc = getAvatarLevelColor(lvl);
+  const genderedAvatars = getGenderedAvatars();
+
+  grid.innerHTML = genderedAvatars.map(([key, av])=>{
+    const color = AVATAR_COLORS[av.type] || '#ff5722';
+    const svg = buildAvatarSVG(av.type, av.gender, lvl, color);
+    const isSelected = current === key;
+    return `<div class="avatar-option ${isSelected?'selected':''}" onclick="selectAvatarOption('${key}', this)">
+      <div class="avatar-svg-wrap">${svg}</div>
+      <div class="avatar-name">${av.name}</div>
+      <div style="font-size:0.58rem;color:${lc};margin-top:2px;font-weight:700;">${getAvatarLevelName(lvl)}</div>
+    </div>`;
+  }).join('');
+
+  // Show progression info
+  const nextLvl = AVATAR_LEVELS[Math.min(lvl+1, 3)];
+  const info = lvl >= 3 ? '🏆 Nivel máximo alcanzado' : 
+    `Próximo nivel: <strong>${nextLvl.name}</strong> a los ${nextLvl.min} días de racha`;
+
+  document.getElementById('avatar-modal').classList.remove('hidden');
+}
 
 function getAvatarLevel(streak, sessions){
   if(streak >= 30 || sessions >= 50) return 3;
