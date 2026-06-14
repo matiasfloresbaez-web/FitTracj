@@ -452,6 +452,24 @@ html { font-size: 16px; }
 .wa-fab:hover + .wa-tooltip,.wa-fab:focus + .wa-tooltip{opacity:1;}
 
 </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9wkXfWKMkGAgxzdSn7emFOBLb7CUR5yc",
+      authDomain: "concefittraining.firebaseapp.com",
+      databaseURL: "https://concefittraining-default-rtdb.firebaseio.com",
+      projectId: "concefittraining",
+      storageBucket: "concefittraining.firebasestorage.app",
+      messagingSenderId: "958498773932",
+      appId: "1:958498773932:web:9c5db582e40ceba4eef809"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
+
 </head>
 <body>
 <div id="app">
@@ -878,12 +896,154 @@ window.onerror = function(msg, src, line, col, err){
 const DB_KEY = 'fittrack_users_v1';
 const ACTIVE_KEY = 'fittrack_active_v1';
 
+/* ── FIREBASE SYNC ──────────────────
+   Hybrid: localStorage (fast) + Firebase (cloud sync)
+──────────────────────────────────── */
+function fbRef(path){ 
+  try { return db.ref(path); } catch(e){ return null; }
+}
+
+// Save user to both localStorage AND Firebase
 function getAllUsers() {
   try { return JSON.parse(localStorage.getItem(DB_KEY)) || {}; } catch(e){ return {}; }
 }
-function saveAllUsers(db) {
-  try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch(e){}
+
+function saveAllUsers(userDB) {
+  // Save locally always
+  try { localStorage.setItem(DB_KEY, JSON.stringify(userDB)); } catch(e){}
+  // Sync to Firebase
+  try {
+    const ref = fbRef('users');
+    if(ref) ref.set(userDB).catch(()=>{});
+  } catch(e){}
 }
+
+function saveActiveUser() {
+  if (!state.uid) return;
+  const userDB = getAllUsers();
+  userDB[state.uid] = {
+    profile: state.user,
+    tickets: state.tickets,
+    history: state.history,
+    streak: state.streak,
+  };
+  saveAllUsers(userDB);
+  // Also sync this specific user to Firebase
+  try {
+    const ref = fbRef('users/' + state.uid);
+    if(ref) ref.set(userDB[state.uid]).catch(()=>{});
+  } catch(e){}
+}
+
+// Pull latest data from Firebase on login
+function syncFromFirebase(uid, callback) {
+  try {
+    const ref = fbRef('users/' + uid);
+    if(!ref){ callback(false); return; }
+    ref.once('value').then(snap => {
+      const data = snap.val();
+      if(data) {
+        // Update localStorage with cloud data
+        const userDB = getAllUsers();
+        userDB[uid] = data;
+        try { localStorage.setItem(DB_KEY, JSON.stringify(userDB)); } catch(e){}
+        callback(true, data);
+      } else {
+        callback(false);
+      }
+    }).catch(() => callback(false));
+  } catch(e){ callback(false); }
+}
+
+// Save auth to Firebase too
+function saveAuthDB(authDB) {
+  try { localStorage.setItem(AUTH_DB_KEY, JSON.stringify(authDB)); } catch(e){}
+  try {
+    const ref = fbRef('auth');
+    if(ref) ref.set(authDB).catch(()=>{});
+  } catch(e){}
+}
+
+// Pull all users from Firebase (for admin panel)
+function syncAllUsersFromFirebase(callback) {
+  try {
+    const ref = fbRef('users');
+    if(!ref){ callback(false); return; }
+    ref.once('value').then(snap => {
+      const data = snap.val();
+      if(data) {
+        try { localStorage.setItem(DB_KEY, JSON.stringify(data)); } catch(e){}
+        callback(true, data);
+      } else {
+        callback(false);
+      }
+    }).catch(() => callback(false));
+  } catch(e){ callback(false); }
+}
+
+// Save trainer to Firebase
+function saveTrainers(trainers) {
+  try { localStorage.setItem('cft_trainers', JSON.stringify(trainers)); } catch(e){}
+  try {
+    const ref = fbRef('trainers');
+    if(ref) ref.set(trainers).catch(()=>{});
+  } catch(e){}
+}
+
+function getTrainers() {
+  try { return JSON.parse(localStorage.getItem('cft_trainers')) || {}; } catch(e){ return {}; }
+}
+
+function syncTrainersFromFirebase(callback) {
+  try {
+    const ref = fbRef('trainers');
+    if(!ref){ callback(getTrainers()); return; }
+    ref.once('value').then(snap => {
+      const data = snap.val() || {};
+      try { localStorage.setItem('cft_trainers', JSON.stringify(data)); } catch(e){}
+      callback(data);
+    }).catch(() => callback(getTrainers()));
+  } catch(e){ callback(getTrainers()); }
+}
+
+// Save custom session plan for a user
+function saveUserPlan(uid, plan) {
+  try {
+    const ref = fbRef('plans/' + uid);
+    if(ref) ref.set(plan).catch(()=>{});
+  } catch(e){}
+  try {
+    const plans = JSON.parse(localStorage.getItem('cft_plans') || '{}');
+    plans[uid] = plan;
+    localStorage.setItem('cft_plans', JSON.stringify(plans));
+  } catch(e){}
+}
+
+function getUserPlan(uid) {
+  try {
+    const plans = JSON.parse(localStorage.getItem('cft_plans') || '{}');
+    return plans[uid] || null;
+  } catch(e){ return null; }
+}
+
+function syncUserPlanFromFirebase(uid, callback) {
+  try {
+    const ref = fbRef('plans/' + uid);
+    if(!ref){ callback(getUserPlan(uid)); return; }
+    ref.once('value').then(snap => {
+      const data = snap.val();
+      if(data) {
+        try {
+          const plans = JSON.parse(localStorage.getItem('cft_plans') || '{}');
+          plans[uid] = data;
+          localStorage.setItem('cft_plans', JSON.stringify(plans));
+        } catch(e){}
+      }
+      callback(data);
+    }).catch(() => callback(getUserPlan(uid)));
+  } catch(e){ callback(getUserPlan(uid)); }
+}
+
 function getActiveUid() {
   return localStorage.getItem(ACTIVE_KEY) || null;
 }
@@ -1632,21 +1792,34 @@ const onbSteps = [
       </div>
     </div>`,
   // STEP 3 — Entrenador
-  () => `
+  () => {
+    const trainers = getTrainers();
+    const trainerList = Object.values(trainers);
+    // Always include Matias Flores as default
+    const hasMatias = trainerList.some(t => t.name === 'Matias Flores');
+    if(!hasMatias) trainerList.unshift({
+      name:'Matias Flores', photo:'', whatsapp:'56969049000',
+      specialties:['Gym','Calistenia','CrossFit','Running'],
+      description:'Entrenador Personal certificado'
+    });
+    return `
     <div class="onb-section-title">🏅 Tu Entrenador</div>
     <p style="font-size:0.82rem;color:var(--muted);margin-bottom:16px;line-height:1.5;">¿Tienes un entrenador personal? Selecciónalo para que pueda hacer seguimiento de tu progreso.</p>
     <div class="form-group">
       <label class="form-label">Selecciona entrenador</label>
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <div class="trainer-card ${onbData.trainer==='Matias Flores'?'selected':''}" onclick="selectTrainer('Matias Flores')" id="trainer-mf">
-          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--fire),var(--fire2));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:#fff;flex-shrink:0;">MF</div>
+        ${trainerList.map(t=>`
+        <div class="trainer-card ${onbData.trainer===t.name?'selected':''}" onclick="selectTrainer('${t.name}')" id="trainer-${t.name.replace(/\s/g,'_')}">
+          ${t.photo ? `<img src="${t.photo}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` 
+            : `<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--fire),var(--fire2));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:#fff;flex-shrink:0;">${(t.name||'?')[0]}</div>`}
           <div style="flex:1;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;color:var(--white);">Matias Flores</div>
-            <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Entrenador Personal · Gym · Calistenia · CrossFit · Running</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;color:var(--white);">${t.name}</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${(t.specialties||[]).join(' · ')}</div>
+            ${t.description?`<div style="font-size:0.68rem;color:var(--muted);margin-top:2px;">${t.description}</div>`:''}
           </div>
-          <div style="font-size:1.2rem;">${onbData.trainer==='Matias Flores'?'✅':''}</div>
-        </div>
-        <div class="trainer-card ${onbData.trainer==='Sin entrenador'?'selected':''}" onclick="selectTrainer('Sin entrenador')" id="trainer-none">
+          <div style="font-size:1.2rem;">${onbData.trainer===t.name?'✅':''}</div>
+        </div>`).join('')}
+        <div class="trainer-card ${onbData.trainer==='Sin entrenador'?'selected':''}" onclick="selectTrainer('Sin entrenador')">
           <div style="width:48px;height:48px;border-radius:50%;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🏋️</div>
           <div style="flex:1;">
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;color:var(--white);">Entreno por mi cuenta</div>
@@ -1656,7 +1829,7 @@ const onbSteps = [
         </div>
       </div>
     </div>
-  `,
+  `; },
   // STEP 4 — Resumen
   () => {
     const bmi = onbData.weight && onbData.height ? (onbData.weight/Math.pow(onbData.height/100,2)).toFixed(1) : '—';
@@ -2045,6 +2218,9 @@ function launchApp(){
   renderProgress();
   renderProfile();
   if(!isAdminUser()) setTimeout(initTrial, 500);
+  // Sync trainers and user plan from Firebase
+  syncTrainersFromFirebase(()=>{});
+  if(state.uid) syncUserPlanFromFirebase(state.uid, ()=>{ renderHome(); });
 }
 
 /* ────────────────────────────────────
@@ -2137,8 +2313,26 @@ function renderHome(){
     </div>
     <div style="padding:0 16px;">
       <div class="section-head"><h2>⚡ Sugerida para hoy</h2><span class="see-all" onclick="navTo('workouts')">Ver todas</span></div>
+      ${renderCustomPlanCard()}
       ${renderWorkoutCard(todayWorkout,true)}
       ${state.history.length>0?`<div class="section-head"><h2>📅 Última sesión</h2></div>${renderHistoryItem(state.history[state.history.length-1])}`:`<div class="empty-state"><div class="es-icon">🏁</div><p>¡Sin sesiones aún! Completa tu primera rutina.</p></div>`}
+    </div>`;
+}
+
+function renderCustomPlanCard(){
+  const plan = getUserPlan(state.uid);
+  if(!plan) return '';
+  const date = new Date(plan.createdAt).toLocaleDateString('es-CL');
+  return `
+    <div style="background:linear-gradient(135deg,#0a1628,#0d2040);border:1px solid rgba(41,182,246,0.3);border-radius:var(--r);padding:16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="background:var(--ice);color:#000;font-size:0.65rem;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.06em;">📋 PLAN PERSONALIZADO</span>
+        <span style="font-size:0.7rem;color:var(--muted);">Por ${plan.createdBy} · ${date}</span>
+      </div>
+      ${plan.warmup?`<div style="margin-bottom:10px;"><div style="font-size:0.65rem;color:var(--fire);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">🔥 Calentamiento</div><div style="font-size:0.82rem;color:var(--text);line-height:1.5;">${plan.warmup}</div></div>`:''}
+      ${plan.main?`<div style="margin-bottom:10px;"><div style="font-size:0.65rem;color:var(--ice);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">💪 Cuerpo de Sesión</div><div style="font-size:0.82rem;color:var(--text);line-height:1.6;white-space:pre-line;">${plan.main}</div></div>`:''}
+      ${plan.cooldown?`<div style="margin-bottom:10px;"><div style="font-size:0.65rem;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">🧘 Vuelta a la Calma</div><div style="font-size:0.82rem;color:var(--text);line-height:1.5;">${plan.cooldown}</div></div>`:''}
+      ${plan.note?`<div style="margin-top:10px;padding:10px;background:rgba(255,193,7,0.08);border-radius:6px;border:1px solid rgba(255,193,7,0.2);font-size:0.78rem;color:var(--yellow);">💬 ${plan.note}</div>`:''}
     </div>`;
 }
 
@@ -2567,21 +2761,22 @@ function checkAdminLogin(){
 
 function openAdminPanel(){
   if(!adminAuthenticated){ openAdminLogin(); return; }
-  renderAdminPanel();
   showScreen('admin');
-}
-
-function closeAdmin(){
-  showScreen('profile');
-  buildNav();
-  NAV_ITEMS.forEach(n=>document.getElementById('nav-'+n.id)?.classList.remove('active'));
-  document.getElementById('nav-profile')?.classList.add('active');
+  document.getElementById('admin-body').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Cargando datos... 🔄</div>';
+  // Sync all users from Firebase first
+  syncAllUsersFromFirebase((synced) => {
+    syncTrainersFromFirebase(() => {
+      renderAdminPanel();
+    });
+  });
 }
 
 function renderAdminPanel(){
   const db = getAllUsers();
+  const myTrainers = getTrainers();
   const myAthletes = Object.entries(db).filter(([uid,u])=>
-    u.profile && u.profile.trainer === 'Matias Flores'
+    u.profile && Object.values(myTrainers).some(t => t.name === u.profile.trainer)
+    || (u.profile && u.profile.trainer === 'Matias Flores')
   );
 
   const totalAthletes = myAthletes.length;
@@ -2590,8 +2785,17 @@ function renderAdminPanel(){
 
   const summaryHTML = `
     <div style="padding:0 16px 12px;">
+
+      <!-- TABS -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;">
+        <button onclick="adminTab('athletes')" id="tab-athletes" class="btn-primary" style="flex-shrink:0;padding:8px 16px;font-size:0.8rem;">👥 Entrenados</button>
+        <button onclick="adminTab('trainers')" id="tab-trainers" class="btn-secondary" style="flex-shrink:0;padding:8px 16px;font-size:0.8rem;">🏅 Entrenadores</button>
+        <button onclick="adminTab('plans')" id="tab-plans" class="btn-secondary" style="flex-shrink:0;padding:8px 16px;font-size:0.8rem;">📋 Planificaciones</button>
+      </div>
+
+      <!-- STATS -->
       <div style="background:linear-gradient(135deg,rgba(255,87,34,0.1),rgba(255,138,80,0.05));border:1px solid rgba(255,87,34,0.2);border-radius:var(--r);padding:16px;margin-bottom:16px;">
-        <div style="font-size:0.65rem;color:var(--fire);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px;">📊 Resumen General</div>
+        <div style="font-size:0.65rem;color:var(--fire);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px;">📊 Resumen</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
           <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--white);">${totalAthletes}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Entrenados</div></div>
           <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--fire);">${totalSessions}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Sesiones</div></div>
@@ -2599,19 +2803,213 @@ function renderAdminPanel(){
         </div>
       </div>
 
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:10px;">👥 Mis Entrenados</div>
+      <!-- ATHLETES TAB -->
+      <div id="admin-tab-athletes">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:10px;">👥 Mis Entrenados</div>
+        ${myAthletes.length===0 ? `<div class="empty-state"><div class="es-icon">🏋️</div><p>Aún no tienes entrenados registrados.</p></div>`
+          : myAthletes.map(([uid,u])=>renderAthleteCard(uid,u)).join('')}
+      </div>
 
-      ${myAthletes.length===0 ? `
-        <div class="empty-state">
-          <div class="es-icon">🏋️</div>
-          <p>Aún no tienes entrenados.<br>Cuando alguien te seleccione como entrenador aparecerá aquí.</p>
+      <!-- TRAINERS TAB -->
+      <div id="admin-tab-trainers" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white);">🏅 Entrenadores</div>
+          <button onclick="openTrainerForm()" class="btn-primary" style="padding:8px 14px;font-size:0.78rem;">+ Agregar</button>
         </div>
-      ` : myAthletes.map(([uid,u])=>renderAthleteCard(uid,u)).join('')}
+        <div id="trainers-list">${renderTrainersList()}</div>
+      </div>
+
+      <!-- PLANS TAB -->
+      <div id="admin-tab-plans" style="display:none;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:12px;">📋 Crear Planificación</div>
+        <div class="form-group">
+          <label class="form-label">Seleccionar entrenado</label>
+          <select class="form-input" id="plan-athlete-select">
+            <option value="">Seleccionar...</option>
+            ${myAthletes.map(([uid,u])=>`<option value="${uid}">${u.profile?.name||'Sin nombre'} (${u.profile?.level||'?'})</option>`).join('')}
+          </select>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:0.75rem;color:var(--fire);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">🔥 Calentamiento</div>
+          <textarea class="form-input" id="plan-warmup" rows="3" placeholder="Ej: 10 min trote suave, movilidad articular, activación muscular..." style="resize:none;font-size:0.82rem;line-height:1.5;"></textarea>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:0.75rem;color:var(--ice);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">💪 Cuerpo de Sesión</div>
+          <textarea class="form-input" id="plan-main" rows="6" placeholder="Ej: 4×10 Sentadilla con barra 80kg, 4×8 Press banca 70kg, 3×12 Remo con barra..." style="resize:none;font-size:0.82rem;line-height:1.5;"></textarea>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.75rem;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">🧘 Vuelta a la Calma</div>
+          <textarea class="form-input" id="plan-cooldown" rows="3" placeholder="Ej: 5 min caminata, estiramientos cuádriceps, isquios y hombros..." style="resize:none;font-size:0.82rem;line-height:1.5;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nota del entrenador (opcional)</label>
+          <textarea class="form-input" id="plan-note" rows="2" placeholder="Mensaje personalizado para tu entrenado..." style="resize:none;font-size:0.82rem;"></textarea>
+        </div>
+        <button class="btn-primary" style="width:100%;padding:14px;" onclick="savePlanForAthlete()">📤 Enviar planificación</button>
+      </div>
+
     </div>
   `;
 
   document.getElementById('admin-body').innerHTML = summaryHTML;
 }
+
+function adminTab(tab){
+  ['athletes','trainers','plans'].forEach(t => {
+    const el = document.getElementById('admin-tab-'+t);
+    const btn = document.getElementById('tab-'+t);
+    if(el) el.style.display = t===tab ? 'block' : 'none';
+    if(btn){
+      btn.className = t===tab ? 'btn-primary' : 'btn-secondary';
+      btn.style.cssText = 'flex-shrink:0;padding:8px 16px;font-size:0.8rem;';
+    }
+  });
+}
+
+/* ── TRAINER MANAGEMENT ── */
+function renderTrainersList(){
+  const trainers = getTrainers();
+  const list = Object.entries(trainers);
+  if(list.length===0) return '<div class="empty-state"><div class="es-icon">🏅</div><p>No hay entrenadores.<br>Agrega el primero.</p></div>';
+  return list.map(([id,t])=>`
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;">
+      ${t.photo ? `<img src="${t.photo}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` 
+        : `<div style="width:52px;height:52px;border-radius:50%;background:var(--fire);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:#fff;flex-shrink:0;">${(t.name||'?')[0]}</div>`}
+      <div style="flex:1;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;color:var(--white);">${t.name}</div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${(t.specialties||[]).join(' · ')}</div>
+        <div style="font-size:0.7rem;color:var(--muted);">${t.description||''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <button onclick="openTrainerForm('${id}')" style="background:rgba(41,182,246,0.15);border:1px solid rgba(41,182,246,0.3);color:var(--ice);border-radius:6px;padding:4px 10px;font-size:0.7rem;cursor:pointer;">✏️</button>
+        <button onclick="deleteTrainer('${id}')" style="background:rgba(255,87,34,0.12);border:1px solid rgba(255,87,34,0.25);color:var(--fire);border-radius:6px;padding:4px 10px;font-size:0.7rem;cursor:pointer;">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+let editingTrainerId = null;
+function openTrainerForm(id=null){
+  editingTrainerId = id;
+  const trainers = getTrainers();
+  const t = id ? trainers[id] : {};
+  const modal = document.getElementById('edit-modal');
+  document.getElementById('edit-modal-title').textContent = id ? 'Editar entrenador' : 'Nuevo entrenador';
+  document.getElementById('edit-modal-body').innerHTML = `
+    <div class="form-group">
+      <label class="form-label">Nombre completo</label>
+      <input class="form-input" id="tr-name" value="${t.name||''}" placeholder="Ej: Matias Flores">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Foto (URL de imagen)</label>
+      <input class="form-input" id="tr-photo" value="${t.photo||''}" placeholder="https://... (enlace a foto de perfil)">
+      <div style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Puedes usar Google Drive, Instagram o cualquier URL pública de imagen</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">WhatsApp</label>
+      <input class="form-input" id="tr-wa" value="${t.whatsapp||''}" placeholder="569XXXXXXXX">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Especialidades</label>
+      <div class="chip-group" id="tr-specs">
+        ${['Gym','Calistenia','CrossFit','Running','Nutrición','Funcional'].map(s=>`
+          <div class="chip ${(t.specialties||[]).includes(s)?'selected':''}" onclick="this.classList.toggle('selected')">${s}</div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descripción corta</label>
+      <input class="form-input" id="tr-desc" value="${t.description||''}" placeholder="Ej: 5 años de experiencia, especialista en pérdida de peso">
+    </div>
+  `;
+  modal.classList.remove('hidden');
+}
+
+function saveAthleteEdit(){
+  // Check if editing trainer or athlete
+  if(editingTrainerId !== undefined && document.getElementById('tr-name')){
+    saveTrainerForm();
+    return;
+  }
+  // Original athlete edit code
+  if(!editingUid) return;
+  const dbU = getAllUsers();
+  if(!dbU[editingUid]) return;
+  dbU[editingUid].profile.name   = document.getElementById('edit-name')?.value.trim() || dbU[editingUid].profile.name;
+  dbU[editingUid].profile.age    = +document.getElementById('edit-age')?.value || dbU[editingUid].profile.age;
+  dbU[editingUid].profile.weight = +document.getElementById('edit-weight')?.value || dbU[editingUid].profile.weight;
+  dbU[editingUid].profile.height = +document.getElementById('edit-height')?.value || dbU[editingUid].profile.height;
+  dbU[editingUid].profile.level  = document.getElementById('edit-level')?.value;
+  dbU[editingUid].profile.days   = document.getElementById('edit-days')?.value;
+  saveAllUsers(dbU);
+  closeEditModal();
+  renderAdminPanel();
+  showToast('✅ Usuario actualizado');
+}
+
+function saveTrainerForm(){
+  const name = document.getElementById('tr-name').value.trim();
+  if(!name){ showToast('Ingresa el nombre del entrenador','fire'); return; }
+  const specs = [...document.querySelectorAll('#tr-specs .chip.selected')].map(c=>c.textContent.trim());
+  const trainers = getTrainers();
+  const tid = editingTrainerId || 'tr_'+Date.now();
+  trainers[tid] = {
+    name,
+    photo: document.getElementById('tr-photo').value.trim(),
+    whatsapp: document.getElementById('tr-wa').value.trim(),
+    specialties: specs,
+    description: document.getElementById('tr-desc').value.trim(),
+  };
+  saveTrainers(trainers);
+  closeEditModal();
+  editingTrainerId = null;
+  renderAdminPanel();
+  adminTab('trainers');
+  showToast('✅ Entrenador guardado');
+  // Refresh onboarding trainer options
+  updateTrainerChips();
+}
+
+function deleteTrainer(id){
+  if(!confirm('¿Eliminar este entrenador?')) return;
+  const trainers = getTrainers();
+  delete trainers[id];
+  saveTrainers(trainers);
+  renderAdminPanel();
+  adminTab('trainers');
+  showToast('Entrenador eliminado');
+}
+
+function updateTrainerChips(){
+  // Refresh trainer list in localStorage for onboarding
+  const trainers = getTrainers();
+  try { localStorage.setItem('cft_trainers', JSON.stringify(trainers)); } catch(e){}
+}
+
+/* ── PLAN MANAGEMENT ── */
+function savePlanForAthlete(){
+  const uid = document.getElementById('plan-athlete-select').value;
+  if(!uid){ showToast('Selecciona un entrenado','fire'); return; }
+  const warmup   = document.getElementById('plan-warmup').value.trim();
+  const main     = document.getElementById('plan-main').value.trim();
+  const cooldown = document.getElementById('plan-cooldown').value.trim();
+  const note     = document.getElementById('plan-note').value.trim();
+  if(!main){ showToast('Completa el cuerpo de la sesión','fire'); return; }
+
+  const plan = {
+    warmup, main, cooldown, note,
+    createdAt: Date.now(),
+    createdBy: state.user?.name || 'Entrenador',
+  };
+
+  saveUserPlan(uid, plan);
+  showToast('✅ Planificación enviada 🔥');
+  document.getElementById('plan-warmup').value='';
+  document.getElementById('plan-main').value='';
+  document.getElementById('plan-cooldown').value='';
+  document.getElementById('plan-note').value='';
+  document.getElementById('plan-athlete-select').value='';
+}
+
 
 function renderAthleteCard(uid, u){
   const p = u.profile||{};
@@ -2688,6 +3086,13 @@ function renderAthleteCard(uid, u){
         Ver detalle ▼
       </div>
     </div>`;
+}
+
+function closeAdmin(){
+  showScreen('profile');
+  buildNav();
+  NAV_ITEMS.forEach(n=>document.getElementById('nav-'+n.id)?.classList.remove('active'));
+  document.getElementById('nav-profile')?.classList.add('active');
 }
 
 function toggleAthleteExpand(uid){
@@ -2770,8 +3175,11 @@ function doRegister(){
   if(db[email]){ err.textContent='Ya existe una cuenta con ese correo'; return; }
 
   // Create auth entry using email as key
+  const emailKey = email.replace(/\./g,'_dot_');
   db[email] = { hash: hashPass(pass), email, uid: null, createdAt: new Date().toISOString() };
   saveAuthDB(db);
+  // Sync to Firebase
+  try { fbRef('auth/'+emailKey)?.set(db[email]).catch(()=>{}); } catch(e){}
 
   currentAuthUser = email;
 
@@ -2790,17 +3198,49 @@ function doLogin(){
   if(!email){ err.textContent='Ingresa tu correo'; return; }
   if(!pass){ err.textContent='Ingresa tu contraseña'; return; }
 
-  const db = getAuthDB();
-  const entry = db[email];
-  if(!entry){ err.textContent='❌ No existe cuenta con ese correo'; return; }
-  if(entry.hash !== hashPass(pass)){ err.textContent='❌ Contraseña incorrecta'; return; }
+  // First check local auth
+  const authDB = getAuthDB();
+  let entry = authDB[email];
 
+  if(!entry){
+    // Try syncing auth from Firebase
+    err.textContent='Verificando...';
+    try {
+      fbRef('auth/' + email.replace(/\./g,'_dot_'))?.once('value').then(snap => {
+        const fbEntry = snap.val();
+        if(fbEntry && fbEntry.hash === hashPass(pass)){
+          authDB[email] = fbEntry;
+          try { localStorage.setItem(AUTH_DB_KEY, JSON.stringify(authDB)); } catch(e){}
+          loginWithEntry(email, fbEntry, err);
+        } else {
+          err.textContent='❌ No existe cuenta con ese correo';
+        }
+      }).catch(() => { err.textContent='❌ No existe cuenta con ese correo'; });
+    } catch(e){ err.textContent='❌ No existe cuenta con ese correo'; }
+    return;
+  }
+
+  if(entry.hash !== hashPass(pass)){ err.textContent='❌ Contraseña incorrecta'; return; }
+  loginWithEntry(email, entry, err);
+}
+
+function loginWithEntry(email, entry, err){
   const userDB = getAllUsers();
   if(entry.uid && userDB[entry.uid]){
-    loadActiveUser(entry.uid);
-    setActiveUid(entry.uid);
-    currentAuthUser = email;
-    launchApp();
+    // Sync from Firebase first
+    syncFromFirebase(entry.uid, (synced, cloudData) => {
+      if(synced && cloudData){
+        const freshDB = getAllUsers();
+        loadActiveUser(entry.uid);
+      } else {
+        loadActiveUser(entry.uid);
+      }
+      setActiveUid(entry.uid);
+      currentAuthUser = email;
+      // Check for custom plan
+      syncUserPlanFromFirebase(entry.uid, ()=>{});
+      launchApp();
+    });
   } else {
     currentAuthUser = email;
     onbStep=0; onbData={};
