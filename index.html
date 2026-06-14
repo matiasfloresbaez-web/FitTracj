@@ -58,8 +58,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .page-subtitle{font-size:0.75rem;color:var(--muted);}
 
 /* ── ONBOARDING / ANAMNESIS ── */
-#screen-onboarding{background:var(--bg);z-index:200;}
-.onb-header{padding:40px 24px 0;text-align:center;}
+#screen-onboarding{background:var(--bg);z-index:200;display:flex;flex-direction:column;overflow:hidden;}
+.onb-header{padding:24px 24px 0;text-align:center;flex-shrink:0;}
 .onb-logo{font-family:'Barlow Condensed',sans-serif;font-size:3rem;font-weight:800;letter-spacing:-0.03em;color:var(--white);}
 .onb-logo span{color:var(--fire);}
 .onb-tagline{font-size:0.85rem;color:var(--muted);margin-top:4px;}
@@ -67,7 +67,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .step-dot{width:28px;height:4px;border-radius:2px;background:var(--border);transition:background 0.3s;}
 .step-dot.active{background:var(--fire);}
 .step-dot.done{background:var(--fire2);}
-.onb-body{flex:1;overflow-y:auto;padding:0 20px 20px;}
+.onb-body{flex:1;overflow-y:auto;padding:0 20px 12px;-webkit-overflow-scrolling:touch;}
+.onb-body::-webkit-scrollbar{display:none;}
 .onb-section-title{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;color:var(--white);margin:20px 0 14px;}
 .form-group{margin-bottom:14px;}
 .form-label{font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;display:block;font-weight:600;}
@@ -79,12 +80,11 @@ select.form-input option{background:var(--card);}
 .chip.selected{background:var(--fire);border-color:var(--fire);color:#fff;font-weight:600;}
 /* ── ONBOARDING NAV — always visible ── */
 .onb-nav{
-  display:flex;gap:10px;padding:16px 20px;
+  display:flex;gap:10px;padding:14px 20px 20px;
   border-top:1px solid var(--border);
-  position:sticky;bottom:0;
   background:var(--bg);
-  z-index:10;
   flex-shrink:0;
+  z-index:10;
 }
 .btn-primary{flex:1;padding:14px;background:var(--fire);color:#fff;border:none;border-radius:var(--r-sm);font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.2s;letter-spacing:0.02em;}
 .btn-primary:active{opacity:0.8;}
@@ -594,7 +594,7 @@ select.form-input option{background:var(--card);}
     </div>
   </div>
 
-  <div class="scroll-body onb-body" id="onb-body" style="flex:1;overflow-y:auto;padding-bottom:20px;">
+  <div class="onb-body" id="onb-body">
     <!-- Steps rendered by JS -->
   </div>
 
