@@ -2473,7 +2473,12 @@ function installPWA(){
 function dismissInstall(){document.getElementById('install-banner').classList.remove('show');}
 window.addEventListener('appinstalled',()=>{showToast('✅ App instalada correctamente');dismissInstall();});
 
-/* Service Worker desactivado */
+/* ── SERVICE WORKER ── */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js')
+    .then(()=>console.log('SW registered'))
+    .catch(()=>{});
+}
 
 /* ────────────────────────────────────
    ADMIN PANEL
