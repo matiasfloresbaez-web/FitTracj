@@ -165,11 +165,11 @@ select.form-input option{background:var(--card);}
 .diff-dot:not(.filled){background:var(--border);}
 
 /* ── EXERCISE DETAIL ── */
-#screen-detail{background:var(--bg);z-index:150;}
+#screen-detail{background:var(--bg);z-index:150;display:flex;flex-direction:column;overflow:hidden;}
 .detail-header{padding:16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
 .back-btn{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
 .detail-title{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white);}
-.exercise-list{padding:12px 16px 100px;}
+.exercise-list{padding:12px 16px 100px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;}
 .exercise-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;}
 .ex-row{display:flex;align-items:center;gap:12px;padding:14px;}
 .ex-number{width:32px;height:32px;border-radius:8px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--muted);flex-shrink:0;}
@@ -566,7 +566,7 @@ select.form-input option{background:var(--card);}
 <!-- ═══════════════════════════════════
      RUNNING PLAN SCREEN
 ════════════════════════════════════ -->
-<div class="screen hidden" id="screen-runplan">
+<div class="screen hidden" id="screen-runplan" style="display:flex;flex-direction:column;overflow:hidden;">
   <div class="detail-header">
     <div class="back-btn" onclick="goBack()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
@@ -610,17 +610,17 @@ select.form-input option{background:var(--card);}
 ════════════════════════════════════ -->
 
 <!-- HOME -->
-<div class="screen hidden" id="screen-home">
-  <div class="scroll-body" id="home-body"></div>
+<div class="screen hidden" id="screen-home" style="display:flex;flex-direction:column;overflow:hidden;">
+  <div class="scroll-body" id="home-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
   <nav class="nav-bar" id="main-nav"></nav>
 </div>
 
 <!-- WORKOUTS LIST -->
-<div class="screen hidden" id="screen-workouts">
-  <div class="top-bar">
+<div class="screen hidden" id="screen-workouts" style="display:flex;flex-direction:column;overflow:hidden;">
+  <div class="top-bar" style="flex-shrink:0;">
     <div><div class="page-title">Entrenamientos</div><div class="page-subtitle">Elige tu rutina</div></div>
   </div>
-  <div class="scroll-body">
+  <div class="scroll-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="workout-filter" id="workout-filter"></div>
     <div id="workout-list"></div>
   </div>
@@ -641,7 +641,9 @@ select.form-input option{background:var(--card);}
     <div class="progress-text"><span>Progreso de hoy</span><span id="progress-label">0 / 0</span></div>
     <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
-  <div class="exercise-list" id="exercise-list"></div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+    <div class="exercise-list" id="exercise-list"></div>
+  </div>
 
   <button class="timer-fab" onclick="openTimer()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -651,19 +653,19 @@ select.form-input option{background:var(--card);}
 </div>
 
 <!-- PROGRESS -->
-<div class="screen hidden" id="screen-progress">
-  <div class="top-bar">
+<div class="screen hidden" id="screen-progress" style="display:flex;flex-direction:column;overflow:hidden;">
+  <div class="top-bar" style="flex-shrink:0;">
     <div><div class="page-title">Mi Progreso</div><div class="page-subtitle">Historial de actividad</div></div>
   </div>
-  <div class="scroll-body" id="progress-body"></div>
+  <div class="scroll-body" id="progress-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
 </div>
 
 <!-- PROFILE -->
-<div class="screen hidden" id="screen-profile">
-  <div class="top-bar">
+<div class="screen hidden" id="screen-profile" style="display:flex;flex-direction:column;overflow:hidden;">
+  <div class="top-bar" style="flex-shrink:0;">
     <div><div class="page-title">Perfil</div><div class="page-subtitle">Tu información</div></div>
   </div>
-  <div class="scroll-body" id="profile-body"></div>
+  <div class="scroll-body" id="profile-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
 </div>
 
 <!-- TIMER MODAL -->
@@ -2135,14 +2137,12 @@ function renderProfile(){
         <div class="settings-item"><div class="settings-icon" style="background:rgba(76,175,80,0.1);">💪</div><div><div class="settings-label">Modalidades</div><div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${(u.modalities||[]).join(', ')||'No definidas'}</div></div></div>
       </div>
 
-      <div class="section-head"><h2>👥 Usuarios</h2></div>
+      <div class="section-head"><h2>👥 Cuenta</h2></div>
       <div class="settings-group">
         <div class="settings-item" onclick="switchUser()"><div class="settings-icon" style="background:rgba(41,182,246,0.1);">🔄</div><div class="settings-label">Cambiar de usuario</div><div class="settings-arrow">›</div></div>
         <div class="settings-item" onclick="addNewUser()"><div class="settings-icon" style="background:rgba(76,175,80,0.1);">➕</div><div class="settings-label">Crear nuevo usuario</div><div class="settings-arrow">›</div></div>
-        <div class="settings-item" onclick="if(confirm('¿Eliminar este usuario y sus datos?'))deleteCurrentUser()"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">🗑</div><div class="settings-label" style="color:var(--fire);">Eliminar mi cuenta</div><div class="settings-arrow">›</div></div>
-      </div>
-
         <div class="settings-item" onclick="doLogout()"><div class="settings-icon" style="background:rgba(107,114,128,0.1);">🚪</div><div class="settings-label">Cerrar sesión</div><div class="settings-arrow">›</div></div>
+        <div class="settings-item" onclick="if(confirm('¿Eliminar este usuario y sus datos?'))deleteCurrentUser()"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">🗑</div><div class="settings-label" style="color:var(--fire);">Eliminar mi cuenta</div><div class="settings-arrow">›</div></div>
       </div>
 
       <div class="section-head"><h2>🔐 Administrador</h2></div>
@@ -2154,8 +2154,8 @@ function renderProfile(){
         </div>
       </div>
 
-      <div style="text-align:center;padding:20px 0 8px;">
-        <div style="font-size:0.72rem;color:var(--muted);">ConceFitTraining · v2.0 PWA</div>
+      <div style="text-align:center;padding:20px 0 40px;">
+        <div style="font-size:0.72rem;color:var(--muted);">ConceFitTraining · v2.0</div>
       </div>
     </div>`;
 }
