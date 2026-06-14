@@ -35,7 +35,7 @@
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
 
 /* ── SHELL ── */
-#app{display:flex;flex-direction:column;height:100vh;max-width:430px;margin:0 auto;position:relative;overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100vh;max-width:900px;margin:0 auto;position:relative;overflow:hidden;}
 
 /* ── SCREENS ── */
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;transition:transform 0.35s cubic-bezier(.4,0,.2,1),opacity 0.3s;}
@@ -47,7 +47,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .scroll-body::-webkit-scrollbar{display:none;}
 
 /* ── NAV BAR ── */
-.nav-bar{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;background:rgba(13,14,20,0.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom,0);}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;max-width:900px;margin:0 auto;background:rgba(13,14,20,0.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom,0);}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;cursor:pointer;color:var(--muted);transition:color 0.2s;font-size:0.62rem;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;}
 .nav-item.active{color:var(--fire);}
 .nav-item svg{width:22px;height:22px;stroke-width:1.8;}
@@ -380,6 +380,31 @@ select.form-input option{background:var(--card);}
 .auth-link span{color:var(--fire);font-weight:600;}
 .strength-bar{height:4px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden;}
 .strength-fill{height:100%;border-radius:2px;transition:width 0.3s,background 0.3s;}
+
+/* ── RESPONSIVE / MULTIPLATAFORMA ── */
+@media (min-width: 600px) {
+  .cat-scroll { display: grid; grid-template-columns: repeat(4,1fr); overflow:visible; padding:0 16px 8px; margin:0; }
+  .cat-card { width: auto; }
+  .stats-row { grid-template-columns: repeat(4,1fr); }
+  .workout-card { max-width: 100%; }
+  .exercise-item { max-width: 100%; }
+  .row-2 { grid-template-columns: 1fr 1fr 1fr; }
+  .presets-grid { grid-template-columns: repeat(3,1fr); }
+  .admin-stat-row { grid-template-columns: repeat(5,1fr); }
+  .week-grid { grid-template-columns: repeat(7,1fr); }
+}
+@media (min-width: 900px) {
+  #workout-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .exercise-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; }
+  .exercise-item { margin-bottom: 0; }
+  .history-item { max-width: 100%; }
+  .admin-card { max-width: 100%; }
+}
+/* Fix viewport meta for desktop */
+html { font-size: 16px; }
+@media (min-width: 600px) { html { font-size: 17px; } }
+@media (min-width: 900px) { html { font-size: 18px; } }
+
 </style>
 </head>
 <body>
@@ -829,6 +854,168 @@ function saveActiveUser() {
     streak: state.streak,
   };
   saveAllUsers(db);
+}
+
+
+/* ────────────────────────────────────
+   EXERCISE GIF DATABASE
+   Source: ExerciseDB (public domain GIFs)
+──────────────────────────────────── */
+const EXERCISE_GIFS = {
+  // GYM - PECHO
+  'Press banca plano con barra':        'https://v2.exercisedb.io/image/0025.gif',
+  'Press banca plano':                   'https://v2.exercisedb.io/image/0025.gif',
+  'Press banca 5×5':                     'https://v2.exercisedb.io/image/0025.gif',
+  'Press banca agarre cerrado':          'https://v2.exercisedb.io/image/0030.gif',
+  'Press inclinado con barra':           'https://v2.exercisedb.io/image/0035.gif',
+  'Press inclinado con mancuernas':      'https://v2.exercisedb.io/image/0033.gif',
+  'Press banca inclinado con mancuernas':'https://v2.exercisedb.io/image/0033.gif',
+  'Press declinado con mancuernas':      'https://v2.exercisedb.io/image/0029.gif',
+  'Press declinado con barra':           'https://v2.exercisedb.io/image/0028.gif',
+  'Aperturas con mancuernas plano':      'https://v2.exercisedb.io/image/0021.gif',
+  'Aperturas en cable cruzado':          'https://v2.exercisedb.io/image/0023.gif',
+  'Aperturas con mancuernas':            'https://v2.exercisedb.io/image/0021.gif',
+  'Cruce de poleas alto':                'https://v2.exercisedb.io/image/0023.gif',
+  'Cable fly bajo a alto':               'https://v2.exercisedb.io/image/0023.gif',
+  'Pullover con mancuerna':              'https://v2.exercisedb.io/image/0052.gif',
+  'Fondos en paralelas':                 'https://v2.exercisedb.io/image/0172.gif',
+  'Fondos lastrados':                    'https://v2.exercisedb.io/image/0172.gif',
+  'Flexiones estándar':                  'https://v2.exercisedb.io/image/0280.gif',
+  'Flexiones con palmada':               'https://v2.exercisedb.io/image/0282.gif',
+  'Flexiones arquero':                   'https://v2.exercisedb.io/image/0285.gif',
+  'Flexiones diamante':                  'https://v2.exercisedb.io/image/0284.gif',
+  'Flexiones rodillas':                  'https://v2.exercisedb.io/image/0283.gif',
+  // GYM - ESPALDA
+  'Dominadas agarre prono':              'https://v2.exercisedb.io/image/0190.gif',
+  'Dominadas asistidas con banda':       'https://v2.exercisedb.io/image/0190.gif',
+  'Dominadas asistidas':                 'https://v2.exercisedb.io/image/0190.gif',
+  'Dominadas agarre supino':             'https://v2.exercisedb.io/image/0194.gif',
+  'Dominadas lastradas':                 'https://v2.exercisedb.io/image/0190.gif',
+  'Dominadas archer':                    'https://v2.exercisedb.io/image/0190.gif',
+  'Jalón al pecho agarre ancho':         'https://v2.exercisedb.io/image/0199.gif',
+  'Jalón al pecho':                      'https://v2.exercisedb.io/image/0199.gif',
+  'Jalón al pecho agarre cerrado':       'https://v2.exercisedb.io/image/0201.gif',
+  'Jalón tras nuca':                     'https://v2.exercisedb.io/image/0200.gif',
+  'Remo con barra pronado':              'https://v2.exercisedb.io/image/0206.gif',
+  'Remo con barra':                      'https://v2.exercisedb.io/image/0206.gif',
+  'Remo con barra supino':               'https://v2.exercisedb.io/image/0207.gif',
+  'Remo Pendlay':                        'https://v2.exercisedb.io/image/0206.gif',
+  'Remo con mancuerna a 1 brazo':        'https://v2.exercisedb.io/image/0209.gif',
+  'Remo en polea baja sentado':          'https://v2.exercisedb.io/image/0211.gif',
+  'Remo en máquina unilateral':          'https://v2.exercisedb.io/image/0209.gif',
+  'Face pulls':                          'https://v2.exercisedb.io/image/0326.gif',
+  'Face pulls con cuerda':               'https://v2.exercisedb.io/image/0326.gif',
+  'Peso muerto convencional':            'https://v2.exercisedb.io/image/0234.gif',
+  'Peso muerto':                         'https://v2.exercisedb.io/image/0234.gif',
+  'Peso muerto 5×3':                     'https://v2.exercisedb.io/image/0234.gif',
+  'Peso muerto rumano':                  'https://v2.exercisedb.io/image/0238.gif',
+  'Hiperextensiones':                    'https://v2.exercisedb.io/image/0384.gif',
+  'Shrugs con barra':                    'https://v2.exercisedb.io/image/0350.gif',
+  'Shrugs con mancuernas':               'https://v2.exercisedb.io/image/0351.gif',
+  'Good mornings':                       'https://v2.exercisedb.io/image/0383.gif',
+  // GYM - PIERNAS
+  'Sentadilla con barra':                'https://v2.exercisedb.io/image/0685.gif',
+  'Sentadilla goblet':                   'https://v2.exercisedb.io/image/0686.gif',
+  'Sentadilla goblet con kettlebell':    'https://v2.exercisedb.io/image/0686.gif',
+  'Sentadilla búlgara':                  'https://v2.exercisedb.io/image/0693.gif',
+  'Sentadilla búlgara con mancuernas':   'https://v2.exercisedb.io/image/0693.gif',
+  'Sentadilla frontal':                  'https://v2.exercisedb.io/image/0687.gif',
+  'Sentadillas con peso corporal':       'https://v2.exercisedb.io/image/0723.gif',
+  'Prensa de piernas':                   'https://v2.exercisedb.io/image/0698.gif',
+  'Leg press unilateral':                'https://v2.exercisedb.io/image/0698.gif',
+  'Extensión de piernas':                'https://v2.exercisedb.io/image/0700.gif',
+  'Curl femoral tumbado':                'https://v2.exercisedb.io/image/0702.gif',
+  'Curl femoral nórdico':                'https://v2.exercisedb.io/image/0706.gif',
+  'Hack squat':                          'https://v2.exercisedb.io/image/0689.gif',
+  'Zancadas con mancuernas':             'https://v2.exercisedb.io/image/0716.gif',
+  'Zancadas':                            'https://v2.exercisedb.io/image/0716.gif',
+  'Step-up con mancuernas':              'https://v2.exercisedb.io/image/0720.gif',
+  'Step-up unilateral':                  'https://v2.exercisedb.io/image/0720.gif',
+  'Hip thrust con barra':                'https://v2.exercisedb.io/image/0728.gif',
+  'Hip thrust con pausa':                'https://v2.exercisedb.io/image/0728.gif',
+  'Hip thrust':                          'https://v2.exercisedb.io/image/0728.gif',
+  'Puente de glúteo con barra':          'https://v2.exercisedb.io/image/0728.gif',
+  'Elevación de gemelos de pie':         'https://v2.exercisedb.io/image/0730.gif',
+  'Gemelos en prensa':                   'https://v2.exercisedb.io/image/0731.gif',
+  // GYM - HOMBROS
+  'Press militar con barra de pie':      'https://v2.exercisedb.io/image/0331.gif',
+  'Press militar con mancuernas':        'https://v2.exercisedb.io/image/0332.gif',
+  'Press militar sentado':               'https://v2.exercisedb.io/image/0332.gif',
+  'Press Arnold':                        'https://v2.exercisedb.io/image/0330.gif',
+  'Elevaciones laterales':               'https://v2.exercisedb.io/image/0335.gif',
+  'Elevaciones laterales en cable':      'https://v2.exercisedb.io/image/0336.gif',
+  'Elevaciones laterales inclinado':     'https://v2.exercisedb.io/image/0335.gif',
+  'Elevaciones frontales alternas':      'https://v2.exercisedb.io/image/0338.gif',
+  'Pájaro con mancuernas':               'https://v2.exercisedb.io/image/0326.gif',
+  'Upright row con barra':               'https://v2.exercisedb.io/image/0341.gif',
+  'Press trasfondo con barra':           'https://v2.exercisedb.io/image/0331.gif',
+  // GYM - BRAZOS
+  'Curl con barra Z':                    'https://v2.exercisedb.io/image/0080.gif',
+  'Curl con mancuernas alterno':         'https://v2.exercisedb.io/image/0086.gif',
+  'Curl con mancuernas':                 'https://v2.exercisedb.io/image/0086.gif',
+  'Curl martillo':                       'https://v2.exercisedb.io/image/0092.gif',
+  'Curl en banco Scott':                 'https://v2.exercisedb.io/image/0083.gif',
+  'Curl concentrado':                    'https://v2.exercisedb.io/image/0081.gif',
+  'Curl en cable con barra recta':       'https://v2.exercisedb.io/image/0088.gif',
+  'Curl bíceps 21s':                     'https://v2.exercisedb.io/image/0080.gif',
+  'Extensión tríceps en polea alta':     'https://v2.exercisedb.io/image/0146.gif',
+  'Extensión tríceps polea':             'https://v2.exercisedb.io/image/0146.gif',
+  'Extensión tríceps sobre cabeza':      'https://v2.exercisedb.io/image/0149.gif',
+  'Press francés con mancuerna':         'https://v2.exercisedb.io/image/0143.gif',
+  'Press francés con barra EZ':          'https://v2.exercisedb.io/image/0142.gif',
+  'Press francés':                       'https://v2.exercisedb.io/image/0142.gif',
+  'Fondos en banco':                     'https://v2.exercisedb.io/image/0172.gif',
+  'Fondos en paralelas lastrados':       'https://v2.exercisedb.io/image/0172.gif',
+  // GYM - CORE
+  'Plancha frontal':                     'https://v2.exercisedb.io/image/0573.gif',
+  'Plancha':                             'https://v2.exercisedb.io/image/0573.gif',
+  'Plancha lateral':                     'https://v2.exercisedb.io/image/0576.gif',
+  'Plancha con toque de hombro':         'https://v2.exercisedb.io/image/0574.gif',
+  'Plancha con desplazamiento':          'https://v2.exercisedb.io/image/0575.gif',
+  'Crunch abdominal':                    'https://v2.exercisedb.io/image/0555.gif',
+  'Elevación de piernas tumbado':        'https://v2.exercisedb.io/image/0565.gif',
+  'Russian twist':                       'https://v2.exercisedb.io/image/0568.gif',
+  'Dead bug':                            'https://v2.exercisedb.io/image/0558.gif',
+  'Ab wheel rollout':                    'https://v2.exercisedb.io/image/0550.gif',
+  'Toes to bar':                         'https://v2.exercisedb.io/image/0569.gif',
+  'L-sit en paralelas':                  'https://v2.exercisedb.io/image/1383.gif',
+  'L-sit en barras paralelas':           'https://v2.exercisedb.io/image/1383.gif',
+  'Hollow body hold':                    'https://v2.exercisedb.io/image/0562.gif',
+  'Pallof press':                        'https://v2.exercisedb.io/image/0580.gif',
+  // CALISTENIA
+  'Muscle-up':                           'https://v2.exercisedb.io/image/1383.gif',
+  'Pistol squat':                        'https://v2.exercisedb.io/image/0724.gif',
+  'Pistol squat asistido':               'https://v2.exercisedb.io/image/0724.gif',
+  'Pistol squat libre':                  'https://v2.exercisedb.io/image/0724.gif',
+  'Front lever negativo':                'https://v2.exercisedb.io/image/0196.gif',
+  'Mountain climbers':                   'https://v2.exercisedb.io/image/0634.gif',
+  'Dips en paralelas':                   'https://v2.exercisedb.io/image/0172.gif',
+  'Dips en silla':                       'https://v2.exercisedb.io/image/0170.gif',
+  'Elevación de caderas':                'https://v2.exercisedb.io/image/0728.gif',
+  // RUNNING - ilustraciones
+  'Calentamiento caminata':              'https://v2.exercisedb.io/image/0860.gif',
+  'Calentamiento':                       'https://v2.exercisedb.io/image/0860.gif',
+  'Estiramiento estático':               'https://v2.exercisedb.io/image/0862.gif',
+  'Estiramiento dinámico':               'https://v2.exercisedb.io/image/0861.gif',
+  'Estiramiento post-run':               'https://v2.exercisedb.io/image/0862.gif',
+  // CROSSFIT
+  'Burpees':                             'https://v2.exercisedb.io/image/0010.gif',
+  'Box jump':                            'https://v2.exercisedb.io/image/0011.gif',
+  'Kettlebell swing':                    'https://v2.exercisedb.io/image/0597.gif',
+  'Thruster con barra':                  'https://v2.exercisedb.io/image/0355.gif',
+  'Wall ball':                           'https://v2.exercisedb.io/image/0669.gif',
+  'Pull-up':                             'https://v2.exercisedb.io/image/0190.gif',
+};
+
+function getExerciseGif(name) {
+  // Exact match first
+  if (EXERCISE_GIFS[name]) return EXERCISE_GIFS[name];
+  // Partial match
+  const key = Object.keys(EXERCISE_GIFS).find(k => 
+    name.toLowerCase().includes(k.toLowerCase()) || 
+    k.toLowerCase().includes(name.toLowerCase().split(' ').slice(0,3).join(' '))
+  );
+  return key ? EXERCISE_GIFS[key] : null;
 }
 
 /* ────────────────────────────────────
@@ -1995,17 +2182,28 @@ function renderExercises(w){
   document.getElementById('exercise-list').innerHTML=w.exercises.map((ex,i)=>{
     const tkey=`${w.key}_${i}`;
     const status=state.tickets[tkey]||'';
+    const gif=getExerciseGif(ex.name);
     return `<div class="exercise-item" id="exitem-${i}">
+      ${gif ? `<div style="position:relative;background:var(--card2);border-bottom:1px solid var(--border);">
+        <img src="${gif}" alt="${ex.name}" 
+          style="width:100%;height:180px;object-fit:cover;display:block;border-radius:0;"
+          onerror="this.parentElement.style.display='none'"
+          loading="lazy">
+        <div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.65);color:#fff;font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:0.04em;">${ex.muscle}</div>
+      </div>` : ''}
       <div class="ex-row">
         <div class="ex-number">${i+1}</div>
-        <div class="ex-info"><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.sets} · 💤 ${ex.rest} · 💪 ${ex.muscle}</div></div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-detail">${ex.sets} · 💤 ${ex.rest} · 💪 ${ex.muscle}</div>
+          <div style="font-size:0.7rem;color:var(--fire2);margin-top:4px;">💡 ${ex.tip}</div>
+        </div>
         <div class="ex-ticket ${status}" id="ticket-${i}" onclick="toggleTicket('${w.key}',${i})">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
       </div>
       <div class="ex-actions">
-        <button class="ex-action-btn" onclick="showTip(${i},'${ex.tip.replace(/'/g,"\\'")}')">💡 Tip</button>
-        <button class="ex-action-btn" onclick="markDone('${w.key}',${i})">✅ Hecho</button>
+        <button class="ex-action-btn primary" onclick="markDone('${w.key}',${i})">✅ Hecho</button>
         <button class="ex-action-btn" onclick="markSkip('${w.key}',${i})">⏭ Saltar</button>
       </div>
     </div>`;
