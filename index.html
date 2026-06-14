@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FitTrack Pro</title>
+<title>ConceFitTraining</title>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ff5722">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="FitTrack">
+<meta name="apple-mobile-web-app-title" content="ConceFit">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&display=swap');
@@ -59,6 +59,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
 /* ── ONBOARDING / ANAMNESIS ── */
 #screen-onboarding{background:var(--bg);z-index:200;display:flex;flex-direction:column;overflow:hidden;}
+#screen-onboarding .onb-nav{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;z-index:999;}
 .onb-header{padding:24px 24px 0;text-align:center;flex-shrink:0;}
 .onb-logo{font-family:'Barlow Condensed',sans-serif;font-size:3rem;font-weight:800;letter-spacing:-0.03em;color:var(--white);}
 .onb-logo span{color:var(--fire);}
@@ -67,7 +68,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .step-dot{width:28px;height:4px;border-radius:2px;background:var(--border);transition:background 0.3s;}
 .step-dot.active{background:var(--fire);}
 .step-dot.done{background:var(--fire2);}
-.onb-body{flex:1;overflow-y:auto;padding:0 20px 12px;-webkit-overflow-scrolling:touch;}
+.onb-body{flex:1;overflow-y:auto;padding:0 20px 90px;-webkit-overflow-scrolling:touch;}
 .onb-body::-webkit-scrollbar{display:none;}
 .onb-section-title{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;color:var(--white);margin:20px 0 14px;}
 .form-group{margin-bottom:14px;}
@@ -80,11 +81,11 @@ select.form-input option{background:var(--card);}
 .chip.selected{background:var(--fire);border-color:var(--fire);color:#fff;font-weight:600;}
 /* ── ONBOARDING NAV — always visible ── */
 .onb-nav{
-  display:flex;gap:10px;padding:14px 20px 20px;
+  display:flex;gap:10px;padding:14px 20px 24px;
   border-top:1px solid var(--border);
   background:var(--bg);
   flex-shrink:0;
-  z-index:10;
+  z-index:999;
 }
 .btn-primary{flex:1;padding:14px;background:var(--fire);color:#fff;border:none;border-radius:var(--r-sm);font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.2s;letter-spacing:0.02em;}
 .btn-primary:active{opacity:0.8;}
@@ -388,8 +389,8 @@ select.form-input option{background:var(--card);}
      SPLASH SCREEN
 ════════════════════════════════════ -->
 <div class="screen" id="screen-splash">
-  <div class="splash-logo" id="splash-logo">Fit<span>Track</span></div>
-  <div class="splash-tagline" id="splash-tagline">Tu entrenamiento. Tu ritmo.</div>
+  <div class="splash-logo" id="splash-logo">Conce<span>Fit</span>Training</div>
+  <div class="splash-tagline" id="splash-tagline">Entrena con propósito. Supera tus límites.</div>
   <div class="splash-ring" id="splash-ring"></div>
 </div>
 
@@ -400,7 +401,7 @@ select.form-input option{background:var(--card);}
   <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;overflow-y:auto;">
     <div class="auth-hero">
       <div style="font-size:4rem;margin-bottom:16px;">🔥</div>
-      <div class="auth-logo">Fit<span>Track</span> Pro</div>
+      <div class="auth-logo">Conce<span>Fit</span>Training</div>
       <div class="auth-welcome">Bienvenido/a <em>máquina</em>,<br>vamos a entrenar</div>
       <div class="auth-sub">Tu app de entrenamiento personal</div>
     </div>
@@ -416,7 +417,7 @@ select.form-input option{background:var(--card);}
         🔑 Olvidé mi contraseña
       </button>
       <div style="text-align:center;margin-top:8px;font-size:0.7rem;color:var(--muted);">
-        FitTrack Pro · Todos los datos se guardan en tu dispositivo
+        ConceFitTraining · Todos los datos se guardan en tu dispositivo
       </div>
     </div>
   </div>
@@ -581,26 +582,26 @@ select.form-input option{background:var(--card);}
 <!-- ═══════════════════════════════════
      ONBOARDING / ANAMNESIS
 ════════════════════════════════════ -->
-<div class="screen" id="screen-onboarding">
-  <div class="onb-header">
-    <div class="onb-logo">Fit<span>Track</span></div>
-    <div class="onb-tagline">Tu entrenamiento. Tu ritmo.</div>
-    <div class="onb-step-indicator">
-      <div class="step-dot active" id="dot-0"></div>
-      <div class="step-dot" id="dot-1"></div>
-      <div class="step-dot" id="dot-2"></div>
-      <div class="step-dot" id="dot-3"></div>
-      <div class="step-dot" id="dot-4"></div>
+<div class="screen" id="screen-onboarding" style="overflow-y:auto;display:block;">
+  <div style="min-height:100%;display:flex;flex-direction:column;">
+    <div class="onb-header">
+      <div class="onb-logo">Conce<span>Fit</span>Training</div>
+      <div class="onb-tagline">Entrena con propósito. Supera tus límites.</div>
+      <div class="onb-step-indicator">
+        <div class="step-dot active" id="dot-0"></div>
+        <div class="step-dot" id="dot-1"></div>
+        <div class="step-dot" id="dot-2"></div>
+        <div class="step-dot" id="dot-3"></div>
+        <div class="step-dot" id="dot-4"></div>
+      </div>
     </div>
-  </div>
-
-  <div class="onb-body" id="onb-body">
-    <!-- Steps rendered by JS -->
-  </div>
-
-  <div class="onb-nav" id="onb-nav">
-    <button class="btn-secondary" id="onb-back-btn" onclick="onbBack()" style="display:none">Atrás</button>
-    <button class="btn-primary" id="onb-next-btn" onclick="onbNext()">Comenzar →</button>
+    <div class="onb-body" id="onb-body" style="flex:1;padding:0 20px 8px;">
+      <!-- Steps rendered by JS -->
+    </div>
+    <div class="onb-nav" id="onb-nav" style="padding:14px 20px 32px;border-top:1px solid var(--border);background:var(--bg);flex-shrink:0;">
+      <button class="btn-secondary" id="onb-back-btn" onclick="onbBack()" style="display:none">Atrás</button>
+      <button class="btn-primary" id="onb-next-btn" onclick="onbNext()">Comenzar →</button>
+    </div>
   </div>
 </div>
 
@@ -689,7 +690,7 @@ select.form-input option{background:var(--card);}
 <!-- USERS SCREEN -->
 <div class="screen hidden" id="screen-users">
   <div class="users-hero">
-    <div class="users-logo">Fit<span>Track</span> Pro</div>
+    <div class="users-logo">Conce<span>Fit</span>Training</div>
     <div class="users-sub">¿Quién va a entrenar hoy?</div>
   </div>
   <div class="user-card-list" id="user-card-list"></div>
@@ -730,7 +731,7 @@ select.form-input option{background:var(--card);}
 <div id="install-banner">
   <span class="ib-icon">📲</span>
   <div class="ib-text">
-    <div class="ib-title">Instalar FitTrack Pro</div>
+    <div class="ib-title">Instalar ConceFitTraining</div>
     <div class="ib-sub">Agrega al inicio · Sin internet · Más rápida</div>
   </div>
   <button class="ib-btn" onclick="installPWA()">Instalar</button>
@@ -2154,7 +2155,7 @@ function renderProfile(){
       </div>
 
       <div style="text-align:center;padding:20px 0 8px;">
-        <div style="font-size:0.72rem;color:var(--muted);">FitTrack Pro · v2.0 PWA</div>
+        <div style="font-size:0.72rem;color:var(--muted);">ConceFitTraining · v2.0 PWA</div>
       </div>
     </div>`;
 }
