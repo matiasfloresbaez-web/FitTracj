@@ -2217,7 +2217,17 @@ function launchApp(){
   renderWorkouts();
   renderProgress();
   renderProfile();
-  if(!isAdminUser()) setTimeout(initTrial, 500);
+  // Admin never sees paywall
+  if(isAdminUser()){
+    localStorage.setItem(SUB_KEY, JSON.stringify({
+      paidAt: Date.now(),
+      expiresAt: Date.now() + (365 * 24 * 60 * 60 * 1000), // 1 year
+      operationCode: 'ADMIN',
+      history: []
+    }));
+  } else {
+    setTimeout(initTrial, 500);
+  }
   // Sync trainers and user plan from Firebase
   syncTrainersFromFirebase(()=>{});
   if(state.uid) syncUserPlanFromFirebase(state.uid, ()=>{ renderHome(); });
@@ -3562,7 +3572,23 @@ function checkAccessBeforeWorkout(key){
 
 // Admin override
 function isAdminUser(){
-  return currentAuthUser && currentAuthUser.includes('matiasfloresbaez');
+  // Check current session
+  if(currentAuthUser && currentAuthUser.includes('matiasfloresbaez')) return true;
+  // Check saved active user
+  const activeUid = getActiveUid();
+  if(activeUid){
+    const users = getAllUsers();
+    const u = users[activeUid];
+    if(u && u.profile && u.profile.name && 
+       (u.profile.name.toLowerCase().includes('matias') || 
+        u.profile.email?.includes('matiasfloresbaez'))) return true;
+  }
+  // Check auth DB
+  const authDB = getAuthDB();
+  for(const email of Object.keys(authDB)){
+    if(email.includes('matiasfloresbaez') && authDB[email].uid === activeUid) return true;
+  }
+  return false;
 }
 
 
