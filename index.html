@@ -331,14 +331,16 @@ select.form-input option{background:var(--card);}
 .trainer-card:active{transform:scale(0.98);}
 
 /* ── SPLASH SCREEN ── */
-#screen-splash{background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;position:relative;overflow:hidden;}
+#screen-splash{background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;position:relative;overflow:hidden;}
 .splash-logo{
   font-family:'Barlow Condensed',sans-serif;font-size:3rem;font-weight:800;
   color:#fff;letter-spacing:-0.02em;
   opacity:0;transform:translateY(20px);
   transition:all 0.7s cubic-bezier(.4,0,.2,1);
   text-align:center;padding:0 20px;
-  text-shadow:0 0 60px rgba(255,87,34,0.9),0 0 120px rgba(255,87,34,0.5),0 2px 8px #000,0 4px 20px #000;
+  margin-top:18vh;
+  text-shadow:0 0 60px rgba(255,87,34,0.9),0 2px 8px #000,0 4px 20px #000;
+  position:relative;z-index:10;
 }
 .splash-logo span{color:var(--fire);}
 .splash-tagline{
@@ -348,6 +350,7 @@ select.form-input option{background:var(--card);}
   margin-top:8px;
   text-shadow:0 1px 12px #000,0 0 30px #000;
   letter-spacing:0.04em;
+  position:relative;z-index:10;
 }
 .splash-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--fire);animation:spin 1s linear infinite;opacity:0;transition:opacity 0.4s 0.8s;margin-top:30px;position:relative;z-index:10;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -356,31 +359,27 @@ select.form-input option{background:var(--card);}
 /* ── SPLASH BUST AVATAR ── */
 .splash-bust-wrap{
   position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%) scale(0.8);
-  width:320px;
-  height:400px;
+  bottom:0;left:0;right:0;
+  height:72%;
   z-index:1;
   pointer-events:none;
   opacity:0;
-  transition:opacity 1.3s ease 0.4s, transform 1.3s cubic-bezier(.17,.67,.35,1.3) 0.4s;
+  transition:opacity 1.3s ease 0.5s, transform 1.3s cubic-bezier(.17,.67,.35,1.3) 0.5s;
+  transform:translateY(30px);
+  display:flex;align-items:flex-end;justify-content:center;
 }
-.splash-bust-wrap.show{
-  opacity:1;
-  transform:translate(-50%, -50%) scale(1);
-}
+.splash-bust-wrap.show{opacity:1;transform:translateY(0);}
 .splash-bust-img{
-  width:100%;
   height:100%;
+  width:auto;
+  max-width:100%;
   object-fit:contain;
-  object-position:center center;
+  object-position:center bottom;
   mix-blend-mode:screen;
   filter:saturate(1.6) contrast(1.3) brightness(1.2);
   animation:bust-breathe 4s ease-in-out infinite;
-  /* Soft fade on ALL edges — no hard borders */
-  mask-image:radial-gradient(ellipse 85% 80% at 50% 45%, black 30%, rgba(0,0,0,0.8) 55%, rgba(0,0,0,0.3) 75%, transparent 100%);
-  -webkit-mask-image:radial-gradient(ellipse 85% 80% at 50% 45%, black 30%, rgba(0,0,0,0.8) 55%, rgba(0,0,0,0.3) 75%, transparent 100%);
+  mask-image:radial-gradient(ellipse 80% 90% at 50% 60%, black 20%, rgba(0,0,0,0.85) 45%, rgba(0,0,0,0.4) 70%, transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 90% at 50% 60%, black 20%, rgba(0,0,0,0.85) 45%, rgba(0,0,0,0.4) 70%, transparent 100%);
 }
 @keyframes bust-breathe{0%,100%{transform:scale(1) translateY(0);}50%{transform:scale(1.04) translateY(-4px);}}
 @keyframes bust-glow-pulse{0%,100%{opacity:0.6;}50%{opacity:1;}}
@@ -638,17 +637,17 @@ html { font-size: 16px; }
      SPLASH SCREEN
 ════════════════════════════════════ -->
 <div class="screen" id="screen-splash">
-  <!-- Text content — normal flow, centered -->
-  <div id="splash-content" style="position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;">
-    <div class="splash-logo" id="splash-logo">Conce<span>Fit</span>Training</div>
-    <div class="splash-tagline" id="splash-tagline">Entrena con propósito. Supera tus límites.</div>
-    <div class="splash-ring" id="splash-ring"></div>
-  </div>
-  <!-- Avatar BEHIND — absolute, lower z-index -->
+  <!-- Text: logo at top ~18vh via CSS margin-top -->
+  <div class="splash-logo" id="splash-logo">Conce<span>Fit</span>Training</div>
+  <div class="splash-tagline" id="splash-tagline">Entrena con propósito. Supera tus límites.</div>
+  <div class="splash-ring" id="splash-ring" style="position:relative;z-index:10;margin-top:auto;margin-bottom:20px;"></div>
+  <!-- Avatar: absolute, covers bottom 72% of screen, behind text via z-index -->
   <div class="splash-bust-wrap" id="splash-bust">
     <img class="splash-bust-img" id="splash-bust-img" src="" alt="Avatar">
   </div>
 </div>
+
+
 
 <!-- ═══════════════════════════════════
      AUTH WELCOME
