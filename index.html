@@ -149,6 +149,7 @@ select.form-input option{background:var(--card);}
 .wk-icon.calistenia{background:rgba(76,175,80,0.15);}
 .wk-icon.crossfit{background:rgba(41,182,246,0.15);}
 .wk-icon.running{background:rgba(255,193,7,0.15);}
+.wk-icon.anual{background:rgba(76,175,80,0.15);}
 .wk-info{flex:1;}
 .wk-name{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;color:var(--white);}
 .wk-meta{font-size:0.72rem;color:var(--muted);margin-top:2px;display:flex;gap:10px;}
@@ -157,6 +158,7 @@ select.form-input option{background:var(--card);}
 .wk-tag.calistenia{background:rgba(76,175,80,0.2);color:#81c784;}
 .wk-tag.crossfit{background:rgba(41,182,246,0.2);color:var(--ice);}
 .wk-tag.running{background:rgba(255,193,7,0.2);color:var(--yellow);}
+.wk-tag.anual{background:rgba(76,175,80,0.2);color:#81c784;}
 .difficulty{display:flex;gap:3px;}
 .diff-dot{width:6px;height:6px;border-radius:50%;}
 .diff-dot.filled.easy{background:var(--green);}
@@ -335,20 +337,17 @@ select.form-input option{background:var(--card);}
   color:#fff;letter-spacing:-0.02em;
   opacity:0;transform:translateY(20px);
   transition:all 0.7s cubic-bezier(.4,0,.2,1);
-  text-align:center;padding:0 16px;
-  position:relative;z-index:10;
-  text-shadow:0 0 40px rgba(255,87,34,0.8), 0 2px 4px rgba(0,0,0,1), 0 0 80px rgba(0,0,0,0.9);
-  margin-bottom:0;
+  text-align:center;padding:0 20px;
+  text-shadow:0 0 60px rgba(255,87,34,0.9),0 0 120px rgba(255,87,34,0.5),0 2px 8px #000,0 4px 20px #000;
 }
-.splash-logo span{color:var(--fire);text-shadow:0 0 30px rgba(255,87,34,1), 0 2px 4px rgba(0,0,0,1);}
+.splash-logo span{color:var(--fire);}
 .splash-tagline{
-  font-size:0.88rem;color:#aaa;
+  font-size:0.88rem;color:#ccc;
   opacity:0;transform:translateY(10px);
   transition:all 0.6s cubic-bezier(.4,0,.2,1) 0.3s;
-  margin-top:6px;
-  position:relative;z-index:10;
-  text-shadow:0 1px 8px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,0.9);
-  letter-spacing:0.02em;
+  margin-top:8px;
+  text-shadow:0 1px 12px #000,0 0 30px #000;
+  letter-spacing:0.04em;
 }
 .splash-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--fire);animation:spin 1s linear infinite;opacity:0;transition:opacity 0.4s 0.8s;margin-top:30px;position:relative;z-index:10;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -357,26 +356,25 @@ select.form-input option{background:var(--card);}
 /* ── SPLASH BUST AVATAR ── */
 .splash-bust-wrap{
   position:absolute;
-  width:280px;height:360px;
-  bottom:0;left:50%;
-  transform:translateX(-50%) scale(0.7);
-  opacity:0;
-  transition:opacity 1.2s ease 0.1s, transform 1.2s cubic-bezier(.17,.67,.35,1.3) 0.1s;
+  inset:0;
   z-index:1;
   pointer-events:none;
+  opacity:0;
+  transition:opacity 1.4s ease 0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
-.splash-bust-wrap.show{opacity:1;transform:translateX(-50%) scale(1);}
+.splash-bust-wrap.show{opacity:1;}
 .splash-bust-img{
-  width:100%;height:100%;
-  object-fit:contain;
-  object-position:center bottom;
-  filter:drop-shadow(0 0 30px rgba(255,87,34,0.4)) drop-shadow(0 0 60px rgba(156,39,176,0.3));
-  animation:bust-breathe 3.5s ease-in-out infinite;
-  mask-image:linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.9) 40%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image:linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.9) 40%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0) 100%);
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center center;
   mix-blend-mode:screen;
+  filter:saturate(1.5) contrast(1.2) brightness(1.1);
+  animation:bust-breathe 4s ease-in-out infinite;
 }
-.splash-bust-glow{display:none;}
 @keyframes bust-breathe{0%,100%{transform:scale(1) translateY(0);}50%{transform:scale(1.04) translateY(-4px);}}
 @keyframes bust-glow-pulse{0%,100%{opacity:0.6;}50%{opacity:1;}}
 /* Arms overlay animation */
@@ -633,16 +631,16 @@ html { font-size: 16px; }
      SPLASH SCREEN
 ════════════════════════════════════ -->
 <div class="screen" id="screen-splash">
-  <!-- Avatar BEHIND everything (z-index:0, absolute) -->
-  <div class="splash-bust-wrap" id="splash-bust">
-    <div class="splash-bust-glow"></div>
-    <img class="splash-bust-img" id="splash-bust-img" src="" alt="Avatar">
-    <div id="splash-particles"></div>
+  <!-- Text content — normal flow, centered -->
+  <div id="splash-content" style="position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;">
+    <div class="splash-logo" id="splash-logo">Conce<span>Fit</span>Training</div>
+    <div class="splash-tagline" id="splash-tagline">Entrena con propósito. Supera tus límites.</div>
+    <div class="splash-ring" id="splash-ring"></div>
   </div>
-  <!-- Text ON TOP (z-index:2) -->
-  <div class="splash-logo" id="splash-logo">Conce<span>Fit</span>Training</div>
-  <div class="splash-tagline" id="splash-tagline">Entrena con propósito. Supera tus límites.</div>
-  <div class="splash-ring" id="splash-ring"></div>
+  <!-- Avatar BEHIND — absolute, lower z-index -->
+  <div class="splash-bust-wrap" id="splash-bust">
+    <img class="splash-bust-img" id="splash-bust-img" src="" alt="Avatar">
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════
@@ -1967,6 +1965,199 @@ const WORKOUTS = [
     ]
   },
 
+  /* ═══════════════════════════════════
+     PLAN ANUAL — 52 SEMANAS PROGRESIVAS
+  ════════════════════════════════════ */
+
+  /* FASE BASE Semana 1 */
+  {
+    key:'anual-base-1', name:'Año · S1: Fundamentos', type:'gym', emoji:'📅',
+    difficulty:'easy', duration:'45 min', level:'Principiante', week:1,
+    exercises:[
+      {name:'Sentadillas con peso corporal', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas', tip:'Aprende la técnica antes de agregar peso'},
+      {name:'Flexiones estándar', sets:'3 × 10 reps', rest:'60s', muscle:'Pecho', tip:'Si no puedes, hazlas con rodillas'},
+      {name:'Plancha frontal', sets:'3 × 20s', rest:'45s', muscle:'Core', tip:'Cuerpo recto, respira normalmente'},
+      {name:'Zancadas', sets:'3 × 10/lado', rest:'60s', muscle:'Piernas', tip:'Rodilla trasera casi al suelo'},
+      {name:'Remo con mancuerna a 1 brazo', sets:'3 × 12/lado', rest:'60s', muscle:'Espalda', tip:'Espalda plana, codo al techo'},
+      {name:'Curl con mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Biceps', tip:'Controla la bajada'},
+    ]
+  },
+  {
+    key:'anual-base-4', name:'Año · S4: Base Consolidada', type:'gym', emoji:'📅',
+    difficulty:'easy', duration:'50 min', level:'Principiante', week:4,
+    exercises:[
+      {name:'Sentadilla goblet con kettlebell', sets:'4 × 12 reps', rest:'75s', muscle:'Piernas', tip:'Agrega 2kg vs semana 1'},
+      {name:'Press banca con mancuernas', sets:'4 × 10 reps', rest:'75s', muscle:'Pecho', tip:'Rango completo de movimiento'},
+      {name:'Jalón al pecho', sets:'4 × 12 reps', rest:'75s', muscle:'Espalda', tip:'Barra al pecho, codos hacia abajo'},
+      {name:'Plancha con toque de hombro', sets:'3 × 10/lado', rest:'45s', muscle:'Core', tip:'Sin rotar las caderas'},
+      {name:'Press militar con mancuernas', sets:'3 × 12 reps', rest:'75s', muscle:'Hombros', tip:'Sentado, espalda apoyada'},
+      {name:'Extensión triceps polea', sets:'3 × 15 reps', rest:'60s', muscle:'Triceps', tip:'Codos pegados al cuerpo'},
+      {name:'Elevación de gemelos de pie', sets:'4 × 20 reps', rest:'45s', muscle:'Gemelos', tip:'Rango completo'},
+    ]
+  },
+  {
+    key:'anual-base-8', name:'Año · S8: Primera Barra', type:'gym', emoji:'📅',
+    difficulty:'easy', duration:'55 min', level:'Principiante', week:8,
+    exercises:[
+      {name:'Sentadilla con barra', sets:'4 × 10 reps', rest:'90s', muscle:'Piernas', tip:'Primera semana con barra — técnica primero'},
+      {name:'Press banca plano con barra', sets:'4 × 10 reps', rest:'90s', muscle:'Pecho', tip:'Agarre a anchura de hombros'},
+      {name:'Peso muerto convencional', sets:'3 × 8 reps', rest:'120s', muscle:'Cadena posterior', tip:'Barra pegada al cuerpo'},
+      {name:'Dominadas asistidas', sets:'4 × 6 reps', rest:'90s', muscle:'Espalda', tip:'Usa banda si es necesario'},
+      {name:'Press militar con barra', sets:'3 × 10 reps', rest:'90s', muscle:'Hombros', tip:'Core activado'},
+      {name:'Fondos en paralelas', sets:'3 × 10 reps', rest:'75s', muscle:'Triceps', tip:'Baja hasta 90 grados de codo'},
+      {name:'Curl con barra Z', sets:'3 × 12 reps', rest:'60s', muscle:'Biceps', tip:'Sin balanceo de torso'},
+    ]
+  },
+  {
+    key:'anual-base-12', name:'Año · S12: Cierre Fase Base', type:'gym', emoji:'📅',
+    difficulty:'med', duration:'60 min', level:'Principiante', week:12,
+    exercises:[
+      {name:'Sentadilla con barra', sets:'4 × 8 reps', rest:'90s', muscle:'Piernas', tip:'+10kg vs semana 8'},
+      {name:'Press banca plano con barra', sets:'4 × 8 reps', rest:'90s', muscle:'Pecho', tip:'Progresión semanal de 2.5kg'},
+      {name:'Peso muerto convencional', sets:'4 × 6 reps', rest:'120s', muscle:'Cadena posterior', tip:'Técnica perfecta'},
+      {name:'Dominadas', sets:'4 × 8 reps', rest:'90s', muscle:'Espalda', tip:'Sin asistencia si es posible'},
+      {name:'Press militar de pie', sets:'4 × 8 reps', rest:'90s', muscle:'Hombros', tip:'Progresión de fuerza'},
+      {name:'Hip thrust con barra', sets:'4 × 10 reps', rest:'90s', muscle:'Gluteos', tip:'Contrae arriba 2 segundos'},
+    ]
+  },
+  /* FASE DESARROLLO Semana 13 */
+  {
+    key:'anual-dev-13', name:'Año · S13: Inicio Fuerza 5x5', type:'gym', emoji:'📅',
+    difficulty:'med', duration:'60 min', level:'Intermedio', week:13,
+    exercises:[
+      {name:'Sentadilla con barra 5x5', sets:'5 × 5 reps', rest:'120s', muscle:'Piernas', tip:'Método 5x5: fuerza máxima con volumen'},
+      {name:'Press banca 5x5', sets:'5 × 5 reps', rest:'120s', muscle:'Pecho', tip:'85% de tu máximo'},
+      {name:'Peso muerto 3x5', sets:'3 × 5 reps (pesado)', rest:'180s', muscle:'Cadena posterior', tip:'El rey de los ejercicios'},
+      {name:'Remo con barra pronado', sets:'4 × 8 reps', rest:'90s', muscle:'Espalda', tip:'Introduce superseries en fase 2'},
+      {name:'Sentadilla bulgar', sets:'3 × 10/lado', rest:'90s', muscle:'Piernas', tip:'Corrige desequilibrios musculares'},
+      {name:'Press inclinado con barra', sets:'4 × 8 reps', rest:'90s', muscle:'Pecho alto', tip:'Angulo 30-45 grados'},
+    ]
+  },
+  {
+    key:'anual-dev-16', name:'Año · S16: Volumen Máximo', type:'gym', emoji:'📅',
+    difficulty:'med', duration:'70 min', level:'Intermedio', week:16,
+    exercises:[
+      {name:'Sentadilla con barra', sets:'5 × 5 reps', rest:'120s', muscle:'Piernas', tip:'Semana de volumen máximo'},
+      {name:'Peso muerto rumano', sets:'4 × 8 reps', rest:'90s', muscle:'Isquios', tip:'Bisagra perfecta, máximo estiramiento'},
+      {name:'Press banca agarre cerrado', sets:'4 × 8 reps', rest:'90s', muscle:'Pecho/Triceps', tip:'Superserie con triceps'},
+      {name:'Jalón al pecho (superserie)', sets:'4 × 10+10 reps', rest:'60s', muscle:'Espalda', tip:'Superserie: jalón más remo en polea baja'},
+      {name:'Hack squat', sets:'4 × 10 reps', rest:'90s', muscle:'Cuadriceps', tip:'Mayor énfasis cuadriceps'},
+      {name:'Press Arnold', sets:'4 × 10 reps', rest:'90s', muscle:'Hombros 360', tip:'Activa los 3 haces del deltoides'},
+      {name:'Curl en banco Scott', sets:'4 × 10 reps', rest:'75s', muscle:'Biceps', tip:'Aísla completamente el biceps'},
+      {name:'Press frances con barra EZ', sets:'4 × 10 reps', rest:'75s', muscle:'Triceps', tip:'Codos fijos, baja a la coronilla'},
+    ]
+  },
+  {
+    key:'anual-dev-20', name:'Año · S20: Pico de Fuerza', type:'gym', emoji:'📅',
+    difficulty:'hard', duration:'65 min', level:'Intermedio', week:20,
+    exercises:[
+      {name:'Sentadilla con barra 6x4', sets:'6 × 4 reps', rest:'150s', muscle:'Piernas', tip:'90% de tu 1RM'},
+      {name:'Press banca 6x4', sets:'6 × 4 reps', rest:'150s', muscle:'Pecho', tip:'Pausa 1s en el pecho'},
+      {name:'Peso muerto 5x3', sets:'5 × 3 reps', rest:'180s', muscle:'Cadena posterior', tip:'95% de tu máximo'},
+      {name:'Dominadas lastradas', sets:'5 × 6 reps', rest:'120s', muscle:'Espalda', tip:'+15-20kg en cinturón'},
+      {name:'Press militar 6x4', sets:'6 × 4 reps', rest:'150s', muscle:'Hombros', tip:'Fuerza máxima en press sobre cabeza'},
+      {name:'Fondos lastrados', sets:'5 × 5 reps', rest:'120s', muscle:'Triceps', tip:'+20kg el triceps más fuerte'},
+    ]
+  },
+  {
+    key:'anual-dev-24', name:'Año · S24: Variantes Avanzadas', type:'gym', emoji:'📅',
+    difficulty:'hard', duration:'70 min', level:'Intermedio', week:24,
+    exercises:[
+      {name:'Sentadilla frontal', sets:'5 × 5 reps', rest:'120s', muscle:'Cuadriceps', tip:'Introduce variantes avanzadas'},
+      {name:'Press banca con pausa', sets:'5 × 5 reps', rest:'120s', muscle:'Pecho', tip:'3s de pausa en el pecho'},
+      {name:'Peso muerto sumo', sets:'4 × 5 reps', rest:'150s', muscle:'Aductores/Gluteos', tip:'Nuevo estímulo para cadena posterior'},
+      {name:'Remo Pendlay', sets:'5 × 5 reps', rest:'120s', muscle:'Espalda', tip:'Parte del suelo en cada rep'},
+      {name:'Press California', sets:'4 × 8 reps', rest:'90s', muscle:'Pecho/Triceps', tip:'Combina press y extensión triceps'},
+      {name:'Face pulls + Pajaro (superserie)', sets:'4 × 15+15 reps', rest:'60s', muscle:'Posterior hombro', tip:'Salud articular del hombro'},
+    ]
+  },
+  /* FASE AVANZADA Semana 25 */
+  {
+    key:'anual-adv-25', name:'Año · S25: Técnicas Avanzadas', type:'gym', emoji:'📅',
+    difficulty:'hard', duration:'75 min', level:'Avanzado', week:25,
+    exercises:[
+      {name:'Sentadilla con pausa', sets:'5 × 4 reps', rest:'150s', muscle:'Piernas', tip:'3s abajo: máxima activación muscular'},
+      {name:'Press banca con bandas', sets:'5 × 5 reps', rest:'120s', muscle:'Pecho', tip:'Bandas añaden resistencia en extensión'},
+      {name:'Peso muerto con déficit', sets:'4 × 5 reps', rest:'150s', muscle:'Cadena posterior', tip:'Parado en plataforma 5cm: mayor rango'},
+      {name:'Dominadas agarre neutro lastradas', sets:'5 × 5 reps', rest:'120s', muscle:'Espalda/Biceps', tip:'+25kg máxima fuerza'},
+      {name:'Sentadilla bulgar con barra', sets:'4 × 8/lado', rest:'90s', muscle:'Piernas unilateral', tip:'Máxima dificultad unilateral'},
+      {name:'Press inclinado con barra 5x5', sets:'5 × 5 reps', rest:'120s', muscle:'Pecho alto', tip:'Movimiento principal en fase avanzada'},
+      {name:'Ab wheel rollout', sets:'4 × 10 reps', rest:'60s', muscle:'Core', tip:'El ejercicio abdominal más completo'},
+    ]
+  },
+  {
+    key:'anual-adv-28', name:'Año · S28: Superseries Avanzadas', type:'gym', emoji:'📅',
+    difficulty:'hard', duration:'75 min', level:'Avanzado', week:28,
+    exercises:[
+      {name:'Sentadilla + Peso muerto rumano (superserie)', sets:'4 × 8+8 reps', rest:'90s', muscle:'Piernas completo', tip:'Sin descanso entre ejercicios'},
+      {name:'Press banca + Aperturas cable (superserie)', sets:'4 × 8+12 reps', rest:'90s', muscle:'Pecho', tip:'Agotamiento muscular total'},
+      {name:'Dominadas + Remo con barra (superserie)', sets:'4 × 8+8 reps', rest:'90s', muscle:'Espalda', tip:'Superserie antagonista'},
+      {name:'Press militar + Elevaciones laterales (superserie)', sets:'4 × 8+15 reps', rest:'90s', muscle:'Hombros', tip:'Fuerza más aislamiento'},
+      {name:'Curl 21s + Extension triceps (superserie)', sets:'3 × 21+12 reps', rest:'75s', muscle:'Brazos', tip:'Máxima congestión de brazos'},
+      {name:'Plancha con peso + Dragon flag (superserie)', sets:'3 × 45s+5 reps', rest:'60s', muscle:'Core avanzado', tip:'Core de élite'},
+    ]
+  },
+  {
+    key:'anual-adv-32', name:'Año · S32: Periodización Ondulada', type:'gym', emoji:'📅',
+    difficulty:'hard', duration:'70 min', level:'Avanzado', week:32,
+    exercises:[
+      {name:'Sentadilla: Día pesado 3x3', sets:'3 × 3 reps (97%)', rest:'180s', muscle:'Piernas', tip:'Alternar pesado/explosivo/volumen'},
+      {name:'Press banca: Día explosivo 5x3', sets:'5 × 3 reps (70% velocidad máx)', rest:'90s', muscle:'Pecho', tip:'Velocidad mayor que peso: potencia'},
+      {name:'Peso muerto: Día técnico 6x2', sets:'6 × 2 reps (92%)', rest:'180s', muscle:'Cadena posterior', tip:'Técnica perfecta con peso alto'},
+      {name:'Remo con barra supino pesado', sets:'5 × 5 reps', rest:'120s', muscle:'Espalda/Biceps', tip:'Más biceps que el pronado'},
+      {name:'Hip thrust con pausa', sets:'5 × 8 reps', rest:'90s', muscle:'Gluteos', tip:'3s pausa arriba: máxima contracción'},
+      {name:'Toes to bar', sets:'4 × 12 reps', rest:'60s', muscle:'Core/Flexores', tip:'Control total, sin balanceo'},
+    ]
+  },
+  {
+    key:'anual-adv-36', name:'Año · S36: Test de Progreso', type:'gym', emoji:'📅',
+    difficulty:'hard', duration:'75 min', level:'Avanzado', week:36,
+    exercises:[
+      {name:'Test 1RM Sentadilla', sets:'Rampa hasta máximo', rest:'300s', muscle:'Piernas', tip:'Mide tu progreso de 9 meses'},
+      {name:'Test 1RM Press banca', sets:'Rampa hasta máximo', rest:'300s', muscle:'Pecho', tip:'Compara con semana 1'},
+      {name:'Test 1RM Peso muerto', sets:'Rampa hasta máximo', rest:'300s', muscle:'Cadena posterior', tip:'El levantamiento más importante'},
+      {name:'Máximo de Dominadas', sets:'Máx reps en 3 series', rest:'180s', muscle:'Espalda', tip:'Anota tu récord personal'},
+      {name:'Máximo de Fondos', sets:'Máx reps en 3 series', rest:'180s', muscle:'Triceps/Pecho', tip:'Cuántas más que semana 1?'},
+    ]
+  },
+  /* FASE ELITE Semana 37 */
+  {
+    key:'anual-elite-37', name:'Año · S37: Entrenamiento Elite', type:'gym', emoji:'🏆',
+    difficulty:'hard', duration:'80 min', level:'Avanzado', week:37,
+    exercises:[
+      {name:'Sentadilla con cadenas', sets:'5 × 5 reps', rest:'150s', muscle:'Piernas', tip:'Cadenas: resistencia variable, fuerza en extensión'},
+      {name:'Press banca con cadenas', sets:'5 × 5 reps', rest:'150s', muscle:'Pecho', tip:'Técnica Westside Barbell: élite'},
+      {name:'Peso muerto en bloques', sets:'4 × 4 reps', rest:'180s', muscle:'Cadena posterior', tip:'Barra elevada: más peso en el tirón'},
+      {name:'Good mornings', sets:'4 × 8 reps', rest:'90s', muscle:'Lumbar/Isquios', tip:'Bisagra perfecta: lumbar de acero'},
+      {name:'Sentadilla frontal 5x5', sets:'5 × 5 reps', rest:'150s', muscle:'Cuadriceps', tip:'Complementa la sentadilla trasera'},
+      {name:'Curl femoral nordico', sets:'4 × 6 reps', rest:'90s', muscle:'Isquios excéntrico', tip:'El más efectivo para isquios'},
+    ]
+  },
+  {
+    key:'anual-elite-44', name:'Año · S44: Power Bodybuilding', type:'gym', emoji:'🏆',
+    difficulty:'hard', duration:'85 min', level:'Avanzado', week:44,
+    exercises:[
+      {name:'Sentadilla 8x2 potencia', sets:'8 × 2 reps (80% vel máx)', rest:'90s', muscle:'Piernas', tip:'Fuerza más volumen: power bodybuilding'},
+      {name:'Press banca 8x3 potencia', sets:'8 × 3 reps (75%)', rest:'90s', muscle:'Pecho', tip:'Explosividad en fase concéntrica'},
+      {name:'Peso muerto rumano 4x10 hipertrofia', sets:'4 × 10 reps', rest:'90s', muscle:'Isquios', tip:'Después de las series de potencia'},
+      {name:'Jalón supino agarre estrecho', sets:'5 × 10 reps', rest:'90s', muscle:'Dorsal inferior/Biceps', tip:'Máximo recorrido del dorsal'},
+      {name:'Press declinado con barra', sets:'4 × 8 reps', rest:'90s', muscle:'Pecho inferior', tip:'Zona inferior que muchos ignoran'},
+      {name:'Shrugs con barra', sets:'5 × 15 reps', rest:'60s', muscle:'Trapecio', tip:'Rango completo, sube directo'},
+    ]
+  },
+  {
+    key:'anual-elite-52', name:'Año · S52: El Gran Test Final 🏆', type:'gym', emoji:'🏆',
+    difficulty:'hard', duration:'90 min', level:'Avanzado', week:52,
+    exercises:[
+      {name:'1RM Sentadilla: RÉCORD ANUAL', sets:'Rampa progresiva hasta máximo', rest:'300s', muscle:'Piernas', tip:'52 semanas de trabajo: demuestra tu potencial!'},
+      {name:'1RM Press banca: RÉCORD ANUAL', sets:'Rampa progresiva hasta máximo', rest:'300s', muscle:'Pecho', tip:'Compara con semana 1: el progreso de un año'},
+      {name:'1RM Peso muerto: RÉCORD ANUAL', sets:'Rampa progresiva hasta máximo', rest:'300s', muscle:'Cadena posterior', tip:'El levantamiento más poderoso del año'},
+      {name:'Máximo dominadas con peso', sets:'Récord personal', rest:'300s', muscle:'Espalda', tip:'Cuántas más que hace 1 año?'},
+      {name:'Máximo fondos con peso', sets:'Récord personal', rest:'300s', muscle:'Triceps/Pecho', tip:'Anota todos tus récords del año'},
+      {name:'Celebración y reflexión', sets:'10 min', rest:'—', muscle:'Mental', tip:'52 semanas completadas. Eres una leyenda! 🏆'},
+    ]
+  },
+
 ];
 
 /* ────────────────────────────────────
@@ -2595,6 +2786,7 @@ function renderHome(){
       <div class="cat-card calistenia" onclick="filterAndGo('calistenia')"><div class="cat-icon">🤸</div><div class="cat-name">CALISTENIA</div><div class="cat-count">${WORKOUTS.filter(w=>w.type==='calistenia').length} rutinas</div></div>
       <div class="cat-card crossfit" onclick="filterAndGo('crossfit')"><div class="cat-icon">🔥</div><div class="cat-name">CROSSFIT</div><div class="cat-count">${WORKOUTS.filter(w=>w.type==='crossfit').length} rutinas</div></div>
       <div class="cat-card running" onclick="filterAndGo('running')"><div class="cat-icon">🏃</div><div class="cat-name">RUNNING</div><div class="cat-count">${WORKOUTS.filter(w=>w.type==='running').length} rutinas</div></div>
+      <div class="cat-card" style="background:linear-gradient(135deg,#1a1a0f,#2d2a10);" onclick="filterAndGo('anual')"><div class="cat-icon">📅</div><div class="cat-name">PLAN ANUAL</div><div class="cat-count">${WORKOUTS.filter(w=>w.plan==='anual').length} semanas</div></div>
     </div>
     <div style="padding:0 16px;">
       <div class="section-head"><h2>⚡ Sugerida para hoy</h2><span class="see-all" onclick="navTo('workouts')">Ver todas</span></div>
@@ -2691,8 +2883,8 @@ function openRunPlan(){
 ──────────────────────────────────── */
 let activeFilter='todos';
 function renderWorkouts(){
-  const filters=['todos','gym','calistenia','crossfit','running'];
-  document.getElementById('workout-filter').innerHTML=filters.map(f=>`<div class="filter-chip ${f===activeFilter?'active':''}" onclick="setFilter('${f}')">${f==='todos'?'🔥 Todos':f.charAt(0).toUpperCase()+f.slice(1)}</div>`).join('');
+  const filters=['todos','gym','calistenia','crossfit','running','anual'];
+  document.getElementById('workout-filter').innerHTML=filters.map(f=>`<div class="filter-chip ${f===activeFilter?'active':''}" onclick="setFilter('${f}')">${f==='todos'?'🔥 Todos':f==='anual'?'📅 Plan Anual':f.charAt(0).toUpperCase()+f.slice(1)}</div>`).join('');
   const filtered=activeFilter==='todos'?WORKOUTS:WORKOUTS.filter(w=>w.type===activeFilter);
   document.getElementById('workout-list').innerHTML=filtered.map(w=>renderWorkoutCard(w)).join('');
 }
