@@ -331,28 +331,11 @@ select.form-input option{background:var(--card);}
 .trainer-card:active{transform:scale(0.98);}
 
 /* ── SPLASH SCREEN ── */
-#screen-splash{background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;position:relative;overflow:hidden;}
-.splash-logo{
-  font-family:'Barlow Condensed',sans-serif;font-size:3rem;font-weight:800;
-  color:#fff;letter-spacing:-0.02em;
-  opacity:0;transform:translateY(20px);
-  transition:all 0.7s cubic-bezier(.4,0,.2,1);
-  text-align:center;padding:0 20px;
-  margin-top:18vh;
-  text-shadow:0 0 60px rgba(255,87,34,0.9),0 2px 8px #000,0 4px 20px #000;
-  position:relative;z-index:10;
-}
+#screen-splash{background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;}
+.splash-logo{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:800;color:var(--white);letter-spacing:-0.02em;opacity:0;transform:translateY(20px);transition:all 0.7s cubic-bezier(.4,0,.2,1);text-align:center;padding:0 16px;}
 .splash-logo span{color:var(--fire);}
-.splash-tagline{
-  font-size:0.88rem;color:#ccc;
-  opacity:0;transform:translateY(10px);
-  transition:all 0.6s cubic-bezier(.4,0,.2,1) 0.3s;
-  margin-top:8px;
-  text-shadow:0 1px 12px #000,0 0 30px #000;
-  letter-spacing:0.04em;
-  position:relative;z-index:10;
-}
-.splash-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--fire);animation:spin 1s linear infinite;opacity:0;transition:opacity 0.4s 0.8s;margin-top:30px;position:relative;z-index:10;}
+.splash-tagline{font-size:0.9rem;color:var(--muted);opacity:0;transform:translateY(10px);transition:all 0.6s cubic-bezier(.4,0,.2,1) 0.3s;margin-top:6px;}
+.splash-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--fire);animation:spin 1s linear infinite;opacity:0;transition:opacity 0.4s 0.8s;margin-top:40px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .splash-logo.show,.splash-tagline.show,.splash-ring.show{opacity:1;transform:translateY(0);}
 
@@ -637,14 +620,9 @@ html { font-size: 16px; }
      SPLASH SCREEN
 ════════════════════════════════════ -->
 <div class="screen" id="screen-splash">
-  <!-- Text: logo at top ~18vh via CSS margin-top -->
   <div class="splash-logo" id="splash-logo">Conce<span>Fit</span>Training</div>
   <div class="splash-tagline" id="splash-tagline">Entrena con propósito. Supera tus límites.</div>
-  <div class="splash-ring" id="splash-ring" style="position:relative;z-index:10;margin-top:auto;margin-bottom:20px;"></div>
-  <!-- Avatar: absolute, covers bottom 72% of screen, behind text via z-index -->
-  <div class="splash-bust-wrap" id="splash-bust">
-    <img class="splash-bust-img" id="splash-bust-img" src="" alt="Avatar">
-  </div>
+  <div class="splash-ring" id="splash-ring"></div>
 </div>
 
 
@@ -2164,6 +2142,516 @@ const WORKOUTS = [
     ]
   },
 
+  /* ═══════════════════════════════════════════════
+     PLAN ANUAL — CALISTENIA (52 semanas, hitos clave)
+  ════════════════════════════════════════════════ */
+  {
+    key:'anual-cali-1', name:'Año Calistenia · S1: Fundamentos', type:'calistenia', emoji:'📅',
+    difficulty:'easy', duration:'40 min', level:'Principiante', week:1,
+    exercises:[
+      {name:'Flexiones de rodillas', sets:'3 × 12 reps', rest:'60s', muscle:'Pecho', tip:'Base antes de flexión completa'},
+      {name:'Sentadillas peso corporal', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas', tip:'Profundidad completa'},
+      {name:'Plancha frontal', sets:'3 × 20s', rest:'45s', muscle:'Core', tip:'Cuerpo recto, sin caderas caídas'},
+      {name:'Remo invertido en mesa', sets:'3 × 10 reps', rest:'60s', muscle:'Espalda', tip:'Sustituto de dominada para principiantes'},
+      {name:'Dips en banco', sets:'3 × 10 reps', rest:'60s', muscle:'Tríceps', tip:'Pies en el suelo, manos en el banco'},
+    ]
+  },
+  {
+    key:'anual-cali-8', name:'Año Calistenia · S8: Primera Dominada', type:'calistenia', emoji:'📅',
+    difficulty:'med', duration:'45 min', level:'Principiante', week:8,
+    exercises:[
+      {name:'Dominadas negativas', sets:'4 × 5 reps', rest:'75s', muscle:'Espalda/Bíceps', tip:'Sube con salto, baja controlado 5s'},
+      {name:'Flexiones completas', sets:'4 × 12 reps', rest:'60s', muscle:'Pecho', tip:'Ya dominas la técnica básica'},
+      {name:'Sentadilla búlgara', sets:'3 × 10/lado', rest:'60s', muscle:'Piernas', tip:'Unilateral para más fuerza'},
+      {name:'Plancha lateral', sets:'3 × 25s/lado', rest:'45s', muscle:'Oblicuos', tip:'Cadera elevada, no caída'},
+      {name:'Fondos en paralelas asistidos', sets:'4 × 8 reps', rest:'75s', muscle:'Tríceps/Pecho', tip:'Usa banda si necesitas'},
+    ]
+  },
+  {
+    key:'anual-cali-16', name:'Año Calistenia · S16: Dominadas Limpias', type:'calistenia', emoji:'📅',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:16,
+    exercises:[
+      {name:'Dominadas estrictas', sets:'5 × 6 reps', rest:'90s', muscle:'Espalda/Bíceps', tip:'Sin impulso, control total'},
+      {name:'Flexiones diamante', sets:'4 × 10 reps', rest:'75s', muscle:'Tríceps/Pecho', tip:'Manos juntas formando diamante'},
+      {name:'Pistol squat asistido', sets:'4 × 6/lado', rest:'90s', muscle:'Piernas', tip:'Sujétate de algo para equilibrio'},
+      {name:'L-sit en paralelas', sets:'4 × 15s', rest:'60s', muscle:'Core/Flexores', tip:'Piernas rectas y elevadas'},
+      {name:'Fondos en paralelas', sets:'4 × 10 reps', rest:'75s', muscle:'Tríceps', tip:'Sin asistencia ya'},
+    ]
+  },
+  {
+    key:'anual-cali-24', name:'Año Calistenia · S24: Hacia el Muscle-up', type:'calistenia', emoji:'📅',
+    difficulty:'hard', duration:'55 min', level:'Intermedio', week:24,
+    exercises:[
+      {name:'Dominadas explosivas (pecho a barra)', sets:'5 × 5 reps', rest:'90s', muscle:'Espalda/Bíceps', tip:'Trabaja la explosividad para el muscle-up'},
+      {name:'Fondos rusos', sets:'4 × 8 reps', rest:'90s', muscle:'Tríceps/Hombros', tip:'Transición clave del muscle-up'},
+      {name:'Pistol squat completo', sets:'4 × 8/lado', rest:'90s', muscle:'Piernas', tip:'Sin asistencia, control total'},
+      {name:'L-sit a V-sit progresión', sets:'4 × 12s', rest:'60s', muscle:'Core avanzado', tip:'Eleva más las piernas'},
+      {name:'Muscle-up asistido con banda', sets:'5 × 4 reps', rest:'120s', muscle:'Full body', tip:'El movimiento más buscado en calistenia'},
+    ]
+  },
+  {
+    key:'anual-cali-32', name:'Año Calistenia · S32: Primer Muscle-up', type:'calistenia', emoji:'📅',
+    difficulty:'hard', duration:'60 min', level:'Avanzado', week:32,
+    exercises:[
+      {name:'Muscle-up estricto', sets:'5 × 3 reps', rest:'150s', muscle:'Full body', tip:'¡El gran hito de la calistenia!'},
+      {name:'Front lever progresión (tuck)', sets:'5 × 10s', rest:'90s', muscle:'Espalda/Core', tip:'Hacia el front lever completo'},
+      {name:'Pistol squat con salto', sets:'4 × 6/lado', rest:'90s', muscle:'Piernas potencia', tip:'Explosividad unilateral'},
+      {name:'Handstand contra pared', sets:'5 × 30s', rest:'60s', muscle:'Hombros/Core', tip:'Base para el handstand libre'},
+      {name:'Dragon flag negativo', sets:'4 × 6 reps', rest:'90s', muscle:'Core avanzado', tip:'Control excéntrico total'},
+    ]
+  },
+  {
+    key:'anual-cali-40', name:'Año Calistenia · S40: Front Lever', type:'calistenia', emoji:'📅',
+    difficulty:'hard', duration:'65 min', level:'Avanzado', week:40,
+    exercises:[
+      {name:'Front lever completo', sets:'5 × 5s', rest:'120s', muscle:'Espalda/Core', tip:'Cuerpo horizontal, control total'},
+      {name:'Muscle-up estricto x3', sets:'5 × 5 reps', rest:'150s', muscle:'Full body', tip:'Aumenta volumen del muscle-up'},
+      {name:'Handstand push-up asistido', sets:'5 × 5 reps', rest:'120s', muscle:'Hombros', tip:'Hacia el handstand push-up libre'},
+      {name:'Pistol squat con peso', sets:'4 × 8/lado', rest:'90s', muscle:'Piernas', tip:'Añade peso para más dificultad'},
+      {name:'Planche lean progresión', sets:'5 × 15s', rest:'90s', muscle:'Hombros/Core', tip:'Inclínate hacia adelante en push-up'},
+    ]
+  },
+  {
+    key:'anual-cali-52', name:'Año Calistenia · S52: Maestría Total 🏆', type:'calistenia', emoji:'🏆',
+    difficulty:'hard', duration:'70 min', level:'Avanzado', week:52,
+    exercises:[
+      {name:'Muscle-up: máximo de repeticiones', sets:'Test máximo', rest:'180s', muscle:'Full body', tip:'¿Cuántos logras tras 52 semanas?'},
+      {name:'Front lever: máximo tiempo', sets:'Test máximo', rest:'180s', muscle:'Espalda/Core', tip:'Anota tu récord personal'},
+      {name:'Pistol squat: serie completa sin descanso', sets:'Máx reps/lado', rest:'180s', muscle:'Piernas', tip:'Demuestra tu control unilateral'},
+      {name:'Handstand: máximo tiempo libre', sets:'Test máximo', rest:'180s', muscle:'Hombros/Core', tip:'Sin apoyo en la pared'},
+      {name:'Combo final: Muscle-up + Front lever + Handstand', sets:'1 serie completa', rest:'—', muscle:'Full body', tip:'¡La trifecta de la calistenia élite!'},
+    ]
+  },
+
+  /* ═══════════════════════════════════════════════
+     PLAN ANUAL — RUNNING (52 semanas: 5K → Maratón)
+  ════════════════════════════════════════════════ */
+  {
+    key:'anual-run-1', name:'Año Running · S1: Primeros Pasos', type:'running', emoji:'📅',
+    difficulty:'easy', duration:'30 min', level:'Principiante', week:1,
+    exercises:[
+      {name:'Caminata + trote alternado', sets:'5 × (3 min camina + 1 min trota)', rest:'—', muscle:'Cardio base', tip:'Objetivo: acostumbrar el cuerpo al impacto'},
+      {name:'Movilidad de tobillo', sets:'2 × 15 reps/lado', rest:'30s', muscle:'Tobillos', tip:'Previene lesiones desde el inicio'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/Pantorrillas', tip:'Post-entreno siempre'},
+    ]
+  },
+  {
+    key:'anual-run-8', name:'Año Running · S8: Tu Primer 5K', type:'running', emoji:'📅',
+    difficulty:'easy', duration:'35 min', level:'Principiante', week:8,
+    exercises:[
+      {name:'Trote continuo 5K', sets:'5km a ritmo cómodo', rest:'—', muscle:'Cardio', tip:'¡Tu primera distancia de 5K completa!'},
+      {name:'Sentadillas para runners', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas', tip:'Fuerza complementaria, 1x/semana'},
+      {name:'Plancha', sets:'3 × 30s', rest:'45s', muscle:'Core', tip:'Estabilidad para mejor postura al correr'},
+    ]
+  },
+  {
+    key:'anual-run-16', name:'Año Running · S16: Hacia el 10K', type:'running', emoji:'📅',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:16,
+    exercises:[
+      {name:'Trote continuo 8K', sets:'8km a ritmo moderado', rest:'—', muscle:'Cardio', tip:'Construyendo base para 10K'},
+      {name:'Series de velocidad', sets:'6 × 400m rápido', rest:'90s trote suave', muscle:'Velocidad', tip:'Mejora tu economía de carrera'},
+      {name:'Zancadas con salto', sets:'3 × 10/lado', rest:'60s', muscle:'Piernas potencia', tip:'Fuerza explosiva para el sprint final'},
+    ]
+  },
+  {
+    key:'anual-run-24', name:'Año Running · S24: Tu Primer 10K', type:'running', emoji:'📅',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:24,
+    exercises:[
+      {name:'Carrera de 10K', sets:'10km a ritmo objetivo', rest:'—', muscle:'Cardio', tip:'¡La distancia más popular en running!'},
+      {name:'Series en cuesta', sets:'8 × 100m subida', rest:'descenso trote', muscle:'Fuerza/Potencia', tip:'Construye fuerza específica de carrera'},
+      {name:'Core para runners', sets:'4 × 12 reps', rest:'45s', muscle:'Core/Estabilidad', tip:'Plancha + rotaciones + puente'},
+    ]
+  },
+  {
+    key:'anual-run-32', name:'Año Running · S32: Resistencia Media Distancia', type:'running', emoji:'📅',
+    difficulty:'hard', duration:'65 min', level:'Avanzado', week:32,
+    exercises:[
+      {name:'Trote largo 14K', sets:'14km a ritmo conversacional', rest:'—', muscle:'Resistencia', tip:'El trote largo semanal es clave'},
+      {name:'Tempo run', sets:'5K a ritmo de carrera objetivo', rest:'—', muscle:'Umbral', tip:'Acostúmbrate a la sensación de "rápido pero controlado"'},
+      {name:'Series de 1000m', sets:'5 × 1000m', rest:'2 min trote', muscle:'VO2 máx', tip:'El entrenamiento clave para media maratón'},
+    ]
+  },
+  {
+    key:'anual-run-40', name:'Año Running · S40: Hacia Media Maratón', type:'running', emoji:'📅',
+    difficulty:'hard', duration:'80 min', level:'Avanzado', week:40,
+    exercises:[
+      {name:'Trote largo 18K', sets:'18km a ritmo cómodo', rest:'—', muscle:'Resistencia', tip:'Te acercas a los 21K de la media maratón'},
+      {name:'Series de 1600m', sets:'5 × 1600m', rest:'3 min trote', muscle:'Resistencia/Velocidad', tip:'Simula la fatiga acumulada de carrera larga'},
+      {name:'Trabajo de fuerza específico', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas', tip:'Sentadillas + zancadas + peso muerto rumano'},
+    ]
+  },
+  {
+    key:'anual-run-48', name:'Año Running · S48: Tu Media Maratón', type:'running', emoji:'📅',
+    difficulty:'hard', duration:'120 min', level:'Avanzado', week:48,
+    exercises:[
+      {name:'Media Maratón — 21.1K', sets:'21.1km a ritmo objetivo', rest:'—', muscle:'Resistencia total', tip:'¡El gran objetivo: a por tu mejor tiempo!'},
+      {name:'Recuperación activa', sets:'20 min trote muy suave', rest:'—', muscle:'Recuperación', tip:'Al día siguiente de la carrera'},
+    ]
+  },
+  {
+    key:'anual-run-52', name:'Año Running · S52: Reflexión y Maratón 🏆', type:'running', emoji:'🏆',
+    difficulty:'hard', duration:'180 min', level:'Avanzado', week:52,
+    exercises:[
+      {name:'Maratón completa — 42.2K (opcional)', sets:'42.2km', rest:'—', muscle:'Resistencia extrema', tip:'Si completaste las 52 semanas, ¡estás listo!'},
+      {name:'O: Tu mejor 10K del año', sets:'10km a máximo esfuerzo', rest:'—', muscle:'Velocidad/Resistencia', tip:'Compara tu tiempo con la semana 24'},
+      {name:'Celebración del año de running', sets:'—', rest:'—', muscle:'Mental', tip:'De caminar-trotar a maratón. ¡Felicidades! 🏆'},
+    ]
+  },
+
+  /* ═══════════════════════════════════════════════
+     PLAN ANUAL — CROSSFIT (52 semanas)
+  ════════════════════════════════════════════════ */
+  {
+    key:'anual-xfit-1', name:'Año CrossFit · S1: Movimientos Base', type:'crossfit', emoji:'📅',
+    difficulty:'easy', duration:'40 min', level:'Principiante', week:1,
+    exercises:[
+      {name:'Air squat', sets:'4 × 15 reps', rest:'60s', muscle:'Piernas', tip:'Técnica de sentadilla aire perfecta'},
+      {name:'Push-up', sets:'4 × 10 reps', rest:'60s', muscle:'Pecho', tip:'Base del movimiento de empuje'},
+      {name:'Ring rows', sets:'4 × 10 reps', rest:'60s', muscle:'Espalda', tip:'Sustituto de pull-up para principiantes'},
+      {name:'Box step-up', sets:'4 × 10/lado', rest:'60s', muscle:'Piernas', tip:'Caja a altura de rodilla'},
+    ]
+  },
+  {
+    key:'anual-xfit-8', name:'Año CrossFit · S8: WOD "Cindy" adaptado', type:'crossfit', emoji:'📅',
+    difficulty:'med', duration:'25 min', level:'Principiante', week:8,
+    exercises:[
+      {name:'AMRAP 15min: 5 Pull-ups asistidas', sets:'Tantas rondas como sea posible', rest:'—', muscle:'Full body', tip:'WOD clásico — adaptado a tu nivel'},
+      {name:'+ 10 Push-ups', sets:'Misma ronda', rest:'—', muscle:'Pecho', tip:'Sin descanso entre movimientos'},
+      {name:'+ 15 Air squats', sets:'Misma ronda', rest:'—', muscle:'Piernas', tip:'Completa el círculo y repite'},
+    ]
+  },
+  {
+    key:'anual-xfit-16', name:'Año CrossFit · S16: Olympic Lifting Básico', type:'crossfit', emoji:'📅',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:16,
+    exercises:[
+      {name:'Clean técnica (con barra ligera)', sets:'5 × 5 reps', rest:'90s', muscle:'Full body potencia', tip:'Técnica antes que peso, siempre'},
+      {name:'Front squat', sets:'4 × 8 reps', rest:'90s', muscle:'Cuádriceps/Core', tip:'Posición clave para el clean'},
+      {name:'Box jumps', sets:'4 × 10 reps', rest:'60s', muscle:'Piernas potencia', tip:'Aterriza suave, controla el impacto'},
+      {name:'Kettlebell swings', sets:'4 × 15 reps', rest:'60s', muscle:'Cadena posterior', tip:'Potencia desde la cadera'},
+    ]
+  },
+  {
+    key:'anual-xfit-24', name:'Año CrossFit · S24: WOD "Fran" adaptado', type:'crossfit', emoji:'📅',
+    difficulty:'hard', duration:'20 min', level:'Intermedio', week:24,
+    exercises:[
+      {name:'21-15-9: Thrusters', sets:'21-15-9 reps', rest:'—', muscle:'Full body', tip:'El WOD más temido de CrossFit'},
+      {name:'21-15-9: Pull-ups', sets:'21-15-9 reps', rest:'—', muscle:'Espalda/Bíceps', tip:'Alterna con thrusters sin descanso'},
+      {name:'Cronometra tu tiempo total', sets:'—', rest:'—', muscle:'Mental', tip:'Anota el tiempo — compite contra ti mismo'},
+    ]
+  },
+  {
+    key:'anual-xfit-32', name:'Año CrossFit · S32: Clean & Jerk completo', type:'crossfit', emoji:'📅',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:32,
+    exercises:[
+      {name:'Clean & Jerk técnica completa', sets:'6 × 3 reps', rest:'120s', muscle:'Full body potencia', tip:'El levantamiento olímpico completo'},
+      {name:'Snatch técnica (barra ligera)', sets:'5 × 3 reps', rest:'120s', muscle:'Full body explosivo', tip:'El movimiento más técnico de CrossFit'},
+      {name:'Muscle-up en anillas', sets:'5 × 3 reps', rest:'90s', muscle:'Full body', tip:'Más difícil que en barra fija'},
+      {name:'Wall balls', sets:'4 × 15 reps', rest:'60s', muscle:'Full body cardio', tip:'Sentadilla + lanzamiento explosivo'},
+    ]
+  },
+  {
+    key:'anual-xfit-44', name:'Año CrossFit · S44: WOD "Murph" adaptado', type:'crossfit', emoji:'📅',
+    difficulty:'hard', duration:'60 min', level:'Avanzado', week:44,
+    exercises:[
+      {name:'1 milla de carrera', sets:'1.6km', rest:'—', muscle:'Cardio', tip:'El WOD homenaje más famoso'},
+      {name:'100 Pull-ups', sets:'Divide en rondas', rest:'según necesites', muscle:'Espalda', tip:'Puedes dividir en sets de 5-10'},
+      {name:'200 Push-ups', sets:'Divide en rondas', rest:'según necesites', muscle:'Pecho', tip:'Ritmo constante, no te quemes al inicio'},
+      {name:'300 Air squats', sets:'Divide en rondas', rest:'según necesites', muscle:'Piernas', tip:'El volumen más alto del WOD'},
+      {name:'1 milla de carrera final', sets:'1.6km', rest:'—', muscle:'Cardio', tip:'Cierra con la segunda milla'},
+    ]
+  },
+  {
+    key:'anual-xfit-52', name:'Año CrossFit · S52: Tu WOD Personalizado 🏆', type:'crossfit', emoji:'🏆',
+    difficulty:'hard', duration:'45 min', level:'Avanzado', week:52,
+    exercises:[
+      {name:'AMRAP 20min: Clean & Jerk x5', sets:'Tantas rondas como sea posible', rest:'—', muscle:'Full body', tip:'Combina todo lo aprendido en el año'},
+      {name:'+ Muscle-ups x3', sets:'Misma ronda', rest:'—', muscle:'Full body', tip:'El movimiento que dominaste en S32'},
+      {name:'+ Box jumps x10', sets:'Misma ronda', rest:'—', muscle:'Piernas potencia', tip:'Cierra cada ronda con explosividad'},
+      {name:'Compara con tu primer WOD (S1)', sets:'—', rest:'—', muscle:'Mental', tip:'52 semanas de progreso — ¡eres otro atleta!'},
+    ]
+  },
+
+  /* ═══════════════════════════════════════════════
+     PLAN VOLUMEN — 16 semanas (ganar masa muscular)
+  ════════════════════════════════════════════════ */
+  {
+    key:'vol-s1', name:'Plan Volumen · S1: Inicio Hipertrofia', type:'gym', emoji:'💪',
+    difficulty:'med', duration:'60 min', level:'Intermedio', week:1,
+    exercises:[
+      {name:'Sentadilla con barra', sets:'4 × 10 reps', rest:'90s', muscle:'Piernas', tip:'Rango de hipertrofia: 8-12 reps'},
+      {name:'Press banca plano', sets:'4 × 10 reps', rest:'90s', muscle:'Pecho', tip:'Volumen alto, peso moderado'},
+      {name:'Remo con barra', sets:'4 × 10 reps', rest:'90s', muscle:'Espalda', tip:'Controla la fase excéntrica'},
+      {name:'Press militar', sets:'4 × 10 reps', rest:'75s', muscle:'Hombros', tip:'Estimula los 3 deltoides'},
+      {name:'Curl con barra', sets:'3 × 12 reps', rest:'60s', muscle:'Bíceps', tip:'Aislamiento puro'},
+      {name:'Extensión tríceps polea', sets:'3 × 12 reps', rest:'60s', muscle:'Tríceps', tip:'Cierra el entreno de brazos'},
+    ]
+  },
+  {
+    key:'vol-s8', name:'Plan Volumen · S8: Sobrecarga Progresiva', type:'gym', emoji:'💪',
+    difficulty:'hard', duration:'70 min', level:'Intermedio', week:8,
+    exercises:[
+      {name:'Sentadilla con barra', sets:'5 × 10 reps', rest:'90s', muscle:'Piernas', tip:'+15% peso vs semana 1'},
+      {name:'Press banca plano', sets:'5 × 10 reps', rest:'90s', muscle:'Pecho', tip:'Mayor volumen total'},
+      {name:'Peso muerto rumano', sets:'4 × 10 reps', rest:'90s', muscle:'Isquios', tip:'Nuevo ejercicio para isquios'},
+      {name:'Jalón al pecho', sets:'4 × 12 reps', rest:'75s', muscle:'Dorsal', tip:'Amplitud máxima'},
+      {name:'Press inclinado con mancuernas', sets:'4 × 10 reps', rest:'75s', muscle:'Pecho alto', tip:'Ángulo diferente para estímulo completo'},
+      {name:'Elevaciones laterales', sets:'4 × 15 reps', rest:'60s', muscle:'Hombro lateral', tip:'Aislamiento de deltoides medio'},
+    ]
+  },
+  {
+    key:'vol-s16', name:'Plan Volumen · S16: Cierre y Resultados', type:'gym', emoji:'💪',
+    difficulty:'hard', duration:'75 min', level:'Avanzado', week:16,
+    exercises:[
+      {name:'Sentadilla con barra', sets:'5 × 8 reps', rest:'120s', muscle:'Piernas', tip:'16 semanas: revisa tu progreso fotográfico'},
+      {name:'Press banca plano', sets:'5 × 8 reps', rest:'120s', muscle:'Pecho', tip:'Compara fuerza vs semana 1'},
+      {name:'Peso muerto convencional', sets:'4 × 8 reps', rest:'120s', muscle:'Cadena posterior', tip:'Mide tu progreso de fuerza total'},
+      {name:'Dominadas', sets:'4 × 10 reps', rest:'90s', muscle:'Espalda', tip:'Sin asistencia tras 16 semanas'},
+      {name:'Press militar', sets:'4 × 10 reps', rest:'90s', muscle:'Hombros', tip:'Compara desarrollo de hombros'},
+      {name:'Mediciones corporales', sets:'—', rest:'—', muscle:'Seguimiento', tip:'Mide brazos, pecho, piernas — anota tu progreso'},
+    ]
+  },
+
+  /* ═══════════════════════════════════════════════
+     PLAN DEFINICIÓN — 12 semanas
+  ════════════════════════════════════════════════ */
+  {
+    key:'def-s1', name:'Plan Definición · S1: Inicio Cut', type:'gym', emoji:'🔥',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:1,
+    exercises:[
+      {name:'Sentadilla con barra', sets:'4 × 12 reps', rest:'60s', muscle:'Piernas', tip:'Mantén la fuerza, menos descanso'},
+      {name:'Press banca plano', sets:'4 × 12 reps', rest:'60s', muscle:'Pecho', tip:'Más reps, menos descanso = más gasto calórico'},
+      {name:'Circuito metabólico: Burpees', sets:'3 × 15 reps', rest:'30s', muscle:'Full body cardio', tip:'Eleva la frecuencia cardíaca'},
+      {name:'Remo con mancuerna', sets:'4 × 12 reps', rest:'60s', muscle:'Espalda', tip:'Mantén masa muscular en déficit'},
+      {name:'Mountain climbers', sets:'3 × 30s', rest:'30s', muscle:'Core/Cardio', tip:'Termina con quema calórica extra'},
+    ]
+  },
+  {
+    key:'def-s6', name:'Plan Definición · S6: Intensidad Media', type:'gym', emoji:'🔥',
+    difficulty:'hard', duration:'60 min', level:'Intermedio', week:6,
+    exercises:[
+      {name:'Superserie: Sentadilla + Zancadas', sets:'4 × 12+12', rest:'45s', muscle:'Piernas', tip:'Sin descanso entre ejercicios'},
+      {name:'Superserie: Press banca + Aperturas', sets:'4 × 12+15', rest:'45s', muscle:'Pecho', tip:'Maximiza el gasto calórico'},
+      {name:'Circuito HIIT: Jump squats', sets:'4 × 20s on/10s off', rest:'—', muscle:'Piernas potencia', tip:'Protocolo Tabata adaptado'},
+      {name:'Remo en máquina', sets:'4 × 15 reps', rest:'45s', muscle:'Espalda', tip:'Cardio + fuerza combinados'},
+      {name:'Plancha con elevación de pierna', sets:'3 × 30s', rest:'30s', muscle:'Core', tip:'Mantén tensión constante'},
+    ]
+  },
+  {
+    key:'def-s12', name:'Plan Definición · S12: Resultado Final', type:'gym', emoji:'🔥',
+    difficulty:'hard', duration:'65 min', level:'Avanzado', week:12,
+    exercises:[
+      {name:'Circuito completo: Sentadilla-Press-Remo-Plancha', sets:'5 rondas × 12 reps c/u', rest:'45s entre rondas', muscle:'Full body', tip:'12 semanas de definición — circuito final'},
+      {name:'HIIT en cinta o bicicleta', sets:'10 × 30s sprint/30s descanso', rest:'—', muscle:'Cardio máximo', tip:'Quema final de grasa'},
+      {name:'Abdominales: Plancha + Bicicleta + Elevación piernas', sets:'3 rondas × 30s c/u', rest:'30s', muscle:'Core completo', tip:'Define el abdomen'},
+      {name:'Mediciones y fotos finales', sets:'—', rest:'—', muscle:'Seguimiento', tip:'Compara con semana 1 — ¡el resultado habla!'},
+    ]
+  },
+
+  /* ═══════════════════════════════════════════════
+     PLAN FUERZA MÁXIMA — 12 semanas (Powerlifting)
+  ════════════════════════════════════════════════ */
+  {
+    key:'fuerza-s1', name:'Plan Fuerza · S1: Base Powerlifting', type:'gym', emoji:'🏋️',
+    difficulty:'med', duration:'70 min', level:'Intermedio', week:1,
+    exercises:[
+      {name:'Sentadilla con barra (técnica)', sets:'5 × 5 reps (70%)', rest:'150s', muscle:'Piernas', tip:'Establece tu base de fuerza'},
+      {name:'Press banca (técnica)', sets:'5 × 5 reps (70%)', rest:'150s', muscle:'Pecho', tip:'Los 3 grandes levantamientos empiezan aquí'},
+      {name:'Peso muerto (técnica)', sets:'5 × 5 reps (70%)', rest:'180s', muscle:'Cadena posterior', tip:'Técnica perfecta antes que peso'},
+    ]
+  },
+  {
+    key:'fuerza-s6', name:'Plan Fuerza · S6: Intensificación', type:'gym', emoji:'🏋️',
+    difficulty:'hard', duration:'80 min', level:'Avanzado', week:6,
+    exercises:[
+      {name:'Sentadilla con barra', sets:'5 × 3 reps (85%)', rest:'180s', muscle:'Piernas', tip:'Aumenta intensidad, reduce volumen'},
+      {name:'Press banca', sets:'5 × 3 reps (85%)', rest:'180s', muscle:'Pecho', tip:'Pesos cercanos al máximo'},
+      {name:'Peso muerto', sets:'5 × 3 reps (85%)', rest:'180s', muscle:'Cadena posterior', tip:'Técnica bajo carga pesada'},
+      {name:'Accesorios: Press cerrado', sets:'3 × 8 reps', rest:'90s', muscle:'Tríceps', tip:'Apoya el press de banca'},
+    ]
+  },
+  {
+    key:'fuerza-s12', name:'Plan Fuerza · S12: Test de 1RM 🏆', type:'gym', emoji:'🏆',
+    difficulty:'hard', duration:'90 min', level:'Avanzado', week:12,
+    exercises:[
+      {name:'1RM Sentadilla', sets:'Rampa hasta máximo', rest:'300s', muscle:'Piernas', tip:'12 semanas de preparación — ¡demuestra tu fuerza!'},
+      {name:'1RM Press banca', sets:'Rampa hasta máximo', rest:'300s', muscle:'Pecho', tip:'Tu nuevo récord personal'},
+      {name:'1RM Peso muerto', sets:'Rampa hasta máximo', rest:'300s', muscle:'Cadena posterior', tip:'El total de los 3 grandes — tu Powerlifting Total'},
+    ]
+  },
+
+  /* ═══════════════════════════════════════════════
+     PLAN MOVILIDAD Y FLEXIBILIDAD — 8 semanas
+  ════════════════════════════════════════════════ */
+  {
+    key:'mov-s1', name:'Plan Movilidad · S1: Evaluación y Base', type:'calistenia', emoji:'🧘',
+    difficulty:'easy', duration:'30 min', level:'Principiante', week:1,
+    exercises:[
+      {name:'Movilidad de cadera (90/90)', sets:'3 × 8/lado', rest:'30s', muscle:'Cadera', tip:'Mejora rotación interna y externa'},
+      {name:'Movilidad de tobillo en pared', sets:'3 × 10/lado', rest:'30s', muscle:'Tobillos', tip:'Clave para sentadilla profunda'},
+      {name:'Gato-camello', sets:'3 × 10 reps', rest:'30s', muscle:'Columna', tip:'Movilidad espinal segmentada'},
+      {name:'Estiramiento de isquios activo', sets:'3 × 10/lado', rest:'30s', muscle:'Isquios', tip:'Estiramiento dinámico, no estático'},
+    ]
+  },
+  {
+    key:'mov-s4', name:'Plan Movilidad · S4: Profundidad', type:'calistenia', emoji:'🧘',
+    difficulty:'easy', duration:'35 min', level:'Principiante', week:4,
+    exercises:[
+      {name:'Sentadilla profunda sostenida', sets:'3 × 60s', rest:'45s', muscle:'Cadera/Tobillo', tip:'Mantén la posición, respira profundo'},
+      {name:'Puente de glúteo con pausa', sets:'3 × 12 reps', rest:'30s', muscle:'Glúteos/Cadera', tip:'3s de pausa arriba'},
+      {name:'Rotación torácica', sets:'3 × 10/lado', rest:'30s', muscle:'Columna torácica', tip:'Mejora rotación de tronco'},
+      {name:'Estiramiento de psoas', sets:'3 × 30s/lado', rest:'—', muscle:'Flexor de cadera', tip:'Libera tensión de estar sentado'},
+    ]
+  },
+  {
+    key:'mov-s8', name:'Plan Movilidad · S8: Libertad de Movimiento', type:'calistenia', emoji:'🧘',
+    difficulty:'med', duration:'40 min', level:'Intermedio', week:8,
+    exercises:[
+      {name:'Sentadilla profunda con rotación', sets:'3 × 8/lado', rest:'45s', muscle:'Cadera completa', tip:'Combina profundidad y rotación'},
+      {name:'Puente completo (wheel pose)', sets:'3 × 20s', rest:'45s', muscle:'Columna/Hombros', tip:'El resultado de 8 semanas de trabajo'},
+      {name:'Split lateral progresión', sets:'3 × 30s/lado', rest:'—', muscle:'Aductores', tip:'Mide tu progreso desde semana 1'},
+      {name:'Evaluación final de movilidad', sets:'—', rest:'—', muscle:'Seguimiento', tip:'Compara fotos con semana 1'},
+    ]
+  },
+
+  /* ═══════════════════════════════════════════════
+     PLAN FEMENINO TONIFICACIÓN — 16 semanas
+  ════════════════════════════════════════════════ */
+  {
+    key:'fem-s1', name:'Plan Tonificación · S1: Activación', type:'gym', emoji:'👩',
+    difficulty:'easy', duration:'45 min', level:'Principiante', week:1,
+    exercises:[
+      {name:'Sentadilla con peso corporal', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/Glúteos', tip:'Activa correctamente el glúteo'},
+      {name:'Hip thrust', sets:'4 × 15 reps', rest:'60s', muscle:'Glúteos', tip:'El ejercicio rey para glúteos'},
+      {name:'Plancha', sets:'3 × 25s', rest:'45s', muscle:'Core', tip:'Base de fuerza central'},
+      {name:'Remo con banda elástica', sets:'3 × 15 reps', rest:'45s', muscle:'Espalda', tip:'Mejora postura'},
+      {name:'Patada de glúteo en polea', sets:'3 × 15/lado', rest:'45s', muscle:'Glúteos aislado', tip:'Aislamiento puro de glúteo'},
+    ]
+  },
+  {
+    key:'fem-s8', name:'Plan Tonificación · S8: Progreso de Fuerza', type:'gym', emoji:'👩',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:8,
+    exercises:[
+      {name:'Sentadilla con barra', sets:'4 × 12 reps', rest:'75s', muscle:'Piernas/Glúteos', tip:'Progresaste de peso corporal a barra'},
+      {name:'Hip thrust con barra', sets:'4 × 12 reps', rest:'75s', muscle:'Glúteos', tip:'Añade peso progresivamente'},
+      {name:'Zancadas con mancuernas', sets:'3 × 10/lado', rest:'60s', muscle:'Piernas', tip:'Unilateral para simetría'},
+      {name:'Press banca con mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Pecho', tip:'Tonifica tren superior'},
+      {name:'Plancha con elevación de pierna', sets:'3 × 12/lado', rest:'45s', muscle:'Core/Glúteo', tip:'Doble estímulo'},
+    ]
+  },
+  {
+    key:'fem-s16', name:'Plan Tonificación · S16: Resultados', type:'gym', emoji:'👩',
+    difficulty:'med', duration:'60 min', level:'Intermedio', week:16,
+    exercises:[
+      {name:'Sentadilla búlgara con mancuernas', sets:'4 × 10/lado', rest:'75s', muscle:'Piernas/Glúteos', tip:'16 semanas: notarás la diferencia'},
+      {name:'Hip thrust con barra', sets:'5 × 10 reps', rest:'90s', muscle:'Glúteos', tip:'Peso significativamente mayor que S1'},
+      {name:'Peso muerto rumano con mancuernas', sets:'4 × 12 reps', rest:'75s', muscle:'Isquios/Glúteos', tip:'Cadena posterior tonificada'},
+      {name:'Remo con mancuerna', sets:'4 × 12/lado', rest:'60s', muscle:'Espalda', tip:'Postura mejorada notablemente'},
+      {name:'Mediciones finales', sets:'—', rest:'—', muscle:'Seguimiento', tip:'Compara con tus fotos de semana 1'},
+    ]
+  },
+
+  /* ═══════════════════════════════════════════════
+     PLAN ADULTO MAYOR — 12 semanas
+  ════════════════════════════════════════════════ */
+  {
+    key:'mayor-s1', name:'Plan Adulto Mayor · S1: Movilidad Segura', type:'calistenia', emoji:'🧓',
+    difficulty:'easy', duration:'30 min', level:'Principiante', week:1,
+    exercises:[
+      {name:'Sentadilla con apoyo en silla', sets:'3 × 10 reps', rest:'60s', muscle:'Piernas', tip:'Apóyate en el respaldo si es necesario'},
+      {name:'Marcha en el lugar', sets:'3 × 30s', rest:'45s', muscle:'Cardio suave', tip:'Calienta articulaciones'},
+      {name:'Elevación de talones', sets:'3 × 12 reps', rest:'45s', muscle:'Equilibrio/Tobillo', tip:'Mejora equilibrio y previene caídas'},
+      {name:'Estiramiento suave de hombros', sets:'3 × 20s/lado', rest:'—', muscle:'Hombros', tip:'Mantén flexibilidad articular'},
+    ]
+  },
+  {
+    key:'mayor-s6', name:'Plan Adulto Mayor · S6: Fuerza Funcional', type:'calistenia', emoji:'🧓',
+    difficulty:'easy', duration:'35 min', level:'Principiante', week:6,
+    exercises:[
+      {name:'Sentadilla a silla sin apoyo', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas', tip:'Progreso desde semana 1 con apoyo'},
+      {name:'Subir/bajar escalón', sets:'3 × 8/lado', rest:'60s', muscle:'Piernas/Equilibrio', tip:'Funcional para vida diaria'},
+      {name:'Banda elástica: remo sentado', sets:'3 × 12 reps', rest:'45s', muscle:'Espalda', tip:'Mejora postura'},
+      {name:'Equilibrio en un pie (con apoyo)', sets:'3 × 15s/lado', rest:'30s', muscle:'Equilibrio', tip:'Reduce riesgo de caídas'},
+    ]
+  },
+  {
+    key:'mayor-s12', name:'Plan Adulto Mayor · S12: Autonomía Ganada', type:'calistenia', emoji:'🧓',
+    difficulty:'med', duration:'40 min', level:'Intermedio', week:12,
+    exercises:[
+      {name:'Sentadilla completa sin apoyo', sets:'4 × 12 reps', rest:'60s', muscle:'Piernas', tip:'12 semanas: mayor independencia funcional'},
+      {name:'Subir escaleras (varios pisos)', sets:'3 series', rest:'90s', muscle:'Cardio/Piernas', tip:'Resistencia para actividades diarias'},
+      {name:'Equilibrio en un pie sin apoyo', sets:'3 × 20s/lado', rest:'30s', muscle:'Equilibrio', tip:'Gran mejora desde semana 6'},
+      {name:'Banda elástica: ejercicio completo', sets:'3 × 12 reps c/u', rest:'45s', muscle:'Full body suave', tip:'Mantén la fuerza ganada'},
+    ]
+  },
+
+  /* ═══════════════════════════════════════════════
+     PLAN POSTPARTO — 8 semanas
+  ════════════════════════════════════════════════ */
+  {
+    key:'postparto-s1', name:'Plan Postparto · S1: Reconexión Suave', type:'calistenia', emoji:'🤰',
+    difficulty:'easy', duration:'20 min', level:'Principiante', week:1,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 10 reps', rest:'30s', muscle:'Core profundo', tip:'Reconecta con el transverso abdominal'},
+      {name:'Inclinación pélvica suave', sets:'3 × 10 reps', rest:'30s', muscle:'Core/Pelvis', tip:'Movimiento muy controlado'},
+      {name:'Caminata suave', sets:'15 min', rest:'—', muscle:'Cardio ligero', tip:'Solo si tu médico lo autorizó'},
+      {name:'Estiramiento suave de espalda', sets:'3 × 20s', rest:'—', muscle:'Espalda baja', tip:'Alivia tensión postparto'},
+    ]
+  },
+  {
+    key:'postparto-s4', name:'Plan Postparto · S4: Fuerza del Core', type:'calistenia', emoji:'🤰',
+    difficulty:'easy', duration:'30 min', level:'Principiante', week:4,
+    exercises:[
+      {name:'Plancha modificada (rodillas)', sets:'3 × 15s', rest:'45s', muscle:'Core', tip:'Progreso desde la respiración diafragmática'},
+      {name:'Puente de glúteo', sets:'3 × 12 reps', rest:'45s', muscle:'Glúteos/Core', tip:'Recupera fuerza de cadera'},
+      {name:'Sentadilla con peso corporal suave', sets:'3 × 12 reps', rest:'45s', muscle:'Piernas', tip:'Reintroduce movimiento funcional'},
+      {name:'Caminata moderada', sets:'25 min', rest:'—', muscle:'Cardio', tip:'Aumenta gradualmente el tiempo'},
+    ]
+  },
+  {
+    key:'postparto-s8', name:'Plan Postparto · S8: Retorno al Entrenamiento', type:'calistenia', emoji:'🤰',
+    difficulty:'med', duration:'35 min', level:'Intermedio', week:8,
+    exercises:[
+      {name:'Plancha completa', sets:'3 × 25s', rest:'45s', muscle:'Core', tip:'8 semanas: core reconectado y fuerte'},
+      {name:'Sentadilla con mancuernas ligeras', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas', tip:'Reintroduce peso progresivamente'},
+      {name:'Remo con banda elástica', sets:'3 × 12 reps', rest:'45s', muscle:'Espalda', tip:'Importante para cargar al bebé sin dolor'},
+      {name:'Trote suave intervalos', sets:'4 × 2 min trote / 2 min camina', rest:'—', muscle:'Cardio', tip:'Reintroduce el trote gradualmente'},
+    ]
+  },
+
+  /* ═══════════════════════════════════════════════
+     PLAN ADOLESCENTE — 12 semanas
+  ════════════════════════════════════════════════ */
+  {
+    key:'adol-s1', name:'Plan Adolescente · S1: Fundamentos Seguros', type:'calistenia', emoji:'🏫',
+    difficulty:'easy', duration:'35 min', level:'Principiante', week:1,
+    exercises:[
+      {name:'Sentadilla con peso corporal', sets:'3 × 15 reps', rest:'45s', muscle:'Piernas', tip:'Técnica perfecta es prioridad a esta edad'},
+      {name:'Flexiones de rodillas o completas', sets:'3 × 10 reps', rest:'45s', muscle:'Pecho', tip:'Según nivel de fuerza actual'},
+      {name:'Plancha', sets:'3 × 20s', rest:'30s', muscle:'Core', tip:'Construye base de core desde joven'},
+      {name:'Saltos al cajón bajo', sets:'3 × 8 reps', rest:'45s', muscle:'Piernas potencia', tip:'Desarrolla coordinación y potencia'},
+    ]
+  },
+  {
+    key:'adol-s6', name:'Plan Adolescente · S6: Desarrollo Atlético', type:'calistenia', emoji:'🏫',
+    difficulty:'med', duration:'40 min', level:'Intermedio', week:6,
+    exercises:[
+      {name:'Sentadilla con peso corporal (más reps)', sets:'4 × 15 reps', rest:'45s', muscle:'Piernas', tip:'Progreso de resistencia muscular'},
+      {name:'Flexiones completas', sets:'4 × 10 reps', rest:'45s', muscle:'Pecho', tip:'De rodillas a completas — gran progreso'},
+      {name:'Dominadas asistidas con banda', sets:'3 × 6 reps', rest:'60s', muscle:'Espalda', tip:'Desarrolla fuerza de tren superior'},
+      {name:'Sprint cortos', sets:'6 × 20m', rest:'45s', muscle:'Velocidad', tip:'Desarrolla potencia y velocidad'},
+    ]
+  },
+  {
+    key:'adol-s12', name:'Plan Adolescente · S12: Atleta en Desarrollo', type:'calistenia', emoji:'🏫',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:12,
+    exercises:[
+      {name:'Sentadilla con salto', sets:'4 × 12 reps', rest:'60s', muscle:'Piernas potencia', tip:'12 semanas: gran desarrollo de coordinación'},
+      {name:'Flexiones con palmada', sets:'3 × 8 reps', rest:'60s', muscle:'Pecho potencia', tip:'Desarrollo explosivo de fuerza'},
+      {name:'Dominadas sin asistencia', sets:'3 × 5 reps', rest:'75s', muscle:'Espalda', tip:'Logro importante a esta edad'},
+      {name:'Circuito de agilidad', sets:'4 rondas', rest:'60s', muscle:'Agilidad/Coordinación', tip:'Conos, escalera de velocidad'},
+    ]
+  },
+
 ];
 
 /* ────────────────────────────────────
@@ -2794,6 +3282,69 @@ function renderHome(){
       <div class="cat-card running" onclick="filterAndGo('running')"><div class="cat-icon">🏃</div><div class="cat-name">RUNNING</div><div class="cat-count">${WORKOUTS.filter(w=>w.type==='running').length} rutinas</div></div>
       <div class="cat-card" style="background:linear-gradient(135deg,#1a1a0f,#2d2a10);" onclick="filterAndGo('anual')"><div class="cat-icon">📅</div><div class="cat-name">PLAN ANUAL</div><div class="cat-count">${WORKOUTS.filter(w=>w.plan==='anual').length} semanas</div></div>
     </div>
+
+    <!-- PROGRAMAS ESPECIALIZADOS -->
+    <div style="padding:0 16px;margin-top:8px;">
+      <div class="section-head"><h2>🎯 Programas Especializados</h2></div>
+      <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;">
+        <div onclick="filterAndGo('anual-cali')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#1b2a1b,#0f1a0f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">📅</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Año Calistenia</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">52 semanas</div>
+        </div>
+        <div onclick="filterAndGo('anual-run')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#1a2230,#0f141f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">📅</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Año Running</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">5K → Maratón</div>
+        </div>
+        <div onclick="filterAndGo('anual-xfit')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#2a1a0f,#1a0f08);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">📅</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Año CrossFit</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">52 semanas</div>
+        </div>
+        <div onclick="filterAndGo('vol')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#2a1530,#1a0f1f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">💪</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Volumen</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">16 semanas</div>
+        </div>
+        <div onclick="filterAndGo('def')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#301515,#1f0f0f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">🔥</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Definición</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">12 semanas</div>
+        </div>
+        <div onclick="filterAndGo('fuerza')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#30220f,#1f1608);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">🏋️</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Fuerza Máxima</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">12 semanas</div>
+        </div>
+        <div onclick="filterAndGo('mov')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#0f2a28,#081a18);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">🧘</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Movilidad</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">8 semanas</div>
+        </div>
+        <div onclick="filterAndGo('fem')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#301a28,#1f0f1a);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">👩</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Tonificación</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">16 semanas</div>
+        </div>
+        <div onclick="filterAndGo('mayor')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#1f2530,#13171f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">🧓</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Adulto Mayor</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">12 semanas</div>
+        </div>
+        <div onclick="filterAndGo('postparto')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#301520,#1f0f15);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">🤰</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Postparto</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">8 semanas</div>
+        </div>
+        <div onclick="filterAndGo('adol')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#152030,#0f141f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">🏫</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Adolescente</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">12 semanas</div>
+        </div>
+      </div>
+    </div>
+
     <div style="padding:0 16px;">
       <div class="section-head"><h2>⚡ Sugerida para hoy</h2><span class="see-all" onclick="navTo('workouts')">Ver todas</span></div>
       ${renderCustomPlanCard()}
@@ -2888,11 +3439,46 @@ function openRunPlan(){
    WORKOUT LIST
 ──────────────────────────────────── */
 let activeFilter='todos';
+const PROGRAM_PREFIXES={
+  'anual-cali':{label:'📅 Año Calistenia', icon:'📅'},
+  'anual-run':{label:'📅 Año Running', icon:'📅'},
+  'anual-xfit':{label:'📅 Año CrossFit', icon:'📅'},
+  'vol':{label:'💪 Volumen', icon:'💪'},
+  'def':{label:'🔥 Definición', icon:'🔥'},
+  'fuerza':{label:'🏋️ Fuerza Máxima', icon:'🏋️'},
+  'mov':{label:'🧘 Movilidad', icon:'🧘'},
+  'fem':{label:'👩 Tonificación', icon:'👩'},
+  'mayor':{label:'🧓 Adulto Mayor', icon:'🧓'},
+  'postparto':{label:'🤰 Postparto', icon:'🤰'},
+  'adol':{label:'🏫 Adolescente', icon:'🏫'},
+};
+
 function renderWorkouts(){
   const filters=['todos','gym','calistenia','crossfit','running','anual'];
   document.getElementById('workout-filter').innerHTML=filters.map(f=>`<div class="filter-chip ${f===activeFilter?'active':''}" onclick="setFilter('${f}')">${f==='todos'?'🔥 Todos':f==='anual'?'📅 Plan Anual':f.charAt(0).toUpperCase()+f.slice(1)}</div>`).join('');
-  const filtered=activeFilter==='todos'?WORKOUTS:WORKOUTS.filter(w=>w.type===activeFilter);
-  document.getElementById('workout-list').innerHTML=filtered.map(w=>renderWorkoutCard(w)).join('');
+
+  let filtered;
+  if(PROGRAM_PREFIXES[activeFilter]){
+    // Filter by key prefix for specialized programs
+    filtered = WORKOUTS.filter(w=>w.key && w.key.startsWith(activeFilter+'-'));
+  } else if(activeFilter==='todos'){
+    filtered = WORKOUTS;
+  } else if(activeFilter==='anual'){
+    filtered = WORKOUTS.filter(w=>w.key && w.key.startsWith('anual-') && !w.key.startsWith('anual-cali') && !w.key.startsWith('anual-run') && !w.key.startsWith('anual-xfit'));
+  } else {
+    filtered = WORKOUTS.filter(w=>w.type===activeFilter);
+  }
+
+  // Show program banner if filtering a specialized program
+  const banner = PROGRAM_PREFIXES[activeFilter]
+    ? `<div style="background:var(--card);border:1px solid var(--fire);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:1.4rem;">${PROGRAM_PREFIXES[activeFilter].icon}</span>
+        <div><div style="font-weight:800;color:#fff;font-family:'Barlow Condensed',sans-serif;">${PROGRAM_PREFIXES[activeFilter].label}</div>
+        <div style="font-size:0.7rem;color:var(--muted);">${filtered.length} semanas clave de este programa</div></div>
+      </div>`
+    : '';
+
+  document.getElementById('workout-list').innerHTML = banner + filtered.map(w=>renderWorkoutCard(w)).join('');
 }
 function setFilter(f){activeFilter=f;renderWorkouts();}
 
