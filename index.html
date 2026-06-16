@@ -4178,11 +4178,50 @@ function installPWA(){
 function dismissInstall(){document.getElementById('install-banner').classList.remove('show');}
 window.addEventListener('appinstalled',()=>{showToast('✅ App instalada correctamente');dismissInstall();});
 
-/* ── SERVICE WORKER ── */
+/* ── SERVICE WORKER + AUTO-UPDATE SYSTEM ── */
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js')
-    .then(()=>console.log('SW registered'))
+    .then(reg => {
+      console.log('SW registered');
+
+      // Check for updates every time the app opens
+      reg.update();
+
+      // When a new SW is found and installed, show update banner
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if(!newWorker) return;
+        newWorker.addEventListener('statechange', () => {
+          if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
+            showUpdateBanner();
+          }
+        });
+      });
+    })
     .catch(()=>{});
+
+  // Reload automatically once the new SW takes control
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+}
+
+function showUpdateBanner(){
+  if(document.getElementById('update-banner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'update-banner';
+  banner.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--fire);color:#fff;padding:12px 20px;border-radius:30px;font-size:0.85rem;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,0.4);cursor:pointer;display:flex;align-items:center;gap:8px;max-width:90vw;';
+  banner.innerHTML = '🔄 Nueva versión disponible — Toca para actualizar';
+  banner.onclick = () => {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if(reg && reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+      else window.location.reload();
+    });
+  };
+  document.body.appendChild(banner);
 }
 
 /* ────────────────────────────────────
