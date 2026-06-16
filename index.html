@@ -35,7 +35,8 @@
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
 
 /* ── SHELL ── */
-#app{display:flex;flex-direction:column;height:100vh;max-width:900px;margin:0 auto;position:relative;overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:900px;margin:0 auto;position:relative;overflow:hidden;}
+html,body{height:100%;overflow:hidden;}
 
 /* ── SCREENS ── */
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;transition:transform 0.35s cubic-bezier(.4,0,.2,1),opacity 0.3s;}
@@ -1043,6 +1044,37 @@ html { font-size: 16px; }
   </div>
 </div>
 
+<!-- PROGRAM PURCHASE MODAL (specialized paid programs) -->
+<div class="modal-overlay hidden" id="program-paywall-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;padding:4px 0 16px;">
+      <div id="prog-pay-icon" style="font-size:2.8rem;margin-bottom:8px;">📅</div>
+      <div id="prog-pay-name" style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);">Programa</div>
+      <div id="prog-pay-desc" style="font-size:0.78rem;color:var(--muted);margin-top:4px;">Descripción</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center;margin-bottom:14px;">
+      <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Costo adicional único</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--fire);">$1.990 CLP</div>
+      <div style="font-size:0.68rem;color:var(--muted);">Pago único — acceso permanente a este programa</div>
+    </div>
+    <a href="https://mpago.la/1GxbJDc" target="_blank" id="prog-pay-link" class="paywall-btn" style="margin-bottom:10px;">
+      💳 Pagar con Mercado Pago
+    </a>
+    <div style="background:rgba(255,193,7,0.08);border:1px solid rgba(255,193,7,0.25);border-radius:var(--r-sm);padding:12px;margin-bottom:14px;font-size:0.76rem;color:var(--yellow);line-height:1.6;text-align:left;">
+      💬 Una vez pagado, envía tu comprobante al WhatsApp:<br>
+      <a href="https://wa.me/56969049000?text=Hola!%20Acabo%20de%20pagar%20un%20programa%20especializado%20de%20ConceFitTraining%20y%20adjunto%20mi%20comprobante%20🔥" target="_blank" style="color:var(--green);font-weight:700;text-decoration:none;">📲 +56 9 6904 9000</a>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+      <div style="font-size:0.74rem;color:var(--muted);margin-bottom:8px;">¿Ya tienes tu código de activación?</div>
+      <input class="act-input" type="text" id="prog-code-input" placeholder="PRG-XXXX-XXXX" maxlength="14" style="margin-bottom:10px;">
+      <button class="btn-primary" onclick="activateProgramCode()" style="width:100%;padding:12px;">🔓 Desbloquear programa</button>
+      <div id="prog-code-error" style="font-size:0.74rem;color:var(--fire);margin-top:8px;min-height:18px;"></div>
+    </div>
+    <button class="btn-secondary" onclick="closeProgramPaywall()" style="width:100%;margin-top:10px;padding:12px;">Cancelar</button>
+  </div>
+</div>
+
 <!-- TRIAL BANNER -->
 <div class="trial-banner hidden" id="trial-banner">
   <span id="trial-text">🎁 Prueba gratuita: 3 días restantes</span>
@@ -1365,106 +1397,323 @@ function saveActiveUser() {
 
 /* ── EXERCISE IMAGES ── */
 const EX_IMGS = {
-  'Press banca plano con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Air squat': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadillas con peso corporal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadillas peso corporal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla con peso corporal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla con peso corporal (más reps)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla con peso corporal suave': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla a silla sin apoyo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla completa sin apoyo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla con apoyo en silla': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadillas para runners': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla × 15': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla con barra (técnica)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla con barra 5x5': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla con barra 5×5': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla con barra 6x4': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla con cadenas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla con mancuernas ligeras': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla con pausa': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla con salto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla: Día pesado 3x3': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla 8x2 potencia': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Sentadilla goblet': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Sentadilla goblet con kettlebell': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Sentadilla frontal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Front_Squat/0.jpg',
+  'Sentadilla frontal 5x5': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Front_Squat/0.jpg',
+  'Sentadilla bulgar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Split_Squat/0.jpg',
+  'Sentadilla bulgar con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Split_Squat/0.jpg',
+  'Sentadilla búlgara': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Split_Squat/0.jpg',
+  'Sentadilla búlgara con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Split_Squat/0.jpg',
+  'Sentadilla profunda con rotación': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Sentadilla profunda sostenida': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Hack squat': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hack_Squat/0.jpg',
+  'Pistol squat asistido': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Pistol squat completo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Pistol squat con peso': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Pistol squat con salto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Pistol squat libre': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Pistol squat: serie completa sin descanso': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
+  'Press banca': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca (técnica)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca 5x5': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca 6x4': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca 8x3 potencia': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
   'Press banca plano': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
-  'Press inclinado con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
-  'Press banca inclinado con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
-  'Press declinado con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Barbell_Bench_Press/0.jpg',
-  'Press declinado con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Barbell_Bench_Press/0.jpg',
+  'Press banca plano 5×5': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca plano con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca: Día explosivo 5x3': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca con pausa': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca con bandas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press banca con cadenas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
   'Press banca agarre cerrado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Barbell_Bench_Press/0.jpg',
+  'Press banca inclinado con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press inclinado con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press inclinado con barra 4×6': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press inclinado con barra 5x5': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press inclinado con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press declinado con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Barbell_Bench_Press/0.jpg',
+  'Press declinado con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Barbell_Bench_Press/0.jpg',
+  'Press California': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Barbell_Bench_Press/0.jpg',
+  'Press trasfondo con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Press militar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
+  'Press militar con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
+  'Press militar con barra de pie': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
+  'Press militar de pie': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
+  'Press militar sentado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
+  'Press militar 6x4': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
+  'Press militar con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shoulder_Press/0.jpg',
+  'Press Arnold': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Arnold_Dumbbell_Press/0.jpg',
+  'Curl con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg',
+  'Curl con barra Z': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg',
+  'Curl con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bicep_Curl/0.jpg',
+  'Curl con mancuernas alterno': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Hammer_Curl/0.jpg',
+  'Curl martillo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Hammer_Curl/0.jpg',
+  'Curl bíceps 21s': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bicep_Curl/0.jpg',
+  'Curl concentrado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Concentration_Curls/0.jpg',
+  'Curl en banco Scott': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Preacher_Curl/0.jpg',
+  'Curl en cable con barra recta': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Curl/0.jpg',
+  'Curl femoral nordico': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg',
+  'Curl femoral nórdico': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg',
+  'Curl femoral tumbado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg',
+  'Extensión triceps polea': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
+  'Extensión tríceps en polea alta': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
+  'Extensión tríceps polea': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
+  'Extensión tríceps sobre cabeza en polea': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
+  'Press frances con barra EZ': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Skull_Crusher/0.jpg',
+  'Press francés': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Skull_Crusher/0.jpg',
+  'Press francés con barra EZ': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Skull_Crusher/0.jpg',
+  'Press francés con mancuerna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Skull_Crusher/0.jpg',
+  'Dips en banco': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
+  'Dips en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
+  'Fondos en banco': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
+  'Fondos en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
+  'Fondos en paralelas asistidos': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
+  'Fondos en paralelas lastrados': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
+  'Fondos lastrados': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
+  'Fondos rusos': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
+  'Accesorios: Press cerrado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Barbell_Bench_Press/0.jpg',
+  'Dominadas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas agarre neutro lastradas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin-Up/0.jpg',
+  'Dominadas agarre prono': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas agarre supino': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin-Up/0.jpg',
+  'Dominadas archer': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas asistidas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas asistidas con banda': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas estrictas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas explosivas (pecho a barra)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas lastradas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas negativas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas o jalón': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Dominadas sin asistencia': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Pull-up × 5': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  '100 Pull-ups': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  '21-15-9: Pull-ups': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'AMRAP 15min: 5 Pull-ups asistidas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'EMOM 20 min — Min 2: 6 Pull-ups': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'FRAN: 21-15-9 Pull-ups': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Máximo de Dominadas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Máximo dominadas con peso': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Jalón en barra (negativo)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Flexiones arquero': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Flexiones completas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Flexiones con palmada': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/0.jpg',
+  'Flexiones de rodillas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Flexiones de rodillas o completas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Flexiones diamante': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Barbell_Bench_Press/0.jpg',
+  'Flexiones estándar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Flexiones rodillas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Flexiones × 10': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Push-up': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  '+ 10 Push-ups': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  '200 Push-ups': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Remo Pendlay': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
+  'Remo con banda elástica': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg',
+  'Remo con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
+  'Remo con barra pronado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
+  'Remo con barra supino': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
+  'Remo con barra supino pesado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
+  'Remo con mancuerna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Two-Dumbbell_Row/0.jpg',
+  'Remo con mancuerna a 1 brazo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Two-Dumbbell_Row/0.jpg',
+  'Remo en máquina': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg',
+  'Remo en máquina unilateral': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg',
+  'Remo en polea baja sentado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg',
+  'Remo invertido en mesa': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg',
+  'Banda elástica: remo sentado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg',
+  'Ring rows': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg',
+  'Jalón al pecho': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Front_Lat_Pulldown/0.jpg',
+  'Jalón al pecho agarre ancho': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Front_Lat_Pulldown/0.jpg',
+  'Jalón al pecho agarre cerrado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Front_Lat_Pulldown/0.jpg',
+  'Jalón supino agarre estrecho': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Front_Lat_Pulldown/0.jpg',
+  'Jalón tras nuca (cuidado!)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Front_Lat_Pulldown/0.jpg',
+  'Upright row con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Upright_Row/0.jpg',
+  'Peso muerto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto (técnica)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto 3x5': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto 5x3': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto 5×3 (máximo)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto con déficit': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto convencional': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto en bloques': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto sumo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto: Día técnico 6x2': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  '1RM Peso muerto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  '1RM Peso muerto: RÉCORD ANUAL': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Test 1RM Peso muerto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
+  'Peso muerto rumano': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg',
+  'Peso muerto rumano 4x10 hipertrofia': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg',
+  'Peso muerto rumano con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg',
+  'Good mornings': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions__Back_Extensions_/0.jpg',
+  'Hiperextensiones': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions__Back_Extensions_/0.jpg',
+  'Hip thrust': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Hip thrust con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Hip thrust con pausa': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Puente de glúteo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Puente de glúteo con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Puente de glúteo con pausa': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Puente completo (wheel pose)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Elevación de caderas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Patada de glúteo en polea': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
+  'Zancadas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
+  'Zancadas con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
+  'Zancadas con mancuernas (caminando)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
+  'Zancadas con salto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
+  'Step-up con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
+  'Box step-up': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg',
+  'Box jump o step-up': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Jump_Multiple_Response/0.jpg',
+  'Subir/bajar escalón': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg',
+  'Leg press unilateral': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg',
+  'Prensa de piernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg',
+  'Extensión de piernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg',
+  'Gemelos en prensa': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Press_On_The_Leg_Press_Machine/0.jpg',
+  'Elevación de gemelos de pie': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocking_Standing_Calf_Raise/0.jpg',
+  'Elevación de talones': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocking_Standing_Calf_Raise/0.jpg',
+  'Plancha': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
+  'Plancha frontal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
+  'Plancha completa': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
+  'Plancha con desplazamiento': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
+  'Plancha con elevación de pierna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
+  'Plancha con toque de hombro': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
+  'Plancha modificada (rodillas)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
+  'Plancha lateral': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg',
+  'Crunch abdominal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch/0.jpg',
+  'Russian twist': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Russian_Twist/0.jpg',
+  'Ab wheel': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Roller/0.jpg',
+  'Ab wheel rollout': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Roller/0.jpg',
+  'Elevación de piernas tumbado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Raise/0.jpg',
+  'Hollow body hold': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'L-sit en barras paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'L-sit en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'L-sit a V-sit progresión': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'Toes to bar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'Mountain climbers': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Mountain_Climbers/0.jpg',
+  'Dead bug': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch/0.jpg',
+  'Pallof press': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Russian_Twist/0.jpg',
+  'Elevaciones laterales': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/0.jpg',
+  'Elevaciones laterales en cable': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Lateral_Raise/0.jpg',
+  'Elevaciones laterales inclinado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/0.jpg',
+  'Elevaciones frontales alternas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Front_Raise/0.jpg',
+  'Face pulls': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg',
+  'Face pulls con cuerda': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg',
+  'Face pulls en polea': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg',
+  'Pájaro con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Flyes/0.jpg',
+  'Shrugs con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shrug/0.jpg',
+  'Shrugs con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg',
   'Aperturas con mancuernas plano': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Flyes/0.jpg',
   'Aperturas en cable cruzado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
   'Cruce de poleas alto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
   'Cable fly bajo a alto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
   'Pullover con mancuerna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent-Arm_Barbell_Pullover/0.jpg',
-  'Fondos en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
-  'Fondos lastrados': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
-  'Fondos en banco': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
-  'Flexiones estándar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
-  'Flexiones con palmada': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Clock_Push-Up/0.jpg',
-  'Flexiones diamante': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Barbell_Bench_Press/0.jpg',
-  'Flexiones arquero': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
-  'Flexiones rodillas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
-  'Dominadas agarre prono': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
-  'Dominadas asistidas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
-  'Dominadas lastradas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
-  'Dominadas agarre supino': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin-Up/0.jpg',
-  'Dominadas archer': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
-  'Jalón al pecho agarre ancho': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Front_Lat_Pulldown/0.jpg',
-  'Jalón al pecho agarre cerrado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Front_Lat_Pulldown/0.jpg',
-  'Jalón al pecho': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Front_Lat_Pulldown/0.jpg',
-  'Remo con barra pronado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
-  'Remo con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
-  'Remo Pendlay': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
-  'Remo con mancuerna a 1 brazo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Two-Dumbbell_Row/0.jpg',
-  'Remo en polea baja sentado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg',
-  'Face pulls': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg',
-  'Face pulls con cuerda': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg',
-  'Peso muerto convencional': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
-  'Peso muerto rumano': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg',
-  'Hiperextensiones': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions__Back_Extensions_/0.jpg',
-  'Shrugs con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shrug/0.jpg',
-  'Shrugs con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/0.jpg',
-  'Sentadilla con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
-  'Sentadilla goblet': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
-  'Sentadilla goblet con kettlebell': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
-  'Sentadilla búlgara': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Split_Squat/0.jpg',
-  'Sentadilla búlgara con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Split_Squat/0.jpg',
-  'Sentadilla frontal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Front_Squat/0.jpg',
-  'Sentadillas con peso corporal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
-  'Prensa de piernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg',
-  'Extensión de piernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg',
-  'Curl femoral tumbado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg',
-  'Curl femoral nórdico': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Leg_Curl/0.jpg',
-  'Hack squat': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hack_Squat/0.jpg',
-  'Zancadas con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
-  'Zancadas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
-  'Step-up con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg',
-  'Hip thrust con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
-  'Hip thrust': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
-  'Puente de glúteo con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg',
-  'Elevación de gemelos de pie': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocking_Standing_Calf_Raise/0.jpg',
-  'Gemelos en prensa': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Press_On_The_Leg_Press_Machine/0.jpg',
-  'Press militar con barra de pie': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
-  'Press militar con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shoulder_Press/0.jpg',
-  'Press Arnold': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Arnold_Dumbbell_Press/0.jpg',
-  'Elevaciones laterales': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/0.jpg',
-  'Elevaciones laterales en cable': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Seated_Lateral_Raise/0.jpg',
-  'Elevaciones frontales alternas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Front_Raise/0.jpg',
-  'Pájaro con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Flyes/0.jpg',
-  'Upright row con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Upright_Row/0.jpg',
-  'Curl con barra Z': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg',
-  'Curl con mancuernas alterno': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bicep_Curl/0.jpg',
-  'Curl con mancuernas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bicep_Curl/0.jpg',
-  'Curl martillo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Hammer_Curl/0.jpg',
-  'Curl en banco Scott': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Preacher_Curl/0.jpg',
-  'Curl concentrado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Concentration_Curls/0.jpg',
-  'Curl en cable con barra recta': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Curl/0.jpg',
-  'Curl bíceps 21s': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg',
-  'Extensión tríceps en polea alta': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
-  'Extensión tríceps polea': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
-  'Press francés con mancuerna': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Skull_Crusher/0.jpg',
-  'Press francés con barra EZ': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Skull_Crusher/0.jpg',
-  'Plancha frontal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
-  'Plancha': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
-  'Plancha lateral': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg',
-  'Crunch abdominal': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch/0.jpg',
-  'Elevación de piernas tumbado': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Raise/0.jpg',
-  'Russian twist': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Russian_Twist/0.jpg',
-  'Ab wheel rollout': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Roller/0.jpg',
-  'Mountain climbers': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Mountain_Climbers/0.jpg',
-  'Toes to bar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
-  'L-sit en paralelas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
-  'Pistol squat': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
-  'Pistol squat asistido': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
-  'Pistol squat libre': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Pistol_Squat/0.jpg',
-  'Burpees': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Step_Ups/0.jpg',
-  'Box jump': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Jump_Multiple_Response/0.jpg',
-  'Kettlebell swing': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Swings/0.jpg',
-  'Thruster con barra': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Thruster/0.jpg',
-  'Pull-up': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg',
+  'Clean & Jerk técnica completa': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Clean técnica (con barra ligera)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Snatch técnica (barra ligera)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Thruster con barra vacía': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  '21-15-9: Thrusters': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'FRAN: 21-15-9 Thrusters 42,5 kg': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'EMOM 20 min — Min 1: 8 Thrusters': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'AMRAP 20min: Clean & Jerk x5': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Año CrossFit · S32: Clean & Jerk completo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Kettlebell swings': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Swings/0.jpg',
+  'One-Arm_Kettlebell_Swings': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Swings/0.jpg',
+  'Wall balls': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Thruster/0.jpg',
+  'For time: 50 Wall balls': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Thruster/0.jpg',
+  'AMRAP 7 min — Chipper: 10 DB Snatch + 10 Box Jumps': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Jump_Multiple_Response/0.jpg',
+  'Box jumps': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Jump_Multiple_Response/0.jpg',
+  'Saltos al cajón bajo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Jump_Multiple_Response/0.jpg',
+  '+ Box jumps x10': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Jump_Multiple_Response/0.jpg',
   'Muscle-up': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kipping_Muscle_Up/0.jpg',
+  'Muscle-up asistido con banda': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kipping_Muscle_Up/0.jpg',
+  'Muscle-up en anillas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kipping_Muscle_Up/0.jpg',
+  'Muscle-up estricto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kipping_Muscle_Up/0.jpg',
+  'Muscle-up estricto x3': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kipping_Muscle_Up/0.jpg',
+  'Muscle-up: máximo de repeticiones': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kipping_Muscle_Up/0.jpg',
+  '+ Muscle-ups x3': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kipping_Muscle_Up/0.jpg',
+  'Estiramiento completo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg',
+  'Estiramiento de cadena posterior': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg',
+  'Estiramiento de isquios activo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg',
+  'Estiramiento de psoas': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg',
+  'Estiramiento dinámico': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg',
+  'Estiramiento estático': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg',
+  'Estiramiento suave de espalda': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions__Back_Extensions_/0.jpg',
+  'Estiramiento suave de hombros': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg',
+  'Movilidad de cadera (90/90)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Squat/0.jpg',
+  'Movilidad de tobillo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocking_Standing_Calf_Raise/0.jpg',
+  'Movilidad de tobillo en pared': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocking_Standing_Calf_Raise/0.jpg',
+  'Gato-camello': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions__Back_Extensions_/0.jpg',
+  'Rotación torácica': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Russian_Twist/0.jpg',
+  '1RM Press banca': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  '1RM Press banca: RÉCORD ANUAL': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  '1RM Sentadilla': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  '1RM Sentadilla: RÉCORD ANUAL': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Test 1RM Press banca': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+  'Test 1RM Sentadilla': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
+  'Front squat': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Front_Squat/0.jpg',
+  'Front lever completo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'Front lever negativo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'Front lever progresión (tuck)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'Front lever: máximo tiempo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'Planche lean progresión': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg',
+  'Dragon flag negativo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
+  'Handstand contra pared': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
+  'Handstand push-up asistido': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
+  'Handstand: máximo tiempo libre': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Shoulder_Press/0.jpg',
+  'Split lateral progresión': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Side_Split_Squat/0.jpg',
+  'Equilibrio en un pie (con apoyo)': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocking_Standing_Calf_Raise/0.jpg',
+  'Equilibrio en un pie sin apoyo': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocking_Standing_Calf_Raise/0.jpg',
+  'Inclinación pélvica suave': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch/0.jpg',
+  'Respiración diafragmática': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
+  'Marcha en el lugar': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Mountain_Climbers/0.jpg'
 };
+
+// ── SAFE FALLBACK SYSTEM FOR EXERCISES WITHOUT EXACT PHOTO MATCH ──
+// Instead of risky fuzzy text matching (which caused wrong images),
+// unmapped exercises get a clean icon card based on keyword category.
+// This NEVER shows an incorrect photo.
+const EX_FALLBACK_ICON = [
+  {keys:['trote','carrera','correr','km','maratón','maraton','sprint','ritmo','tempo','intervalos','series de','drills','aceleración','segmento'], icon:'🏃', label:'Running'},
+  {keys:['calentamiento','warm'], icon:'🔥', label:'Calentamiento'},
+  {keys:['enfriamiento','cooldown','foam rolling','stretching','recuperación','recuperacion'], icon:'🧘', label:'Recuperación'},
+  {keys:['caminata','marcha'], icon:'🚶', label:'Caminata'},
+  {keys:['superserie','superserie:','+ '], icon:'⚡', label:'Superserie'},
+  {keys:['amrap','emom','for time','wod','fran','cindy','murph','chipper'], icon:'⏱️', label:'WOD'},
+  {keys:['mediciones','evaluación','evaluacion','celebración','celebracion','reflexión','reflexion','compara'], icon:'📊', label:'Seguimiento'},
+  {keys:['hidratación','hidratacion','rest','descanso'], icon:'💧', label:'Pausa'},
+  {keys:['equilibrio'], icon:'⚖️', label:'Equilibrio'},
+  {keys:['front lever','planche','handstand','dragon flag'], icon:'🤸', label:'Calistenia avanzada'},
+  {keys:['1rm','test 1rm','récord','record'], icon:'🏆', label:'Test máximo'},
+];
+
+function getFallbackIcon(name){
+  const n = name.toLowerCase();
+  for(const cat of EX_FALLBACK_ICON){
+    if(cat.keys.some(k=>n.includes(k))) return cat;
+  }
+  return {icon:'💪', label:'Ejercicio'};
+}
+
 
 const MUSCLE_CLR = {
   'Pecho':'#ff5722','Espalda':'#2196f3','Piernas':'#4caf50','Hombros':'#ff9800',
@@ -1476,10 +1725,8 @@ const MUSCLE_CLR = {
 };
 
 function getExerciseImg(name) {
-  if (EX_IMGS[name]) return EX_IMGS[name];
-  const n = name.toLowerCase();
-  const key = Object.keys(EX_IMGS).find(k => n.includes(k.toLowerCase().split(' ').slice(0,2).join(' ')));
-  return key ? EX_IMGS[key] : null;
+  // EXACT match only — no fuzzy/partial matching to avoid showing wrong exercise photos
+  return EX_IMGS[name] || null;
 }
 
 function renderExerciseVisual(name, muscle) {
@@ -1489,13 +1736,19 @@ function renderExerciseVisual(name, muscle) {
     return `<div style="position:relative;height:200px;overflow:hidden;border-bottom:1px solid var(--border);">
       <img src="${img}" alt="${name}" loading="lazy"
         style="width:100%;height:100%;object-fit:cover;object-position:top center;filter:brightness(0.9);"
-        onerror="this.closest('div').innerHTML='<div style=&quot;height:80px;background:var(--card2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;&quot;><span style=&quot;color:var(--muted);font-size:0.85rem;&quot;>💪 ${muscle}</span></div>'">
+        onerror="this.closest('div').innerHTML=document.getElementById('ex-fallback-tpl-${muscle.replace(/[^a-zA-Z0-9]/g,'')}')?.innerHTML || ''">
       <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 55%,rgba(0,0,0,0.55));pointer-events:none;"></div>
       <div style="position:absolute;top:8px;left:8px;background:${color};color:#fff;font-size:0.65rem;font-weight:800;padding:3px 10px;border-radius:20px;">${muscle}</div>
     </div>`;
   }
-  return `<div style="height:70px;background:linear-gradient(135deg,${color}20,${color}05);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:8px;">
-    <div style="color:${color};font-weight:700;font-size:0.85rem;">💪 ${muscle}</div>
+  // SAFE FALLBACK: keyword-based icon card instead of risky guessed photo
+  const fb = getFallbackIcon(name);
+  return `<div style="height:90px;background:linear-gradient(135deg,${color}20,${color}05);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px;">
+    <div style="font-size:1.8rem;">${fb.icon}</div>
+    <div>
+      <div style="color:${color};font-weight:700;font-size:0.85rem;">${muscle}</div>
+      <div style="color:var(--muted);font-size:0.65rem;">${fb.label}</div>
+    </div>
   </div>`;
 }
 
@@ -3286,63 +3539,7 @@ function renderHome(){
     <!-- PROGRAMAS ESPECIALIZADOS -->
     <div style="padding:0 16px;margin-top:8px;">
       <div class="section-head"><h2>🎯 Programas Especializados</h2></div>
-      <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;">
-        <div onclick="filterAndGo('anual-cali')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#1b2a1b,#0f1a0f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">📅</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Año Calistenia</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">52 semanas</div>
-        </div>
-        <div onclick="filterAndGo('anual-run')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#1a2230,#0f141f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">📅</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Año Running</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">5K → Maratón</div>
-        </div>
-        <div onclick="filterAndGo('anual-xfit')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#2a1a0f,#1a0f08);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">📅</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Año CrossFit</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">52 semanas</div>
-        </div>
-        <div onclick="filterAndGo('vol')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#2a1530,#1a0f1f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">💪</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Volumen</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">16 semanas</div>
-        </div>
-        <div onclick="filterAndGo('def')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#301515,#1f0f0f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">🔥</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Definición</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">12 semanas</div>
-        </div>
-        <div onclick="filterAndGo('fuerza')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#30220f,#1f1608);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">🏋️</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Fuerza Máxima</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">12 semanas</div>
-        </div>
-        <div onclick="filterAndGo('mov')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#0f2a28,#081a18);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">🧘</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Movilidad</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">8 semanas</div>
-        </div>
-        <div onclick="filterAndGo('fem')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#301a28,#1f0f1a);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">👩</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Tonificación</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">16 semanas</div>
-        </div>
-        <div onclick="filterAndGo('mayor')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#1f2530,#13171f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">🧓</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Adulto Mayor</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">12 semanas</div>
-        </div>
-        <div onclick="filterAndGo('postparto')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#301520,#1f0f15);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">🤰</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Postparto</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">8 semanas</div>
-        </div>
-        <div onclick="filterAndGo('adol')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,#152030,#0f141f);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">🏫</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">Adolescente</div>
-          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">12 semanas</div>
-        </div>
-      </div>
+      <div id="programs-scroll" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;"></div>
     </div>
 
     <div style="padding:0 16px;">
@@ -3351,6 +3548,29 @@ function renderHome(){
       ${renderWorkoutCard(todayWorkout,true)}
       ${state.history.length>0?`<div class="section-head"><h2>📅 Última sesión</h2></div>${renderHistoryItem(state.history[state.history.length-1])}`:`<div class="empty-state"><div class="es-icon">🏁</div><p>¡Sin sesiones aún! Completa tu primera rutina.</p></div>`}
     </div>`;
+  renderProgramsScroll();
+}
+
+function renderProgramsScroll(){
+  const el = document.getElementById('programs-scroll');
+  if(!el) return;
+  const gradients = {
+    'anual-cali':'#1b2a1b,#0f1a0f','anual-run':'#1a2230,#0f141f','anual-xfit':'#2a1a0f,#1a0f08',
+    'vol':'#2a1530,#1a0f1f','def':'#301515,#1f0f0f','fuerza':'#30220f,#1f1608',
+    'mov':'#0f2a28,#081a18','fem':'#301a28,#1f0f1a','mayor':'#1f2530,#13171f',
+    'postparto':'#301520,#1f0f15','adol':'#152030,#0f141f'
+  };
+  el.innerHTML = Object.entries(PROGRAM_PREFIXES).map(([key,prog])=>{
+    const owned = hasProgramAccess(key);
+    const grad = gradients[key]||'#1a1a1a,#0f0f0f';
+    return `<div onclick="filterAndGo('${key}')" style="flex-shrink:0;width:140px;background:linear-gradient(135deg,${grad});border:1px solid ${owned?'rgba(76,175,80,0.4)':'var(--border)'};border-radius:var(--r);padding:12px;cursor:pointer;position:relative;">
+      ${owned?'<div style="position:absolute;top:8px;right:8px;font-size:0.9rem;">✅</div>':'<div style="position:absolute;top:8px;right:8px;font-size:0.85rem;opacity:0.7;">🔒</div>'}
+      <div style="font-size:1.6rem;margin-bottom:6px;">${prog.icon}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:#fff;line-height:1.1;">${prog.label.replace(/^[^\\s]+\\s/,'')}</div>
+      <div style="font-size:0.6rem;color:var(--muted);margin-top:4px;line-height:1.3;">${prog.desc}</div>
+      ${!owned?`<div style="font-size:0.68rem;color:var(--fire);font-weight:800;margin-top:6px;">$1.990 CLP</div>`:`<div style="font-size:0.65rem;color:var(--green);font-weight:700;margin-top:6px;">Desbloqueado</div>`}
+    </div>`;
+  }).join('');
 }
 
 function renderCustomPlanCard(){
@@ -3370,7 +3590,14 @@ function renderCustomPlanCard(){
     </div>`;
 }
 
-function filterAndGo(type){activeFilter=type;navTo('workouts');renderWorkouts();}
+function filterAndGo(type){
+  // Specialized paid programs require purchase/code unlock
+  if(PROGRAM_PREFIXES[type] && !hasProgramAccess(type)){
+    showProgramPaywall(type);
+    return;
+  }
+  activeFilter=type;navTo('workouts');renderWorkouts();
+}
 
 function openRunPlan(){
   const plan = generateRunningPlan();
@@ -3439,19 +3666,140 @@ function openRunPlan(){
    WORKOUT LIST
 ──────────────────────────────────── */
 let activeFilter='todos';
+const PROGRAM_PRICE_CLP = 1990;
+const PROGRAM_PAY_LINK = 'https://mpago.la/1GxbJDc';
+
 const PROGRAM_PREFIXES={
-  'anual-cali':{label:'📅 Año Calistenia', icon:'📅'},
-  'anual-run':{label:'📅 Año Running', icon:'📅'},
-  'anual-xfit':{label:'📅 Año CrossFit', icon:'📅'},
-  'vol':{label:'💪 Volumen', icon:'💪'},
-  'def':{label:'🔥 Definición', icon:'🔥'},
-  'fuerza':{label:'🏋️ Fuerza Máxima', icon:'🏋️'},
-  'mov':{label:'🧘 Movilidad', icon:'🧘'},
-  'fem':{label:'👩 Tonificación', icon:'👩'},
-  'mayor':{label:'🧓 Adulto Mayor', icon:'🧓'},
-  'postparto':{label:'🤰 Postparto', icon:'🤰'},
-  'adol':{label:'🏫 Adolescente', icon:'🏫'},
+  'anual-cali':{label:'📅 Año Calistenia', icon:'📅', desc:'52 semanas: dominadas → muscle-up → front lever'},
+  'anual-run':{label:'📅 Año Running', icon:'📅', desc:'52 semanas: 5K → 10K → media maratón → maratón'},
+  'anual-xfit':{label:'📅 Año CrossFit', icon:'📅', desc:'52 semanas: movimientos base → WODs de élite'},
+  'vol':{label:'💪 Volumen', icon:'💪', desc:'16 semanas para ganar masa muscular'},
+  'def':{label:'🔥 Definición', icon:'🔥', desc:'12 semanas de definición y quema de grasa'},
+  'fuerza':{label:'🏋️ Fuerza Máxima', icon:'🏋️', desc:'12 semanas estilo powerlifting'},
+  'mov':{label:'🧘 Movilidad', icon:'🧘', desc:'8 semanas de movilidad y flexibilidad'},
+  'fem':{label:'👩 Tonificación', icon:'👩', desc:'16 semanas de tonificación femenina'},
+  'mayor':{label:'🧓 Adulto Mayor', icon:'🧓', desc:'12 semanas de entrenamiento seguro'},
+  'postparto':{label:'🤰 Postparto', icon:'🤰', desc:'8 semanas de recuperación postparto'},
+  'adol':{label:'🏫 Adolescente', icon:'🏫', desc:'12 semanas de desarrollo atlético juvenil'},
 };
+
+// ── PROGRAM PURCHASE SYSTEM ──
+const PROGRAM_PURCHASES_KEY = 'cft_program_purchases';
+const PROGRAM_CODES_KEY = 'cft_program_codes';
+
+function getPurchasedPrograms(){
+  try{ return JSON.parse(localStorage.getItem(PROGRAM_PURCHASES_KEY))||[]; }catch(e){ return []; }
+}
+function savePurchasedPrograms(list){
+  localStorage.setItem(PROGRAM_PURCHASES_KEY, JSON.stringify(list));
+  try{
+    const email = currentAuthUser||'';
+    if(email){ fbRef('program_purchases/'+email.replace(/\./g,'_dot_'))?.set(list).catch(()=>{}); }
+  }catch(e){}
+}
+function syncPurchasedProgramsFromFirebase(cb){
+  try{
+    const email = currentAuthUser||'';
+    if(!email){ cb(getPurchasedPrograms()); return; }
+    fbRef('program_purchases/'+email.replace(/\./g,'_dot_'))?.once('value').then(snap=>{
+      const d = snap.val();
+      if(d && Array.isArray(d)){ localStorage.setItem(PROGRAM_PURCHASES_KEY, JSON.stringify(d)); cb(d); }
+      else cb(getPurchasedPrograms());
+    }).catch(()=>cb(getPurchasedPrograms()));
+  }catch(e){ cb(getPurchasedPrograms()); }
+}
+
+function hasProgramAccess(prefix){
+  if(isAdminUser()) return true;
+  return getPurchasedPrograms().includes(prefix);
+}
+
+function getProgramCodes(){
+  try{ return JSON.parse(localStorage.getItem(PROGRAM_CODES_KEY))||{}; }catch(e){ return {}; }
+}
+function saveProgramCodes(codes){
+  localStorage.setItem(PROGRAM_CODES_KEY, JSON.stringify(codes));
+  try{ fbRef('program_codes')?.set(codes).catch(()=>{}); }catch(e){}
+}
+function syncProgramCodesFromFirebase(cb){
+  try{
+    fbRef('program_codes')?.once('value').then(snap=>{
+      const d = snap.val()||{};
+      try{ localStorage.setItem(PROGRAM_CODES_KEY, JSON.stringify(d)); }catch(e){}
+      cb(d);
+    }).catch(()=>cb(getProgramCodes()));
+  }catch(e){ cb(getProgramCodes()); }
+}
+
+function generateProgramCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code='PRG-';
+  for(let i=0;i<4;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  code+='-';
+  for(let i=0;i<4;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+function showProgramPaywall(prefix){
+  const prog = PROGRAM_PREFIXES[prefix];
+  if(!prog) return;
+  document.getElementById('prog-pay-icon').textContent = prog.icon;
+  document.getElementById('prog-pay-name').textContent = prog.label;
+  document.getElementById('prog-pay-desc').textContent = prog.desc;
+  document.getElementById('prog-pay-link').href = PROGRAM_PAY_LINK;
+  document.getElementById('prog-code-input').value = '';
+  document.getElementById('prog-code-error').textContent = '';
+  window._pendingProgramPrefix = prefix;
+  document.getElementById('program-paywall-modal').classList.remove('hidden');
+}
+
+function closeProgramPaywall(){
+  document.getElementById('program-paywall-modal').classList.add('hidden');
+  window._pendingProgramPrefix = null;
+}
+
+function activateProgramCode(){
+  const raw = document.getElementById('prog-code-input')?.value.trim().toUpperCase();
+  const err = document.getElementById('prog-code-error');
+  if(err) err.textContent='';
+  if(!raw||raw.length<6){ if(err) err.textContent='Ingresa un código válido'; return; }
+
+  syncProgramCodesFromFirebase(codes=>{
+    const entry = codes[raw];
+    if(!entry){ if(err) err.textContent='❌ Código inválido. Verifica con tu entrenador.'; return; }
+    if(entry.used){ if(err) err.textContent='❌ Código ya fue utilizado.'; return; }
+
+    const prefix = entry.prefix || window._pendingProgramPrefix;
+    const purchased = getPurchasedPrograms();
+    if(!purchased.includes(prefix)){
+      purchased.push(prefix);
+      savePurchasedPrograms(purchased);
+    }
+    codes[raw].used = true;
+    codes[raw].usedAt = Date.now();
+    codes[raw].usedBy = currentAuthUser||'';
+    saveProgramCodes(codes);
+
+    closeProgramPaywall();
+    showToast('✅ ¡Programa desbloqueado!');
+    renderWorkouts();
+  });
+}
+
+function adminGenerateProgramCode(prefix){
+  const code = generateProgramCode();
+  syncProgramCodesFromFirebase(codes=>{
+    codes[code] = {prefix, createdAt:Date.now(), used:false};
+    saveProgramCodes(codes);
+    navigator.clipboard?.writeText(code).catch(()=>{});
+    window._lastProgramCode = code;
+    showToast('✅ Código: '+code+' (copiado)');
+    const display = document.getElementById('admin-program-code-display');
+    const wrap = document.getElementById('admin-program-code-wrap');
+    if(display) display.textContent = code;
+    if(wrap) wrap.style.display='block';
+  });
+}
 
 function renderWorkouts(){
   const filters=['todos','gym','calistenia','crossfit','running','anual'];
@@ -3480,7 +3828,13 @@ function renderWorkouts(){
 
   document.getElementById('workout-list').innerHTML = banner + filtered.map(w=>renderWorkoutCard(w)).join('');
 }
-function setFilter(f){activeFilter=f;renderWorkouts();}
+function setFilter(f){
+  if(PROGRAM_PREFIXES[f] && !hasProgramAccess(f)){
+    showProgramPaywall(f);
+    return;
+  }
+  activeFilter=f;renderWorkouts();
+}
 
 function renderWorkoutCard(w){
   const diffdots=(n,cls)=>[1,2,3].map(i=>`<div class="diff-dot${i<=n?' filled '+cls:''}"></div>`).join('');
@@ -3516,6 +3870,12 @@ function openWorkout(key){
       title.innerHTML='⏸ Cuenta suspendida';
       sub.innerHTML='Tu suscripción venció. Paga y envía tu comprobante al <strong style="color:var(--fire);">+56 9 6904 9000</strong> para recibir tu código de activación.';
     }
+    return;
+  }
+  // Check specialized paid program access by key prefix
+  const progPrefix = Object.keys(PROGRAM_PREFIXES).find(p=>key.startsWith(p+'-'));
+  if(progPrefix && !hasProgramAccess(progPrefix)){
+    showProgramPaywall(progPrefix);
     return;
   }
   const w=WORKOUTS.find(x=>x.key===key);
@@ -3749,7 +4109,7 @@ function renderProfile(){
               <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
             </div>
             <div style="flex:1;">
-              <div class="settings-label">Hablar con Matias Flores</div>
+              <div class="settings-label">Hablar con ConceFitTraining</div>
               <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Consultas y planificación personalizada</div>
             </div>
             <div class="settings-arrow" style="color:#25D366;">›</div>
@@ -3980,6 +4340,35 @@ function renderAdminPanel(){
           <div style="display:flex;gap:8px;">
             <input class="form-input" type="text" id="new-trainer-code" placeholder="Nuevo código entrenador" style="flex:1;">
             <button onclick="addTrainerCode()" class="btn-primary" style="padding:10px 14px;font-size:0.8rem;">+ Agregar</button>
+          </div>
+        </div>
+
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:10px;">🎯 Programas Especializados ($1.990 c/u)</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;">
+          <div class="form-group">
+            <label class="form-label">Programa a desbloquear</label>
+            <select class="form-input" id="admin-program-select">
+              <option value="anual-cali">📅 Año Calistenia</option>
+              <option value="anual-run">📅 Año Running</option>
+              <option value="anual-xfit">📅 Año CrossFit</option>
+              <option value="vol">💪 Volumen</option>
+              <option value="def">🔥 Definición</option>
+              <option value="fuerza">🏋️ Fuerza Máxima</option>
+              <option value="mov">🧘 Movilidad</option>
+              <option value="fem">👩 Tonificación</option>
+              <option value="mayor">🧓 Adulto Mayor</option>
+              <option value="postparto">🤰 Postparto</option>
+              <option value="adol">🏫 Adolescente</option>
+            </select>
+          </div>
+          <button class="btn-primary" style="width:100%;padding:13px;" onclick="adminGenerateProgramCode(document.getElementById('admin-program-select').value)">
+            🔑 Generar Código de Programa
+          </button>
+          <div id="admin-program-code-wrap" style="margin-top:12px;display:none;">
+            <div style="background:rgba(76,175,80,0.1);border:1px solid var(--green);border-radius:var(--r-sm);padding:14px;text-align:center;">
+              <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;">CÓDIGO GENERADO — envía esto al usuario:</div>
+              <div id="admin-program-code-display" style="font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--green);letter-spacing:0.1em;"></div>
+            </div>
           </div>
         </div>
       </div>
