@@ -599,6 +599,7 @@ html { font-size: 16px; }
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9wkXfWKMkGAgxzdSn7emFOBLb7CUR5yc",
@@ -611,6 +612,17 @@ html { font-size: 16px; }
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
+    // ── ANONYMOUS AUTH (invisible to the user) ──
+    // Esto permite que las reglas de la base de datos exijan "auth != null"
+    // sin afectar el sistema de login propio de la app (email/contraseña en /auth).
+    // Así, solo quien abre la app real (no quien pega la URL directo) puede leer/escribir.
+    window._fbAuthReady = new Promise((resolve) => {
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) { resolve(user); return; }
+        firebase.auth().signInAnonymously().catch(err => console.error('Auth anónima falló:', err));
+      });
+    });
   </script>
 
 </head>
