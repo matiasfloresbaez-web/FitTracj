@@ -206,7 +206,7 @@ select.form-input option{background:var(--card);}
 /* Timer modal */
 .modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.7);z-index:300;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
 .modal-overlay.hidden{display:none;}
-.modal-sheet{background:var(--card);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:430px;}
+.modal-sheet{background:var(--card);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:430px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
 .timer-display{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:5rem;font-weight:800;color:var(--white);line-height:1;margin:16px 0;}
 .timer-display.running{color:var(--fire);}
@@ -1072,6 +1072,96 @@ html { font-size: 16px; }
       <div id="prog-code-error" style="font-size:0.74rem;color:var(--fire);margin-top:8px;min-height:18px;"></div>
     </div>
     <button class="btn-secondary" onclick="closeProgramPaywall()" style="width:100%;margin-top:10px;padding:12px;">Cancelar</button>
+  </div>
+</div>
+
+<!-- TEST DE COOPER MODAL -->
+<div class="modal-overlay hidden" id="cooper-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;padding:4px 0 16px;">
+      <div style="font-size:2.4rem;margin-bottom:8px;">🏃‍♂️</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);">Test de Cooper</div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-top:4px;">Corre al máximo durante 12 minutos y registra la distancia que lograste. Con esto calculamos tu condición física real.</div>
+    </div>
+
+    <div id="cooper-step-intro">
+      <div class="form-group">
+        <label class="form-label">Elige tu test</label>
+        <div class="chip-group" style="flex-direction:column;gap:8px;">
+          <div class="chip selected" id="cooper-mode-time" onclick="cooperSelectMode('time')" style="width:100%;text-align:left;padding:12px 14px;">
+            <strong>⏱️ Test de 12 minutos</strong><br>
+            <span style="font-size:0.7rem;color:var(--muted);">Corre 12 min, mide cuánta distancia lograste</span>
+          </div>
+          <div class="chip" id="cooper-mode-distance" onclick="cooperSelectMode('distance')" style="width:100%;text-align:left;padding:12px 14px;">
+            <strong>📏 Test de distancia fija (1.6K o 3K)</strong><br>
+            <span style="font-size:0.7rem;color:var(--muted);">Corre una distancia fija, mide cuánto tiempo te tomó</span>
+          </div>
+        </div>
+      </div>
+      <div id="cooper-intro-instructions" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px;">
+        <div style="font-size:0.76rem;color:var(--text);line-height:1.7;">
+          <strong style="color:var(--fire);">¿Cómo se hace?</strong><br>
+          1. Calienta 5-10 min antes de empezar<br>
+          2. Corre o camina rápido durante <strong>12 minutos exactos</strong> — usa un cronómetro<br>
+          3. Da lo mejor de ti, manteniendo un ritmo que puedas sostener<br>
+          4. Mide o estima la distancia total recorrida
+        </div>
+      </div>
+      <button class="btn-primary" style="width:100%;padding:14px;" onclick="cooperShowStep('input')">Ya hice el test — ingresar resultado</button>
+      <button class="btn-secondary" style="width:100%;padding:12px;margin-top:8px;" onclick="closeCooperModal()">Lo haré después</button>
+    </div>
+
+    <div id="cooper-step-input" class="hidden">
+      <div id="cooper-input-time-fields">
+        <div class="form-group">
+          <label class="form-label">Distancia recorrida en 12 minutos</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="form-input" type="number" id="cooper-distance" placeholder="2400" min="200" max="5000" style="flex:1;">
+            <span style="color:var(--muted);font-size:0.85rem;">metros</span>
+          </div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Ej: si corriste 2.4 km, ingresa 2400</div>
+        </div>
+      </div>
+
+      <div id="cooper-input-distance-fields" class="hidden">
+        <div class="form-group">
+          <label class="form-label">Distancia que corriste</label>
+          <div class="chip-group">
+            <div class="chip selected" id="cooper-fixdist-1600" onclick="cooperSelectFixedDistance(1600)">1.6K</div>
+            <div class="chip" id="cooper-fixdist-3000" onclick="cooperSelectFixedDistance(3000)">3K</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tiempo que te tomó</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="form-input" type="number" id="cooper-time-min" placeholder="0" min="0" max="60" style="width:80px;text-align:center;">
+            <span style="color:var(--muted);font-size:0.9rem;">min</span>
+            <input class="form-input" type="number" id="cooper-time-sec" placeholder="00" min="0" max="59" style="width:80px;text-align:center;">
+            <span style="color:var(--muted);font-size:0.9rem;">seg</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Edad</label>
+        <input class="form-input" type="number" id="cooper-age" placeholder="30" min="10" max="90">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sexo</label>
+        <div class="chip-group">
+          <div class="chip" id="cooper-gender-m" onclick="cooperSelectGender('m')">Hombre</div>
+          <div class="chip" id="cooper-gender-f" onclick="cooperSelectGender('f')">Mujer</div>
+        </div>
+      </div>
+      <div id="cooper-input-error" style="font-size:0.74rem;color:var(--fire);margin-bottom:8px;min-height:18px;"></div>
+      <button class="btn-primary" style="width:100%;padding:14px;" onclick="cooperCalculate()">Calcular resultado 🔥</button>
+    </div>
+
+    <div id="cooper-step-result" class="hidden">
+      <div id="cooper-result-content"></div>
+      <button class="btn-primary" style="width:100%;padding:14px;margin-top:14px;" onclick="cooperApplyAndClose()">✅ Usar estos ritmos en mi plan</button>
+    </div>
   </div>
 </div>
 
@@ -3126,6 +3216,249 @@ function getRunTimeOptions(dist){
   return list.map(l=>`<div class="chip${onbData.runTimeLabel===l?' selected':''}" onclick="onbData.runTimeLabel=this.textContent.trim();this.closest('.chip-group').querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));this.classList.add('selected')">${l}</div>`).join('');
 }
 
+/* ════════════════════════════════════
+   TEST DE COOPER — Evaluación física real
+   (12 min, mide distancia recorrida)
+   Fórmula VO2 máx: Cooper 1968
+   Zonas de entrenamiento: basadas en % VO2máx (Jack Daniels)
+════════════════════════════════════ */
+
+const COOPER_TEST_KEY = 'cft_cooper_tests';
+
+function getCooperTests(){
+  try{ return JSON.parse(localStorage.getItem(COOPER_TEST_KEY))||[]; }catch(e){ return []; }
+}
+function saveCooperTest(result){
+  const tests = getCooperTests();
+  tests.push(result);
+  localStorage.setItem(COOPER_TEST_KEY, JSON.stringify(tests));
+  try{
+    const uid = state.uid;
+    if(uid) fbRef('users/'+uid+'/cooperTests')?.set(tests).catch(()=>{});
+  }catch(e){}
+  return tests;
+}
+function getLastCooperTest(){
+  const tests = getCooperTests();
+  return tests.length ? tests[tests.length-1] : null;
+}
+
+// VO2 máx estimado (fórmula de Cooper, 1968): VO2max = (distancia_m - 504.9) / 44.73
+function calcVO2Max(distanceMeters){
+  return Math.max(0, (distanceMeters - 504.9) / 44.73);
+}
+
+// VO2 máx estimado para test de DISTANCIA FIJA (1.6K o 3K cronometrados)
+// Basado en la fórmula validada de 1.5 milla (2.4km): VO2max = (483 / tiempo_min) + 3.5
+// Se escala proporcionalmente para 1.6K y 3K usando la velocidad equivalente a 2.4km
+function calcVO2MaxFromTime(distanceMeters, timeMinutes){
+  if(!timeMinutes || timeMinutes <= 0) return 0;
+  // Velocidad de la prueba en m/min
+  const speedMPerMin = distanceMeters / timeMinutes;
+  // Tiempo equivalente que tomaría correr 2.4km (1.5 milla) a esa misma velocidad
+  const equivalentTimeFor2400m = 2400 / speedMPerMin;
+  return Math.max(0, (483 / equivalentTimeFor2400m) + 3.5);
+}
+
+// Clasificación de VO2 máx por edad/sexo (tablas estándar simplificadas)
+function classifyVO2Max(vo2, age, gender){
+  age = age || 30;
+  const tables = {
+    m: [{max:29,exc:52,good:46,fair:42,poor:37},{max:39,exc:50,good:44,fair:40,poor:35},{max:49,exc:48,good:42,fair:38,poor:33},{max:200,exc:45,good:39,fair:35,poor:30}],
+    f: [{max:29,exc:46,good:40,fair:36,poor:31},{max:39,exc:44,good:38,fair:34,poor:29},{max:49,exc:42,good:36,fair:32,poor:27},{max:200,exc:40,good:34,fair:30,poor:25}],
+  };
+  const t = (gender==='f'?tables.f:tables.m).find(r=>age<=r.max) || tables.m[3];
+  if(vo2>=t.exc) return {label:'Excelente', color:'#4caf50'};
+  if(vo2>=t.good) return {label:'Bueno', color:'#29b6f6'};
+  if(vo2>=t.fair) return {label:'Regular', color:'#ffc107'};
+  if(vo2>=t.poor) return {label:'Bajo', color:'#ff9800'};
+  return {label:'Muy bajo', color:'#ff5722'};
+}
+
+// Calcula ritmos de entrenamiento (min/km) a partir del VO2máx
+function calcZonesFromVO2(vo2, weightKg){
+  // VO2 (ml/kg/min) ≈ 0.2 * velocidad(m/min) + 3.5  →  velocidad = (VO2-3.5)/0.2
+  const vVO2max = Math.max(50, (vo2 - 3.5) / 0.2); // m/min
+  const paceAtVO2 = 1000 / vVO2max; // min/km al 100% VO2max
+
+  const fmt = (pm) => { const m=Math.floor(pm), s=Math.round((pm-m)*60); return `${m}:${String(s).padStart(2,'0')} min/km`; };
+
+  return {
+    vo2max: vo2.toFixed(1),
+    easyPace:  fmt(paceAtVO2 / 0.70),
+    marathonPace: fmt(paceAtVO2 / 0.80),
+    tempoPace: fmt(paceAtVO2 / 0.88),
+    racePace5k: fmt(paceAtVO2 / 0.95),
+    intPace:   fmt(paceAtVO2 / 1.00),
+    paceAtVO2max: fmt(paceAtVO2),
+  };
+}
+
+function calcCooperResult(distanceMeters, weightKg, age, gender, mode, timeMinutes){
+  // mode: 'time' = test de 12 minutos (Cooper clásico, mide distancia)
+  //       'distance' = test de distancia fija (1.6K o 3K, mide tiempo)
+  const vo2 = mode === 'distance'
+    ? calcVO2MaxFromTime(distanceMeters, timeMinutes)
+    : calcVO2Max(distanceMeters);
+  const classification = classifyVO2Max(vo2, age, gender);
+  const zones = calcZonesFromVO2(vo2, weightKg);
+  return { distanceMeters, timeMinutes: mode==='distance'?timeMinutes:null, mode: mode||'time', vo2max:+vo2.toFixed(1), classification, zones, date: Date.now() };
+}
+
+// ¿Corresponde repetir el test? (check-in cada N semanas desde el último test)
+const COOPER_CHECKIN_WEEKS = 6;
+function cooperCheckinDue(){
+  const last = getLastCooperTest();
+  if(!last) return true;
+  const weeksSince = (Date.now() - last.date) / (1000*60*60*24*7);
+  return weeksSince >= COOPER_CHECKIN_WEEKS;
+}
+
+// ── COOPER MODAL UI ──
+window._cooperGender = null;
+window._cooperMode = 'time';
+window._cooperFixedDistance = 1600;
+
+function openCooperModal(){
+  document.getElementById('cooper-step-intro').classList.remove('hidden');
+  document.getElementById('cooper-step-input').classList.add('hidden');
+  document.getElementById('cooper-step-result').classList.add('hidden');
+  document.getElementById('cooper-distance').value = '';
+  document.getElementById('cooper-time-min').value = '';
+  document.getElementById('cooper-time-sec').value = '';
+  document.getElementById('cooper-age').value = (state.user && state.user.age) || '';
+  document.getElementById('cooper-input-error').textContent = '';
+  window._cooperGender = null;
+  window._cooperMode = 'time';
+  window._cooperFixedDistance = 1600;
+  document.getElementById('cooper-gender-m')?.classList.remove('selected');
+  document.getElementById('cooper-gender-f')?.classList.remove('selected');
+  cooperSelectMode('time');
+  document.getElementById('cooper-modal').classList.remove('hidden');
+}
+
+function closeCooperModal(){
+  document.getElementById('cooper-modal').classList.add('hidden');
+}
+
+function cooperShowStep(step){
+  document.getElementById('cooper-step-intro').classList.toggle('hidden', step!=='intro');
+  document.getElementById('cooper-step-input').classList.toggle('hidden', step!=='input');
+  document.getElementById('cooper-step-result').classList.toggle('hidden', step!=='result');
+}
+
+function cooperSelectMode(mode){
+  window._cooperMode = mode;
+  document.getElementById('cooper-mode-time')?.classList.toggle('selected', mode==='time');
+  document.getElementById('cooper-mode-distance')?.classList.toggle('selected', mode==='distance');
+  document.getElementById('cooper-input-time-fields')?.classList.toggle('hidden', mode!=='time');
+  document.getElementById('cooper-input-distance-fields')?.classList.toggle('hidden', mode!=='distance');
+
+  const instructions = document.getElementById('cooper-intro-instructions');
+  if(instructions){
+    instructions.innerHTML = mode === 'time'
+      ? `<div style="font-size:0.76rem;color:var(--text);line-height:1.7;">
+          <strong style="color:var(--fire);">¿Cómo se hace?</strong><br>
+          1. Calienta 5-10 min antes de empezar<br>
+          2. Corre o camina rápido durante <strong>12 minutos exactos</strong> — usa un cronómetro<br>
+          3. Da lo mejor de ti, manteniendo un ritmo que puedas sostener<br>
+          4. Mide o estima la distancia total recorrida
+        </div>`
+      : `<div style="font-size:0.76rem;color:var(--text);line-height:1.7;">
+          <strong style="color:var(--fire);">¿Cómo se hace?</strong><br>
+          1. Calienta 5-10 min antes de empezar<br>
+          2. Marca o usa una pista con la distancia exacta (1.6K o 3K)<br>
+          3. Corre al máximo esfuerzo sostenible — cronometra desde el inicio<br>
+          4. Detén el cronómetro justo al cruzar la meta
+        </div>`;
+  }
+}
+
+function cooperSelectFixedDistance(meters){
+  window._cooperFixedDistance = meters;
+  document.getElementById('cooper-fixdist-1600')?.classList.toggle('selected', meters===1600);
+  document.getElementById('cooper-fixdist-3000')?.classList.toggle('selected', meters===3000);
+}
+
+function cooperSelectGender(g){
+  window._cooperGender = g;
+  document.getElementById('cooper-gender-m')?.classList.toggle('selected', g==='m');
+  document.getElementById('cooper-gender-f')?.classList.toggle('selected', g==='f');
+}
+
+function cooperCalculate(){
+  const age = parseInt(document.getElementById('cooper-age').value) || 30;
+  const gender = window._cooperGender || 'm';
+  const err = document.getElementById('cooper-input-error');
+  const mode = window._cooperMode || 'time';
+
+  let dist, timeMinutes = null;
+
+  if(mode === 'time'){
+    dist = parseInt(document.getElementById('cooper-distance').value);
+    if(!dist || dist < 200 || dist > 5000){
+      err.textContent = 'Ingresa una distancia válida entre 200 y 5000 metros';
+      return;
+    }
+  } else {
+    dist = window._cooperFixedDistance || 1600;
+    const min = parseInt(document.getElementById('cooper-time-min').value) || 0;
+    const sec = parseInt(document.getElementById('cooper-time-sec').value) || 0;
+    timeMinutes = min + (sec/60);
+    if(timeMinutes <= 0 || timeMinutes > 60){
+      err.textContent = 'Ingresa un tiempo válido';
+      return;
+    }
+  }
+  err.textContent = '';
+
+  const weight = (state.user && state.user.weight) || null;
+  const result = calcCooperResult(dist, weight, age, gender, mode, timeMinutes);
+  window._lastCooperResult = result;
+
+  const bmi = (state.user && state.user.weight && state.user.height)
+    ? (state.user.weight/Math.pow(state.user.height/100,2)).toFixed(1) : null;
+
+  document.getElementById('cooper-result-content').innerHTML = `
+    <div style="text-align:center;margin-bottom:14px;">
+      <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">VO2 máx estimado</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:2.4rem;font-weight:800;color:${result.classification.color};">${result.vo2max}</div>
+      <div style="font-size:0.85rem;font-weight:700;color:${result.classification.color};">${result.classification.label}</div>
+      ${bmi?`<div style="font-size:0.7rem;color:var(--muted);margin-top:6px;">IMC actual: ${bmi}</div>`:''}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+      <div style="background:rgba(41,182,246,0.08);border:1px solid rgba(41,182,246,0.2);border-radius:var(--r-sm);padding:10px;text-align:center;">
+        <div style="font-size:0.58rem;color:var(--ice);text-transform:uppercase;">🧘 Ritmo Fácil</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;color:var(--white);">${result.zones.easyPace}</div>
+      </div>
+      <div style="background:rgba(76,175,80,0.08);border:1px solid rgba(76,175,80,0.2);border-radius:var(--r-sm);padding:10px;text-align:center;">
+        <div style="font-size:0.58rem;color:var(--green);text-transform:uppercase;">🏃 Maratón</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;color:var(--white);">${result.zones.marathonPace}</div>
+      </div>
+      <div style="background:rgba(255,193,7,0.08);border:1px solid rgba(255,193,7,0.2);border-radius:var(--r-sm);padding:10px;text-align:center;">
+        <div style="font-size:0.58rem;color:var(--yellow);text-transform:uppercase;">🔥 Tempo</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;color:var(--white);">${result.zones.tempoPace}</div>
+      </div>
+      <div style="background:rgba(255,87,34,0.08);border:1px solid rgba(255,87,34,0.2);border-radius:var(--r-sm);padding:10px;text-align:center;">
+        <div style="font-size:0.58rem;color:var(--fire);text-transform:uppercase;">⚡ 5K Race</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;color:var(--white);">${result.zones.racePace5k}</div>
+      </div>
+    </div>
+    <div style="font-size:0.68rem;color:var(--muted);text-align:center;margin-top:10px;">Próximo check-in recomendado en ${COOPER_CHECKIN_WEEKS} semanas para medir tu progreso</div>
+  `;
+  cooperShowStep('result');
+}
+
+function cooperApplyAndClose(){
+  if(window._lastCooperResult){
+    saveCooperTest(window._lastCooperResult);
+    showToast('✅ Ritmos actualizados con tu condición real');
+  }
+  closeCooperModal();
+  // Refresh the run plan screen if open
+  if(state.currentScreen === 'runplan') openRunPlan();
+}
+
 function calcPace(dist, h, m, s){
   const distKm = {'2,5K':2.5,'5K':5,'10K':10,'21K (Medio Maratón)':21.1,'42K (Maratón)':42.2}[dist] || 0;
   if(!distKm) return '—';
@@ -3172,10 +3505,20 @@ function generateRunningPlan(){
   const goalPaceMin = goalMin > 0 ? goalMin/distKm : null;
   const fmt = (pm) => { const m=Math.floor(pm),s=Math.round((pm-m)*60); return `${m}:${String(s).padStart(2,'0')} min/km`; };
 
-  const easyPace  = goalPaceMin ? fmt(goalPaceMin * 1.25) : '7:30–9:00 min/km';
-  const tempoPace = goalPaceMin ? fmt(goalPaceMin * 1.05) : '5:30–6:30 min/km';
-  const racePace  = goalPaceMin ? fmt(goalPaceMin)         : '< 5:00 min/km';
-  const intPace   = goalPaceMin ? fmt(goalPaceMin * 0.93)  : '4:30–5:15 min/km';
+  // Si hay un Test de Cooper reciente, usar las zonas reales medidas (más preciso que solo el objetivo declarado)
+  const cooperTest = getLastCooperTest();
+  let easyPace, tempoPace, racePace, intPace;
+  if(cooperTest && cooperTest.zones){
+    easyPace  = cooperTest.zones.easyPace;
+    tempoPace = cooperTest.zones.tempoPace;
+    racePace  = goalPaceMin ? fmt(goalPaceMin) : cooperTest.zones.racePace5k; // mantiene el ritmo meta de carrera específico si existe
+    intPace   = cooperTest.zones.intPace;
+  } else {
+    easyPace  = goalPaceMin ? fmt(goalPaceMin * 1.25) : '7:30–9:00 min/km';
+    tempoPace = goalPaceMin ? fmt(goalPaceMin * 1.05) : '5:30–6:30 min/km';
+    racePace  = goalPaceMin ? fmt(goalPaceMin)         : '< 5:00 min/km';
+    intPace   = goalPaceMin ? fmt(goalPaceMin * 0.93)  : '4:30–5:15 min/km';
+  }
 
   // Build week-by-week plan
   const plan = [];
@@ -3657,7 +4000,23 @@ function openRunPlan(){
         </div>`).join('')}
     </div>`).join('');
 
-  document.getElementById('runplan-body').innerHTML = pacesHTML + weeksHTML;
+  const lastCooper = getLastCooperTest();
+  const cooperDue = cooperCheckinDue();
+  const cooperBannerHTML = `
+    <div style="margin:0 16px 16px;background:${cooperDue?'linear-gradient(135deg,rgba(255,87,34,0.15),rgba(255,87,34,0.05))':'var(--card)'};border:1px solid ${cooperDue?'rgba(255,87,34,0.35)':'var(--border)'};border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openCooperModal()">
+      <div style="font-size:1.8rem;">🏃‍♂️</div>
+      <div style="flex:1;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:800;color:var(--white);">
+          ${lastCooper ? (cooperDue ? '⏰ Hora de tu nuevo Test de Cooper' : '✅ Test de Cooper al día') : '🎯 Haz tu Test de Cooper'}
+        </div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:2px;">
+          ${lastCooper ? `VO2máx: ${lastCooper.vo2max} · ${lastCooper.classification.label} — ${cooperDue?'reevalúa tu progreso':'próximo check-in en '+COOPER_CHECKIN_WEEKS+' sem'}` : 'Mide tu condición real para ritmos más precisos'}
+        </div>
+      </div>
+      <div style="color:var(--fire);font-size:1.2rem;">›</div>
+    </div>`;
+
+  document.getElementById('runplan-body').innerHTML = cooperBannerHTML + pacesHTML + weeksHTML;
   previousScreen = 'home';
   showScreen('runplan');
 }
@@ -4034,6 +4393,21 @@ function renderProfile(){
           <div class="bio-item"><div class="bio-val">${bmi}</div><div class="bio-label">IMC</div></div>
         </div>
       </div>
+
+      ${(()=>{ const ct = getLastCooperTest(); if(!ct) return ''; return `
+      <div class="section-head"><h2>🏃 Condición Física (Test de Cooper)</h2></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;cursor:pointer;" onclick="openCooperModal()">
+        <div style="text-align:center;flex-shrink:0;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:${ct.classification.color};">${ct.vo2max}</div>
+          <div style="font-size:0.6rem;color:var(--muted);">VO2 máx</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:0.85rem;font-weight:700;color:${ct.classification.color};">${ct.classification.label}</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:2px;">Última medición: ${new Date(ct.date).toLocaleDateString('es-CL')}</div>
+          ${cooperCheckinDue()?'<div style="font-size:0.68rem;color:var(--fire);margin-top:4px;">⏰ Toca para repetir el test</div>':''}
+        </div>
+        <div style="color:var(--fire);font-size:1.2rem;">›</div>
+      </div>`; })()}
 
       <div class="section-head"><h2>🩺 Anamnesis</h2></div>
       <div class="settings-group">
