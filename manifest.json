@@ -1,6 +1,6 @@
 {
-  "name": "ConceFitTraining",
-  "short_name": "ConceFit",
+  "name": "MultiFitTraining",
+  "short_name": "MultiFit",
   "description": "Tu app de entrenamiento personal — Gym, Calistenia, CrossFit y Running con plan personalizado",
   "start_url": "./index.html",
   "scope": "./",
