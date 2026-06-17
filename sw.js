@@ -1,9 +1,9 @@
-// ConceFitTraining Service Worker
+// MultiFitTraining Service Worker
 // Estrategia: network-first para index.html (siempre busca la versión más nueva)
 // Esto permite actualizar la app sin que el usuario deba desinstalar/reinstalar
 
-const CACHE_VERSION = 'cft-v1'; // 👉 Sube este número cada vez que subas cambios importantes
-const CACHE_NAME = `concefit-${CACHE_VERSION}`;
+const CACHE_VERSION = 'mft-v2'; // 👉 Sube este número cada vez que subas cambios importantes
+const CACHE_NAME = `multifit-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
   './',
@@ -25,7 +25,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((key) => key.startsWith('concefit-') && key !== CACHE_NAME)
+          .filter((key) => (key.startsWith('concefit-') || key.startsWith('multifit-')) && key !== CACHE_NAME)
           .map((key) => caches.delete(key))
       )
     )
