@@ -5325,21 +5325,39 @@ function doLogin(){
 
 function loginWithEntry(email, entry, err){
   const userDB = getAllUsers();
-  if(entry.uid && userDB[entry.uid]){
-    // Sync from Firebase first
-    syncFromFirebase(entry.uid, (synced, cloudData) => {
-      if(synced && cloudData){
-        const freshDB = getAllUsers();
-        loadActiveUser(entry.uid);
-      } else {
-        loadActiveUser(entry.uid);
-      }
-      setActiveUid(entry.uid);
-      currentAuthUser = email;
-      // Check for custom plan
-      syncUserPlanFromFirebase(entry.uid, ()=>{});
-      launchApp();
-    });
+  if(entry.uid){
+    // Esperamos a que la autenticación anónima esté lista antes de leer Firebase,
+    // para evitar que una lectura prematura falle por permisos y nos mande al onboarding vacío
+    const doSync = () => {
+      syncFromFirebase(entry.uid, (synced, cloudData) => {
+        if(synced && cloudData){
+          loadActiveUser(entry.uid);
+          setActiveUid(entry.uid);
+          currentAuthUser = email;
+          syncUserPlanFromFirebase(entry.uid, ()=>{});
+          launchApp();
+        } else if(userDB[entry.uid]){
+          // No se pudo sincronizar con la nube, pero sí hay copia local: la usamos
+          loadActiveUser(entry.uid);
+          setActiveUid(entry.uid);
+          currentAuthUser = email;
+          syncUserPlanFromFirebase(entry.uid, ()=>{});
+          launchApp();
+        } else {
+          // No hay datos ni en la nube ni localmente: recién ahí es cuenta nueva real
+          currentAuthUser = email;
+          onbStep=0; onbData={};
+          renderOnbStep();
+          showScreen('onboarding');
+          document.getElementById('main-nav').style.display='none';
+        }
+      });
+    };
+    if(window._fbAuthReady && typeof window._fbAuthReady.then === 'function'){
+      window._fbAuthReady.then(doSync).catch(doSync);
+    } else {
+      doSync();
+    }
   } else {
     currentAuthUser = email;
     onbStep=0; onbData={};
