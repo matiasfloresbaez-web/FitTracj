@@ -1385,11 +1385,32 @@ function getAllUsers() {
   try { return JSON.parse(localStorage.getItem(DB_KEY)) || {}; } catch(e){ return {}; }
 }
 
-function saveAllUsers(userDB) {
-  // Save locally always
+function saveAllUsers(userDB, changedUid) {
+  // Save locally always (copia completa local, sirve de caché del dispositivo)
   try { localStorage.setItem(DB_KEY, JSON.stringify(userDB)); } catch(e){}
-  // Sync to Firebase (esperando auth anónimo)
-  fbSet('users', userDB);
+  // Sync to Firebase: escribimos SOLO el usuario que cambió, nunca el nodo completo.
+  // Esto evita que un dispositivo borre accidentalmente los datos de otros usuarios
+  // que existen en la nube pero no en el localStorage de este dispositivo.
+  if(changedUid){
+    if(userDB[changedUid] === undefined){
+      // El usuario fue eliminado: borramos solo esa ruta específica
+      const doDelete = () => {
+        try {
+          const ref = fbRef('users/' + changedUid);
+          if(ref) ref.remove().catch(e => console.warn('fbRemove error:', e));
+        } catch(e){}
+      };
+      if(window._fbAuthReady && typeof window._fbAuthReady.then === 'function'){
+        window._fbAuthReady.then(doDelete).catch(doDelete);
+      } else { doDelete(); }
+    } else {
+      fbSet('users/' + changedUid, userDB[changedUid]);
+    }
+  } else {
+    // Llamada sin uid específico (caso legado): no sobrescribimos toda la nube,
+    // solo guardamos local. Usar saveAllUsers(db, uid) siempre que se pueda.
+    console.warn('saveAllUsers llamado sin changedUid — solo se guardó localmente, no en la nube');
+  }
 }
 
 function saveActiveUser() {
@@ -1451,12 +1472,25 @@ function syncAllUsersFromFirebase(callback) {
 }
 
 // Save trainer to Firebase
-function saveTrainers(trainers) {
+function saveTrainers(trainers, changedId) {
   try { localStorage.setItem('cft_trainers', JSON.stringify(trainers)); } catch(e){}
-  try {
-    const ref = fbRef('trainers');
-    if(ref) ref.set(trainers).catch(()=>{});
-  } catch(e){}
+  // Escribimos solo el entrenador que cambió, nunca el nodo completo
+  // (evita que un dispositivo borre entrenadores agregados desde otro dispositivo)
+  if(changedId){
+    if(trainers[changedId] === undefined){
+      const doDelete = () => {
+        try {
+          const ref = fbRef('trainers/' + changedId);
+          if(ref) ref.remove().catch(()=>{});
+        } catch(e){}
+      };
+      if(window._fbAuthReady && typeof window._fbAuthReady.then === 'function'){
+        window._fbAuthReady.then(doDelete).catch(doDelete);
+      } else { doDelete(); }
+    } else {
+      fbSet('trainers/' + changedId, trainers[changedId]);
+    }
+  }
 }
 
 function getTrainers() {
@@ -1533,7 +1567,7 @@ function newUid() {
       const db = getAllUsers();
       const uid = newUid();
       db[uid] = { profile: d.user, tickets: d.tickets||{}, history: d.history||[], streak: d.streak||0 };
-      saveAllUsers(db);
+      saveAllUsers(db, uid);
       setActiveUid(uid);
       localStorage.removeItem('fittrack_v1');
     }
@@ -1574,7 +1608,7 @@ function saveActiveUser() {
     history: state.history,
     streak: state.streak,
   };
-  saveAllUsers(db);
+  saveAllUsers(db, state.uid);
 }
 
 
@@ -14022,7 +14056,7 @@ function onbNext(){
   const uid=newUid();
   const db=getAllUsers();
   db[uid]={profile:{...onbData},tickets:{},history:[],streak:0};
-  saveAllUsers(db);
+  saveAllUsers(db, uid);
   setActiveUid(uid);
   loadActiveUser(uid);
   // Link auth account to this uid
@@ -14073,7 +14107,7 @@ function deleteUser(uid){
   if(!confirm('¿Eliminar este usuario y todos sus datos?'))return;
   const db=getAllUsers();
   delete db[uid];
-  saveAllUsers(db);
+  saveAllUsers(db, uid);
   renderUsersScreen();
   showToast('Usuario eliminado');
 }
@@ -14835,8 +14869,9 @@ function switchUser(){
 
 function deleteCurrentUser(){
   const db=getAllUsers();
+  const _delUid = state.uid;
   delete db[state.uid];
-  saveAllUsers(db);
+  saveAllUsers(db, _delUid);
   state={uid:null,user:null,currentScreen:'users',currentWorkout:null,tickets:{},history:[],streak:0};
   renderUsersScreen();
   showScreen('users');
@@ -15287,7 +15322,7 @@ function saveAthleteEdit(){
   dbU[editingUid].profile.height = +document.getElementById('edit-height')?.value || dbU[editingUid].profile.height;
   dbU[editingUid].profile.level  = document.getElementById('edit-level')?.value;
   dbU[editingUid].profile.days   = document.getElementById('edit-days')?.value;
-  saveAllUsers(dbU);
+  saveAllUsers(dbU, editingUid);
   closeEditModal();
   renderAdminPanel();
   showToast('✅ Usuario actualizado');
@@ -15306,7 +15341,7 @@ function saveTrainerForm(){
     specialties: specs,
     description: document.getElementById('tr-desc').value.trim(),
   };
-  saveTrainers(trainers);
+  saveTrainers(trainers, tid);
   closeEditModal();
   editingTrainerId = null;
   renderAdminPanel();
@@ -15320,7 +15355,7 @@ function deleteTrainer(id){
   if(!confirm('¿Eliminar este entrenador?')) return;
   const trainers = getTrainers();
   delete trainers[id];
-  saveTrainers(trainers);
+  saveTrainers(trainers, id);
   renderAdminPanel();
   adminTab('trainers');
   showToast('Entrenador eliminado');
@@ -15890,7 +15925,7 @@ function saveAthleteEdit(){
   db[editingUid].profile.level  = document.getElementById('edit-level').value;
   db[editingUid].profile.days   = document.getElementById('edit-days').value;
 
-  saveAllUsers(db);
+  saveAllUsers(db, editingUid);
   closeEditModal();
   renderAdminPanel();
   showToast('✅ Usuario actualizado');
@@ -15908,7 +15943,7 @@ function deleteAthleteByUid(uid){
   const db = getAllUsers();
   const name = db[uid]?.profile?.name || 'Usuario';
   delete db[uid];
-  saveAllUsers(db);
+  saveAllUsers(db, uid);
 
   // Remove from auth DB
   const authDB = getAuthDB();
