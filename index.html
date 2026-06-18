@@ -1347,6 +1347,21 @@ function fbRef(path){
   } catch(e){ return null; }
 }
 
+// Escribe en Firebase esperando a que el auth anónimo esté listo
+function fbSet(path, data){
+  const doWrite = () => {
+    try {
+      const ref = fbRef(path);
+      if(ref) ref.set(data).catch(e => console.warn('fbSet error:', e));
+    } catch(e){}
+  };
+  if(window._fbAuthReady && typeof window._fbAuthReady.then === 'function'){
+    window._fbAuthReady.then(doWrite).catch(doWrite);
+  } else {
+    doWrite();
+  }
+}
+
 // Save user to both localStorage AND Firebase
 function getAllUsers() {
   try { return JSON.parse(localStorage.getItem(DB_KEY)) || {}; } catch(e){ return {}; }
@@ -1355,13 +1370,8 @@ function getAllUsers() {
 function saveAllUsers(userDB) {
   // Save locally always
   try { localStorage.setItem(DB_KEY, JSON.stringify(userDB)); } catch(e){}
-  // Sync to Firebase
-  try {
-    if(typeof db !== 'undefined'){
-      const ref = fbRef('users');
-      if(ref) ref.set(userDB).catch(()=>{});
-    }
-  } catch(e){}
+  // Sync to Firebase (esperando auth anónimo)
+  fbSet('users', userDB);
 }
 
 function saveActiveUser() {
@@ -1404,10 +1414,7 @@ function syncFromFirebase(uid, callback) {
 // Save auth to Firebase too
 function saveAuthDB(authDB) {
   try { localStorage.setItem(AUTH_DB_KEY, JSON.stringify(authDB)); } catch(e){}
-  try {
-    const ref = fbRef('auth');
-    if(ref) ref.set(authDB).catch(()=>{});
-  } catch(e){}
+  fbSet('auth', authDB);
 }
 
 // Pull all users from Firebase (for admin panel)
