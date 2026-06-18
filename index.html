@@ -638,6 +638,70 @@ html { font-size: 16px; }
   <div class="splash-ring" id="splash-ring"></div>
 </div>
 
+<!-- ═══════════════════════════════════
+     CONSENT MODAL (Términos y Privacidad)
+════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="consent-modal" style="z-index:9999;">
+  <div class="modal-sheet" style="max-width:480px;max-height:88vh;display:flex;flex-direction:column;padding:0;border-radius:20px;">
+    <div style="padding:20px 20px 0;text-align:center;">
+      <div style="font-size:2.2rem;margin-bottom:8px;">📋</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);">Antes de continuar</div>
+      <div style="font-size:0.82rem;color:var(--muted);margin-top:4px;">Necesitamos tu consentimiento para crear tu cuenta</div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:18px 20px;">
+      <div style="font-size:0.86rem;color:var(--text);line-height:1.6;margin-bottom:16px;">
+        Para usar MultiFitTraining necesitamos guardar algunos datos personales (como tu edad, peso, altura y objetivos de entrenamiento) para generar tu plan. Por favor revisa estos documentos antes de continuar:
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+        <div onclick="openLegalDoc('terms')" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
+          <span style="font-size:1.3rem;">📄</span>
+          <div style="flex:1;">
+            <div style="font-size:0.88rem;font-weight:700;color:var(--fire);text-decoration:underline;">Términos y Condiciones</div>
+            <div style="font-size:0.7rem;color:var(--muted);">Toca para leer</div>
+          </div>
+          <span style="color:var(--muted);">→</span>
+        </div>
+        <div onclick="openLegalDoc('privacy')" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
+          <span style="font-size:1.3rem;">🔒</span>
+          <div style="flex:1;">
+            <div style="font-size:0.88rem;font-weight:700;color:var(--fire);text-decoration:underline;">Política de Privacidad</div>
+            <div style="font-size:0.7rem;color:var(--muted);">Toca para leer</div>
+          </div>
+          <span style="color:var(--muted);">→</span>
+        </div>
+      </div>
+
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px;background:var(--card2);border-radius:var(--r-sm);">
+        <input type="checkbox" id="consent-checkbox" onchange="toggleConsentButton()" style="margin-top:2px;width:20px;height:20px;flex-shrink:0;accent-color:var(--fire);">
+        <span style="font-size:0.82rem;color:var(--text);line-height:1.5;">He leído y acepto los <strong>Términos y Condiciones</strong> y la <strong>Política de Privacidad</strong> de MultiFitTraining.</span>
+      </label>
+    </div>
+
+    <div style="padding:16px 20px 20px;border-top:1px solid var(--border);">
+      <button class="btn-primary" id="consent-accept-btn" disabled style="width:100%;padding:14px;opacity:0.4;" onclick="acceptConsentAndContinue()">Aceptar y continuar</button>
+      <button class="btn-secondary" style="width:100%;padding:12px;margin-top:8px;" onclick="closeConsentModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     LEGAL DOCUMENT VIEWER
+════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="legal-doc-modal" style="z-index:10000;">
+  <div class="modal-sheet" style="max-width:560px;max-height:90vh;display:flex;flex-direction:column;padding:0;border-radius:20px;">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <div id="legal-doc-title" style="font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);"></div>
+      <span onclick="closeLegalDoc()" style="font-size:1.4rem;color:var(--muted);cursor:pointer;padding:0 6px;">×</span>
+    </div>
+    <div id="legal-doc-content" style="flex:1;overflow-y:auto;padding:18px 20px;font-size:0.82rem;color:var(--text);line-height:1.7;"></div>
+    <div style="padding:14px 20px;border-top:1px solid var(--border);">
+      <button class="btn-primary" style="width:100%;padding:12px;" onclick="closeLegalDoc()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 
 
 <!-- ═══════════════════════════════════
@@ -5317,10 +5381,109 @@ function doForgot(){
 }
 
 function goToOnboarding(){
-  onbStep=0; onbData={};
-  renderOnbStep();
-  showScreen('onboarding');
-  document.getElementById('main-nav').style.display='none';
+  // Si ya aceptó antes (guardado localmente), no lo volvemos a interrumpir
+  if(localStorage.getItem('mft_consent_accepted') === 'true'){
+    onbStep=0; onbData={};
+    renderOnbStep();
+    showScreen('onboarding');
+    document.getElementById('main-nav').style.display='none';
+    return;
+  }
+  // Si no, mostramos el modal de consentimiento primero
+  window._pendingOnboardingAction = () => {
+    onbStep=0; onbData={};
+    renderOnbStep();
+    showScreen('onboarding');
+    document.getElementById('main-nav').style.display='none';
+  };
+  openConsentModal();
+}
+
+/* ────────────────────────────────────
+   CONSENTIMIENTO LEGAL (Términos + Privacidad)
+──────────────────────────────────── */
+function openConsentModal(){
+  document.getElementById('consent-checkbox').checked = false;
+  toggleConsentButton();
+  document.getElementById('consent-modal').classList.remove('hidden');
+}
+
+function closeConsentModal(){
+  document.getElementById('consent-modal').classList.add('hidden');
+  window._pendingOnboardingAction = null;
+}
+
+function toggleConsentButton(){
+  const checked = document.getElementById('consent-checkbox').checked;
+  const btn = document.getElementById('consent-accept-btn');
+  btn.disabled = !checked;
+  btn.style.opacity = checked ? '1' : '0.4';
+}
+
+function acceptConsentAndContinue(){
+  if(!document.getElementById('consent-checkbox').checked) return;
+  localStorage.setItem('mft_consent_accepted', 'true');
+  localStorage.setItem('mft_consent_date', new Date().toISOString());
+  document.getElementById('consent-modal').classList.add('hidden');
+  if(typeof window._pendingOnboardingAction === 'function'){
+    window._pendingOnboardingAction();
+    window._pendingOnboardingAction = null;
+  }
+}
+
+const LEGAL_TERMS_HTML = `
+<p><strong>Última actualización:</strong> Junio 2026</p>
+<p>Bienvenido/a a <strong>MultiFitTraining</strong>. Al crear una cuenta y usar la aplicación, aceptas los siguientes términos:</p>
+<p><strong>1. Naturaleza del servicio</strong><br>
+MultiFitTraining es una aplicación de entrenamiento personal que entrega rutinas, planes y seguimiento de progreso físico (Gym, Calistenia, CrossFit y Running). No sustituye la evaluación de un médico, kinesiólogo o profesional de la salud.</p>
+<p><strong>2. Responsabilidad sobre el ejercicio físico</strong><br>
+El uso de las rutinas y programas es bajo tu propia responsabilidad. Si tienes alguna condición médica, lesión previa o duda sobre tu capacidad física, debes consultar con un profesional de la salud antes de comenzar. MultiFitTraining y su equipo no son responsables por lesiones derivadas del mal uso de las rutinas o de no respetar tus propios límites físicos.</p>
+<p><strong>3. Planes pagados</strong><br>
+Algunos programas y funciones requieren un pago único o suscripción. Los precios y medios de pago vigentes se muestran dentro de la app al momento de la compra. Los pagos se gestionan a través de los medios de pago indicados (ej. Mercado Pago) y la activación del acceso se realiza de forma manual tras la verificación del comprobante enviado por WhatsApp.</p>
+<p><strong>4. Cuenta de usuario</strong><br>
+Eres responsable de mantener la confidencialidad de tu contraseña. MultiFitTraining no se hace responsable por accesos no autorizados derivados del mal uso de tus credenciales.</p>
+<p><strong>5. Modificaciones del servicio</strong><br>
+Podemos actualizar, mejorar o modificar funciones de la app en cualquier momento. Buscaremos siempre que estos cambios no afecten negativamente tu experiencia ni tu progreso guardado.</p>
+<p><strong>6. Cancelación y reembolsos</strong><br>
+Si tienes problemas con tu compra o quieres solicitar un reembolso, puedes contactarnos directamente por WhatsApp dentro de los plazos y condiciones que indica la ley chilena de protección al consumidor para servicios digitales. Evaluaremos cada caso de forma directa contigo.</p>
+<p><strong>7. Contacto</strong><br>
+Para cualquier consulta sobre estos términos, puedes escribirnos por WhatsApp desde la sección de contacto en tu perfil.</p>
+`;
+
+const LEGAL_PRIVACY_HTML = `
+<p><strong>Última actualización:</strong> Junio 2026</p>
+<p>En <strong>MultiFitTraining</strong> nos tomamos en serio la protección de tus datos personales, conforme a la Ley N° 19.628 sobre Protección de la Vida Privada vigente en Chile.</p>
+<p><strong>1. ¿Qué datos recopilamos?</strong><br>
+Nombre, edad, sexo, altura, peso, nivel de entrenamiento, objetivos, condiciones físicas o lesiones que tú mismo/a indiques, correo electrónico, y tu progreso de entrenamiento (rutinas completadas, racha, tests físicos como el Test de Cooper).</p>
+<p><strong>2. ¿Para qué usamos tus datos?</strong><br>
+Exclusivamente para generar tu plan de entrenamiento personalizado, calcular tus zonas de esfuerzo y ritmo, mostrar tu progreso, y permitir que tu entrenador (si tienes uno asignado) pueda ver tu evolución dentro de la app.</p>
+<p><strong>3. ¿Dónde se almacenan?</strong><br>
+Tus datos se guardan de forma segura en Firebase (Google), con reglas de acceso restringidas. No vendemos, arrendamos ni compartimos tus datos personales con terceros para fines publicitarios.</p>
+<p><strong>4. Tus derechos</strong><br>
+Puedes solicitar en cualquier momento: acceder a tus datos, corregirlos si están desactualizados o incorrectos, o solicitar su eliminación completa de nuestros sistemas. Para ejercer cualquiera de estos derechos, escríbenos por WhatsApp desde la sección de contacto en tu perfil y responderemos a la brevedad.</p>
+<p><strong>5. Datos sensibles de salud</strong><br>
+Información como tu peso, condiciones físicas o lesiones se trata con especial cuidado y solo se usa para personalizar tu entrenamiento de forma segura. Nunca se utiliza para fines distintos a este.</p>
+<p><strong>6. Revocación del consentimiento</strong><br>
+Puedes revocar tu consentimiento y solicitar la eliminación de tu cuenta y datos en cualquier momento, sin que esto afecte el tratamiento realizado previamente de forma lícita.</p>
+<p><strong>7. Contacto</strong><br>
+Ante cualquier duda sobre el tratamiento de tus datos personales, contáctanos por WhatsApp desde la sección de contacto en tu perfil.</p>
+`;
+
+function openLegalDoc(type){
+  const titleEl = document.getElementById('legal-doc-title');
+  const contentEl = document.getElementById('legal-doc-content');
+  if(type === 'terms'){
+    titleEl.textContent = '📄 Términos y Condiciones';
+    contentEl.innerHTML = LEGAL_TERMS_HTML;
+  } else {
+    titleEl.textContent = '🔒 Política de Privacidad';
+    contentEl.innerHTML = LEGAL_PRIVACY_HTML;
+  }
+  document.getElementById('legal-doc-modal').classList.remove('hidden');
+}
+
+function closeLegalDoc(){
+  document.getElementById('legal-doc-modal').classList.add('hidden');
 }
 
 function goToLoginAfterRegister(){
