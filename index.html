@@ -861,6 +861,9 @@ html { font-size: 16px; }
      CUENTA CREADA
 ════════════════════════════════════ -->
 <div class="screen hidden" id="screen-success">
+  <div style="position:absolute;top:16px;left:16px;">
+    <div class="back-btn" onclick="showScreen('auth')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
+  </div>
   <div class="success-icon">✅</div>
   <div class="success-title">¡Cuenta creada!</div>
   <div class="success-sub">Tu cuenta fue registrada exitosamente.<br>Ahora completa tu perfil para comenzar.</div>
@@ -942,7 +945,10 @@ html { font-size: 16px; }
 <!-- WORKOUTS LIST -->
 <div class="screen hidden" id="screen-workouts" style="display:flex;flex-direction:column;overflow:hidden;">
   <div class="top-bar" style="flex-shrink:0;">
-    <div><div class="page-title">Entrenamientos</div><div class="page-subtitle">Elige tu rutina</div></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="back-btn" onclick="goBack()" style="width:34px;height:34px;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div><div class="page-title">Entrenamientos</div><div class="page-subtitle">Elige tu rutina</div></div>
+    </div>
   </div>
   <div class="scroll-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px;">
     <div class="workout-filter" id="workout-filter"></div>
@@ -979,7 +985,10 @@ html { font-size: 16px; }
 <!-- PROGRESS -->
 <div class="screen hidden" id="screen-progress" style="display:flex;flex-direction:column;overflow:hidden;">
   <div class="top-bar" style="flex-shrink:0;">
-    <div><div class="page-title">Mi Progreso</div><div class="page-subtitle">Historial de actividad</div></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="back-btn" onclick="goBack()" style="width:34px;height:34px;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div><div class="page-title">Mi Progreso</div><div class="page-subtitle">Historial de actividad</div></div>
+    </div>
   </div>
   <div class="scroll-body" id="progress-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px;"></div>
 </div>
@@ -987,7 +996,10 @@ html { font-size: 16px; }
 <!-- PROFILE -->
 <div class="screen hidden" id="screen-profile" style="display:flex;flex-direction:column;overflow:hidden;">
   <div class="top-bar" style="flex-shrink:0;">
-    <div><div class="page-title">Perfil</div><div class="page-subtitle">Tu información</div></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="back-btn" onclick="goBack()" style="width:34px;height:34px;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div><div class="page-title">Perfil</div><div class="page-subtitle">Tu información</div></div>
+    </div>
   </div>
   <div class="scroll-body" id="profile-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px;"></div>
 </div>
@@ -1015,6 +1027,9 @@ html { font-size: 16px; }
 
 <!-- USERS SCREEN -->
 <div class="screen hidden" id="screen-users">
+  <div style="position:absolute;top:16px;left:16px;z-index:10;">
+    <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
+  </div>
   <div class="users-hero">
     <div class="users-logo">Multi<span>Fit</span>Training</div>
     <div class="users-sub">¿Quién va a entrenar hoy?</div>
@@ -1061,6 +1076,9 @@ html { font-size: 16px; }
 ════════════════════════════════════ -->
 <div class="screen hidden" id="screen-paywall" style="overflow-y:auto;">
   <div style="padding:28px 20px 40px;width:100%;max-width:420px;margin:0 auto;text-align:center;">
+    <div style="display:flex;align-items:center;margin-bottom:8px;">
+      <div class="back-btn" onclick="goBack()" style="width:34px;height:34px;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
+    </div>
     <div class="paywall-logo">Multi<span>Fit</span>Training</div>
     <div class="paywall-badge">⚡ ACCESO COMPLETO</div>
     <div class="paywall-title" id="paywall-title">Tu prueba gratuita<br>ha terminado</div>
@@ -1383,12 +1401,10 @@ function saveActiveUser() {
     history: state.history,
     streak: state.streak,
   };
-  saveAllUsers(userDB);
-  // Also sync this specific user to Firebase
-  try {
-    const ref = fbRef('users/' + state.uid);
-    if(ref) ref.set(userDB[state.uid]).catch(()=>{});
-  } catch(e){}
+  // Guardar localmente
+  try { localStorage.setItem(DB_KEY, JSON.stringify(userDB)); } catch(e){}
+  // Guardar en Firebase esperando auth anónimo
+  fbSet('users/' + state.uid, userDB[state.uid]);
 }
 
 // Pull latest data from Firebase on login
@@ -3014,33 +3030,1586 @@ const WORKOUTS = [
      PLAN POSTPARTO — 8 semanas
   ════════════════════════════════════════════════ */
   {
-    key:'postparto-s1', name:'Plan Postparto · S1: Reconexión Suave', type:'calistenia', emoji:'🤰',
-    difficulty:'easy', duration:'20 min', level:'Principiante', week:1,
+    key:'postparto-w1-s1', name:'Postparto · S1 Ses.1: Suelo Pélvico', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'22 min', level:'Principiante', week:1,
     exercises:[
-      {name:'Respiración diafragmática', sets:'3 × 10 reps', rest:'30s', muscle:'Core profundo', tip:'Reconecta con el transverso abdominal'},
-      {name:'Inclinación pélvica suave', sets:'3 × 10 reps', rest:'30s', muscle:'Core/Pelvis', tip:'Movimiento muy controlado'},
-      {name:'Caminata suave', sets:'15 min', rest:'—', muscle:'Cardio ligero', tip:'Solo si tu médico lo autorizó'},
-      {name:'Estiramiento suave de espalda', sets:'3 × 20s', rest:'—', muscle:'Espalda baja', tip:'Alivia tensión postparto'},
+      {name:'Respiración diafragmática', sets:'3 × 10 resp.', rest:'30s', muscle:'Core profundo', tip:'Inhala expandiendo el abdomen, exhala contrayendo suavemente'},
+      {name:'Kegel suave', sets:'3 × 8 contracciones', rest:'30s', muscle:'Suelo pélvico', tip:'Contrae 3 segundos, relaja 3 segundos — sin apuros'},
+      {name:'Inclinación pélvica en decúbito', sets:'3 × 10 reps', rest:'30s', muscle:'Pelvis/lumbar', tip:'Aplana la zona lumbar contra el suelo suavemente'},
+      {name:'Caminata suave', sets:'11 min', rest:'—', muscle:'Cardio ligero', tip:'Ritmo conversacional, sin forzar'},
     ]
   },
   {
-    key:'postparto-s4', name:'Plan Postparto · S4: Fuerza del Core', type:'calistenia', emoji:'🤰',
-    difficulty:'easy', duration:'30 min', level:'Principiante', week:4,
+    key:'postparto-w1-s2', name:'Postparto · S1 Ses.2: Respiración', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'22 min', level:'Principiante', week:1,
     exercises:[
-      {name:'Plancha modificada (rodillas)', sets:'3 × 15s', rest:'45s', muscle:'Core', tip:'Progreso desde la respiración diafragmática'},
-      {name:'Puente de glúteo', sets:'3 × 12 reps', rest:'45s', muscle:'Glúteos/Core', tip:'Recupera fuerza de cadera'},
-      {name:'Sentadilla con peso corporal suave', sets:'3 × 12 reps', rest:'45s', muscle:'Piernas', tip:'Reintroduce movimiento funcional'},
-      {name:'Caminata moderada', sets:'25 min', rest:'—', muscle:'Cardio', tip:'Aumenta gradualmente el tiempo'},
+      {name:'Respiración diafragmática', sets:'3 × 12 resp.', rest:'30s', muscle:'Core profundo', tip:'Con cada exhalación siente cómo se activa el transverso'},
+      {name:'Kegel progresivo', sets:'3 × 10 contracciones', rest:'30s', muscle:'Suelo pélvico', tip:'Mantén 5 segundos esta semana'},
+      {name:'Estiramiento de cadera en decúbito', sets:'3 × 30s cada lado', rest:'—', muscle:'Cadera/glúteos', tip:'Relaja la tensión acumulada postparto'},
+      {name:'Caminata suave', sets:'13 min', rest:'—', muscle:'Cardio', tip:'Puedes dividirla en 2 bloques si te cansas'},
     ]
   },
   {
-    key:'postparto-s8', name:'Plan Postparto · S8: Retorno al Entrenamiento', type:'calistenia', emoji:'🤰',
-    difficulty:'med', duration:'35 min', level:'Intermedio', week:8,
+    key:'postparto-w1-s3', name:'Postparto · S1 Ses.3: Movimiento Suave', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'22 min', level:'Principiante', week:1,
     exercises:[
-      {name:'Plancha completa', sets:'3 × 25s', rest:'45s', muscle:'Core', tip:'8 semanas: core reconectado y fuerte'},
-      {name:'Sentadilla con mancuernas ligeras', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas', tip:'Reintroduce peso progresivamente'},
-      {name:'Remo con banda elástica', sets:'3 × 12 reps', rest:'45s', muscle:'Espalda', tip:'Importante para cargar al bebé sin dolor'},
-      {name:'Trote suave intervalos', sets:'4 × 2 min trote / 2 min camina', rest:'—', muscle:'Cardio', tip:'Reintroduce el trote gradualmente'},
+      {name:'Respiración + contracción simultánea', sets:'3 × 10 reps', rest:'30s', muscle:'Core/suelo pélvico', tip:'Al exhalar contrae suelo pélvico y transverso juntos'},
+      {name:'Kegel rápido y lento alternado', sets:'2 × 10 de cada tipo', rest:'30s', muscle:'Suelo pélvico', tip:'Mejora control neuromuscular'},
+      {name:'Movilidad de tobillo y rodilla', sets:'2 × 10 rotaciones', rest:'—', muscle:'Articulaciones', tip:'Activa la circulación de extremidades inferiores'},
+      {name:'Estiramiento de espalda alta (gato-vaca)', sets:'3 × 10 reps', rest:'—', muscle:'Columna', tip:'Alivia tensión por postura de lactancia'},
+    ]
+  },
+  {
+    key:'postparto-w2-s1', name:'Postparto · S2 Ses.1: Suelo Pélvico', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'24 min', level:'Principiante', week:2,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 10 resp.', rest:'30s', muscle:'Core profundo', tip:'Inhala expandiendo el abdomen, exhala contrayendo suavemente'},
+      {name:'Kegel suave', sets:'3 × 8 contracciones', rest:'30s', muscle:'Suelo pélvico', tip:'Contrae 3 segundos, relaja 3 segundos — sin apuros'},
+      {name:'Inclinación pélvica en decúbito', sets:'3 × 10 reps', rest:'30s', muscle:'Pelvis/lumbar', tip:'Aplana la zona lumbar contra el suelo suavemente'},
+      {name:'Caminata suave', sets:'12 min', rest:'—', muscle:'Cardio ligero', tip:'Ritmo conversacional, sin forzar'},
+    ]
+  },
+  {
+    key:'postparto-w2-s2', name:'Postparto · S2 Ses.2: Respiración', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'24 min', level:'Principiante', week:2,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 12 resp.', rest:'30s', muscle:'Core profundo', tip:'Con cada exhalación siente cómo se activa el transverso'},
+      {name:'Kegel progresivo', sets:'3 × 10 contracciones', rest:'30s', muscle:'Suelo pélvico', tip:'Mantén 5 segundos esta semana'},
+      {name:'Estiramiento de cadera en decúbito', sets:'3 × 30s cada lado', rest:'—', muscle:'Cadera/glúteos', tip:'Relaja la tensión acumulada postparto'},
+      {name:'Caminata suave', sets:'14 min', rest:'—', muscle:'Cardio', tip:'Puedes dividirla en 2 bloques si te cansas'},
+    ]
+  },
+  {
+    key:'postparto-w2-s3', name:'Postparto · S2 Ses.3: Movimiento Suave', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'24 min', level:'Principiante', week:2,
+    exercises:[
+      {name:'Respiración + contracción simultánea', sets:'3 × 10 reps', rest:'30s', muscle:'Core/suelo pélvico', tip:'Al exhalar contrae suelo pélvico y transverso juntos'},
+      {name:'Kegel rápido y lento alternado', sets:'2 × 10 de cada tipo', rest:'30s', muscle:'Suelo pélvico', tip:'Mejora control neuromuscular'},
+      {name:'Movilidad de tobillo y rodilla', sets:'2 × 10 rotaciones', rest:'—', muscle:'Articulaciones', tip:'Activa la circulación de extremidades inferiores'},
+      {name:'Estiramiento de espalda alta (gato-vaca)', sets:'3 × 10 reps', rest:'—', muscle:'Columna', tip:'Alivia tensión por postura de lactancia'},
+    ]
+  },
+  {
+    key:'postparto-w3-s1', name:'Postparto · S3 Ses.1: Suelo Pélvico', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'26 min', level:'Principiante', week:3,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 10 resp.', rest:'30s', muscle:'Core profundo', tip:'Inhala expandiendo el abdomen, exhala contrayendo suavemente'},
+      {name:'Kegel suave', sets:'3 × 8 contracciones', rest:'30s', muscle:'Suelo pélvico', tip:'Contrae 3 segundos, relaja 3 segundos — sin apuros'},
+      {name:'Inclinación pélvica en decúbito', sets:'3 × 10 reps', rest:'30s', muscle:'Pelvis/lumbar', tip:'Aplana la zona lumbar contra el suelo suavemente'},
+      {name:'Caminata suave', sets:'13 min', rest:'—', muscle:'Cardio ligero', tip:'Ritmo conversacional, sin forzar'},
+    ]
+  },
+  {
+    key:'postparto-w3-s2', name:'Postparto · S3 Ses.2: Respiración', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'26 min', level:'Principiante', week:3,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 12 resp.', rest:'30s', muscle:'Core profundo', tip:'Con cada exhalación siente cómo se activa el transverso'},
+      {name:'Kegel progresivo', sets:'3 × 10 contracciones', rest:'30s', muscle:'Suelo pélvico', tip:'Mantén 5 segundos esta semana'},
+      {name:'Estiramiento de cadera en decúbito', sets:'3 × 30s cada lado', rest:'—', muscle:'Cadera/glúteos', tip:'Relaja la tensión acumulada postparto'},
+      {name:'Caminata suave', sets:'15 min', rest:'—', muscle:'Cardio', tip:'Puedes dividirla en 2 bloques si te cansas'},
+    ]
+  },
+  {
+    key:'postparto-w3-s3', name:'Postparto · S3 Ses.3: Movimiento Suave', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'26 min', level:'Principiante', week:3,
+    exercises:[
+      {name:'Respiración + contracción simultánea', sets:'3 × 10 reps', rest:'30s', muscle:'Core/suelo pélvico', tip:'Al exhalar contrae suelo pélvico y transverso juntos'},
+      {name:'Kegel rápido y lento alternado', sets:'2 × 10 de cada tipo', rest:'30s', muscle:'Suelo pélvico', tip:'Mejora control neuromuscular'},
+      {name:'Movilidad de tobillo y rodilla', sets:'2 × 10 rotaciones', rest:'—', muscle:'Articulaciones', tip:'Activa la circulación de extremidades inferiores'},
+      {name:'Estiramiento de espalda alta (gato-vaca)', sets:'3 × 10 reps', rest:'—', muscle:'Columna', tip:'Alivia tensión por postura de lactancia'},
+    ]
+  },
+  {
+    key:'postparto-w4-s1', name:'Postparto · S4 Ses.1: Suelo Pélvico', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'28 min', level:'Principiante', week:4,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 10 resp.', rest:'30s', muscle:'Core profundo', tip:'Inhala expandiendo el abdomen, exhala contrayendo suavemente'},
+      {name:'Kegel suave', sets:'3 × 8 contracciones', rest:'30s', muscle:'Suelo pélvico', tip:'Contrae 3 segundos, relaja 3 segundos — sin apuros'},
+      {name:'Inclinación pélvica en decúbito', sets:'3 × 10 reps', rest:'30s', muscle:'Pelvis/lumbar', tip:'Aplana la zona lumbar contra el suelo suavemente'},
+      {name:'Caminata suave', sets:'14 min', rest:'—', muscle:'Cardio ligero', tip:'Ritmo conversacional, sin forzar'},
+    ]
+  },
+  {
+    key:'postparto-w4-s2', name:'Postparto · S4 Ses.2: Respiración', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'28 min', level:'Principiante', week:4,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 12 resp.', rest:'30s', muscle:'Core profundo', tip:'Con cada exhalación siente cómo se activa el transverso'},
+      {name:'Kegel progresivo', sets:'3 × 10 contracciones', rest:'30s', muscle:'Suelo pélvico', tip:'Mantén 5 segundos esta semana'},
+      {name:'Estiramiento de cadera en decúbito', sets:'3 × 30s cada lado', rest:'—', muscle:'Cadera/glúteos', tip:'Relaja la tensión acumulada postparto'},
+      {name:'Caminata suave', sets:'16 min', rest:'—', muscle:'Cardio', tip:'Puedes dividirla en 2 bloques si te cansas'},
+    ]
+  },
+  {
+    key:'postparto-w4-s3', name:'Postparto · S4 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'easy', duration:'28 min', level:'Principiante', week:4,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w5-s1', name:'Postparto · S5 Ses.1: Suelo Pélvico', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'30 min', level:'Principiante', week:5,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 12 resp.', rest:'30s', muscle:'Core profundo', tip:'Base de todo el programa, nunca la abandones'},
+      {name:'Kegel sostenido', sets:'3 × 10 × 5s', rest:'30s', muscle:'Suelo pélvico', tip:'5 segundos de contracción, 5 de relajación'},
+      {name:'Inclinación pélvica de pie', sets:'3 × 12 reps', rest:'30s', muscle:'Core/postura', tip:'Progresión desde la versión en decúbito'},
+      {name:'Caminata activa', sets:'20 min', rest:'—', muscle:'Cardio/piernas', tip:'Agrega algo de cuesta suave si puedes'},
+    ]
+  },
+  {
+    key:'postparto-w5-s2', name:'Postparto · S5 Ses.2: Respiración', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'30 min', level:'Principiante', week:5,
+    exercises:[
+      {name:'Activación de transverso', sets:'3 × 10 × 8s', rest:'30s', muscle:'Core profundo', tip:'Exhala y mete el ombligo sin retener el aire'},
+      {name:'Puente de glúteo suave', sets:'3 × 10 reps', rest:'45s', muscle:'Glúteos/core', tip:'Solo sube hasta que el cuerpo forme una línea recta'},
+      {name:'Rotación de cadera en decúbito', sets:'3 × 8 cada lado', rest:'30s', muscle:'Cadera/suelo pélvico', tip:'Movimiento lento y controlado'},
+      {name:'Estiramiento flexor de cadera', sets:'3 × 30s cada lado', rest:'—', muscle:'Cadena anterior', tip:'El psoas suele estar muy tenso postparto'},
+    ]
+  },
+  {
+    key:'postparto-w5-s3', name:'Postparto · S5 Ses.3: Movimiento Suave', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'30 min', level:'Principiante', week:5,
+    exercises:[
+      {name:'Respiración + Kegel + Transverso', sets:'3 × 10 reps', rest:'30s', muscle:'Unidad interna', tip:'Activa los 3 simultáneamente al exhalar'},
+      {name:'Puente de glúteo con pausa', sets:'3 × 10 × 2s arriba', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La pausa aumenta la activación del suelo pélvico'},
+      {name:'Superman suave (extensión alterna)', sets:'3 × 8 cada lado', rest:'30s', muscle:'Espalda baja/glúteos', tip:'Muy lento, sin comprimir la zona lumbar'},
+      {name:'Caminata con consciencia de pisada', sets:'23 min', rest:'—', muscle:'Cardio/postura', tip:'Activa el suelo pélvico en cada pisada'},
+    ]
+  },
+  {
+    key:'postparto-w6-s1', name:'Postparto · S6 Ses.1: Suelo Pélvico', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'32 min', level:'Principiante', week:6,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 12 resp.', rest:'30s', muscle:'Core profundo', tip:'Base de todo el programa, nunca la abandones'},
+      {name:'Kegel sostenido', sets:'3 × 10 × 5s', rest:'30s', muscle:'Suelo pélvico', tip:'5 segundos de contracción, 5 de relajación'},
+      {name:'Inclinación pélvica de pie', sets:'3 × 12 reps', rest:'30s', muscle:'Core/postura', tip:'Progresión desde la versión en decúbito'},
+      {name:'Caminata activa', sets:'21 min', rest:'—', muscle:'Cardio/piernas', tip:'Agrega algo de cuesta suave si puedes'},
+    ]
+  },
+  {
+    key:'postparto-w6-s2', name:'Postparto · S6 Ses.2: Respiración', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'32 min', level:'Principiante', week:6,
+    exercises:[
+      {name:'Activación de transverso', sets:'3 × 10 × 8s', rest:'30s', muscle:'Core profundo', tip:'Exhala y mete el ombligo sin retener el aire'},
+      {name:'Puente de glúteo suave', sets:'3 × 10 reps', rest:'45s', muscle:'Glúteos/core', tip:'Solo sube hasta que el cuerpo forme una línea recta'},
+      {name:'Rotación de cadera en decúbito', sets:'3 × 8 cada lado', rest:'30s', muscle:'Cadera/suelo pélvico', tip:'Movimiento lento y controlado'},
+      {name:'Estiramiento flexor de cadera', sets:'3 × 30s cada lado', rest:'—', muscle:'Cadena anterior', tip:'El psoas suele estar muy tenso postparto'},
+    ]
+  },
+  {
+    key:'postparto-w6-s3', name:'Postparto · S6 Ses.3: Movimiento Suave', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'32 min', level:'Principiante', week:6,
+    exercises:[
+      {name:'Respiración + Kegel + Transverso', sets:'3 × 10 reps', rest:'30s', muscle:'Unidad interna', tip:'Activa los 3 simultáneamente al exhalar'},
+      {name:'Puente de glúteo con pausa', sets:'3 × 10 × 2s arriba', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La pausa aumenta la activación del suelo pélvico'},
+      {name:'Superman suave (extensión alterna)', sets:'3 × 8 cada lado', rest:'30s', muscle:'Espalda baja/glúteos', tip:'Muy lento, sin comprimir la zona lumbar'},
+      {name:'Caminata con consciencia de pisada', sets:'24 min', rest:'—', muscle:'Cardio/postura', tip:'Activa el suelo pélvico en cada pisada'},
+    ]
+  },
+  {
+    key:'postparto-w7-s1', name:'Postparto · S7 Ses.1: Suelo Pélvico', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'34 min', level:'Principiante', week:7,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 12 resp.', rest:'30s', muscle:'Core profundo', tip:'Base de todo el programa, nunca la abandones'},
+      {name:'Kegel sostenido', sets:'3 × 10 × 5s', rest:'30s', muscle:'Suelo pélvico', tip:'5 segundos de contracción, 5 de relajación'},
+      {name:'Inclinación pélvica de pie', sets:'3 × 12 reps', rest:'30s', muscle:'Core/postura', tip:'Progresión desde la versión en decúbito'},
+      {name:'Caminata activa', sets:'22 min', rest:'—', muscle:'Cardio/piernas', tip:'Agrega algo de cuesta suave si puedes'},
+    ]
+  },
+  {
+    key:'postparto-w7-s2', name:'Postparto · S7 Ses.2: Respiración', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'34 min', level:'Principiante', week:7,
+    exercises:[
+      {name:'Activación de transverso', sets:'3 × 10 × 8s', rest:'30s', muscle:'Core profundo', tip:'Exhala y mete el ombligo sin retener el aire'},
+      {name:'Puente de glúteo suave', sets:'3 × 10 reps', rest:'45s', muscle:'Glúteos/core', tip:'Solo sube hasta que el cuerpo forme una línea recta'},
+      {name:'Rotación de cadera en decúbito', sets:'3 × 8 cada lado', rest:'30s', muscle:'Cadera/suelo pélvico', tip:'Movimiento lento y controlado'},
+      {name:'Estiramiento flexor de cadera', sets:'3 × 30s cada lado', rest:'—', muscle:'Cadena anterior', tip:'El psoas suele estar muy tenso postparto'},
+    ]
+  },
+  {
+    key:'postparto-w7-s3', name:'Postparto · S7 Ses.3: Movimiento Suave', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'34 min', level:'Principiante', week:7,
+    exercises:[
+      {name:'Respiración + Kegel + Transverso', sets:'3 × 10 reps', rest:'30s', muscle:'Unidad interna', tip:'Activa los 3 simultáneamente al exhalar'},
+      {name:'Puente de glúteo con pausa', sets:'3 × 10 × 2s arriba', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La pausa aumenta la activación del suelo pélvico'},
+      {name:'Superman suave (extensión alterna)', sets:'3 × 8 cada lado', rest:'30s', muscle:'Espalda baja/glúteos', tip:'Muy lento, sin comprimir la zona lumbar'},
+      {name:'Caminata con consciencia de pisada', sets:'25 min', rest:'—', muscle:'Cardio/postura', tip:'Activa el suelo pélvico en cada pisada'},
+    ]
+  },
+  {
+    key:'postparto-w8-s1', name:'Postparto · S8 Ses.1: Suelo Pélvico', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'35 min', level:'Principiante', week:8,
+    exercises:[
+      {name:'Respiración diafragmática', sets:'3 × 12 resp.', rest:'30s', muscle:'Core profundo', tip:'Base de todo el programa, nunca la abandones'},
+      {name:'Kegel sostenido', sets:'3 × 10 × 5s', rest:'30s', muscle:'Suelo pélvico', tip:'5 segundos de contracción, 5 de relajación'},
+      {name:'Inclinación pélvica de pie', sets:'3 × 12 reps', rest:'30s', muscle:'Core/postura', tip:'Progresión desde la versión en decúbito'},
+      {name:'Caminata activa', sets:'23 min', rest:'—', muscle:'Cardio/piernas', tip:'Agrega algo de cuesta suave si puedes'},
+    ]
+  },
+  {
+    key:'postparto-w8-s2', name:'Postparto · S8 Ses.2: Respiración', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'35 min', level:'Principiante', week:8,
+    exercises:[
+      {name:'Activación de transverso', sets:'3 × 10 × 8s', rest:'30s', muscle:'Core profundo', tip:'Exhala y mete el ombligo sin retener el aire'},
+      {name:'Puente de glúteo suave', sets:'3 × 10 reps', rest:'45s', muscle:'Glúteos/core', tip:'Solo sube hasta que el cuerpo forme una línea recta'},
+      {name:'Rotación de cadera en decúbito', sets:'3 × 8 cada lado', rest:'30s', muscle:'Cadera/suelo pélvico', tip:'Movimiento lento y controlado'},
+      {name:'Estiramiento flexor de cadera', sets:'3 × 30s cada lado', rest:'—', muscle:'Cadena anterior', tip:'El psoas suele estar muy tenso postparto'},
+    ]
+  },
+  {
+    key:'postparto-w8-s3', name:'Postparto · S8 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'easy', duration:'35 min', level:'Principiante', week:8,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w9-s1', name:'Postparto · S9 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'35 min', level:'Principiante', week:9,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 23s', rest:'45s', muscle:'Core', tip:'Semana 9: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 12 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w9-s2', name:'Postparto · S9 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'35 min', level:'Principiante', week:9,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 8 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 9: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w9-s3', name:'Postparto · S9 Ses.3: Glúteos y Postura', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'35 min', level:'Principiante', week:9,
+    exercises:[
+      {name:'Activación glúteo en decúbito (clamshell)', sets:'3 × 16 reps', rest:'30s', muscle:'Glúteo medio', tip:'No rotar la pelvis — solo la cadera'},
+      {name:'Puente de glúteo con banda elástica', sets:'3 × 12 reps', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La banda añade resistencia al abductor'},
+      {name:'Plancha lateral desde rodillas', sets:'3 × 17s cada lado', rest:'45s', muscle:'Core lateral/oblicuos', tip:'Fortalece los estabilizadores laterales'},
+      {name:'Caminata progresiva', sets:'27 min', rest:'—', muscle:'Cardio suave', tip:'Puedes empezar a agregar pequeñas subidas'},
+    ]
+  },
+  {
+    key:'postparto-w10-s1', name:'Postparto · S10 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'36 min', level:'Principiante', week:10,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 26s', rest:'45s', muscle:'Core', tip:'Semana 10: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 13 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w10-s2', name:'Postparto · S10 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'36 min', level:'Principiante', week:10,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 8 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 10: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w10-s3', name:'Postparto · S10 Ses.3: Glúteos y Postura', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'36 min', level:'Principiante', week:10,
+    exercises:[
+      {name:'Activación glúteo en decúbito (clamshell)', sets:'3 × 17 reps', rest:'30s', muscle:'Glúteo medio', tip:'No rotar la pelvis — solo la cadera'},
+      {name:'Puente de glúteo con banda elástica', sets:'3 × 13 reps', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La banda añade resistencia al abductor'},
+      {name:'Plancha lateral desde rodillas', sets:'3 × 19s cada lado', rest:'45s', muscle:'Core lateral/oblicuos', tip:'Fortalece los estabilizadores laterales'},
+      {name:'Caminata progresiva', sets:'29 min', rest:'—', muscle:'Cardio suave', tip:'Puedes empezar a agregar pequeñas subidas'},
+    ]
+  },
+  {
+    key:'postparto-w11-s1', name:'Postparto · S11 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'37 min', level:'Principiante', week:11,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 29s', rest:'45s', muscle:'Core', tip:'Semana 11: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 13 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w11-s2', name:'Postparto · S11 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'37 min', level:'Principiante', week:11,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 9 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 11: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w11-s3', name:'Postparto · S11 Ses.3: Glúteos y Postura', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'37 min', level:'Principiante', week:11,
+    exercises:[
+      {name:'Activación glúteo en decúbito (clamshell)', sets:'3 × 18 reps', rest:'30s', muscle:'Glúteo medio', tip:'No rotar la pelvis — solo la cadera'},
+      {name:'Puente de glúteo con banda elástica', sets:'3 × 13 reps', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La banda añade resistencia al abductor'},
+      {name:'Plancha lateral desde rodillas', sets:'3 × 21s cada lado', rest:'45s', muscle:'Core lateral/oblicuos', tip:'Fortalece los estabilizadores laterales'},
+      {name:'Caminata progresiva', sets:'31 min', rest:'—', muscle:'Cardio suave', tip:'Puedes empezar a agregar pequeñas subidas'},
+    ]
+  },
+  {
+    key:'postparto-w12-s1', name:'Postparto · S12 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'38 min', level:'Principiante', week:12,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 32s', rest:'45s', muscle:'Core', tip:'Semana 12: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 14 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w12-s2', name:'Postparto · S12 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'38 min', level:'Principiante', week:12,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 9 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 12: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w12-s3', name:'Postparto · S12 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'easy', duration:'38 min', level:'Principiante', week:12,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w13-s1', name:'Postparto · S13 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'39 min', level:'Intermedio', week:13,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 35s', rest:'45s', muscle:'Core', tip:'Semana 13: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 14 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w13-s2', name:'Postparto · S13 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'39 min', level:'Intermedio', week:13,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 9 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 13: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w13-s3', name:'Postparto · S13 Ses.3: Glúteos y Postura', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'39 min', level:'Intermedio', week:13,
+    exercises:[
+      {name:'Activación glúteo en decúbito (clamshell)', sets:'3 × 20 reps', rest:'30s', muscle:'Glúteo medio', tip:'No rotar la pelvis — solo la cadera'},
+      {name:'Puente de glúteo con banda elástica', sets:'3 × 14 reps', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La banda añade resistencia al abductor'},
+      {name:'Plancha lateral desde rodillas', sets:'3 × 25s cada lado', rest:'45s', muscle:'Core lateral/oblicuos', tip:'Fortalece los estabilizadores laterales'},
+      {name:'Caminata progresiva', sets:'35 min', rest:'—', muscle:'Cardio suave', tip:'Puedes empezar a agregar pequeñas subidas'},
+    ]
+  },
+  {
+    key:'postparto-w14-s1', name:'Postparto · S14 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'40 min', level:'Intermedio', week:14,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 38s', rest:'45s', muscle:'Core', tip:'Semana 14: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 15 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w14-s2', name:'Postparto · S14 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'40 min', level:'Intermedio', week:14,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 10 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 14: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w14-s3', name:'Postparto · S14 Ses.3: Glúteos y Postura', type:'calistenia', emoji:'🤱',
+    difficulty:'easy', duration:'40 min', level:'Intermedio', week:14,
+    exercises:[
+      {name:'Activación glúteo en decúbito (clamshell)', sets:'3 × 21 reps', rest:'30s', muscle:'Glúteo medio', tip:'No rotar la pelvis — solo la cadera'},
+      {name:'Puente de glúteo con banda elástica', sets:'3 × 15 reps', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La banda añade resistencia al abductor'},
+      {name:'Plancha lateral desde rodillas', sets:'3 × 27s cada lado', rest:'45s', muscle:'Core lateral/oblicuos', tip:'Fortalece los estabilizadores laterales'},
+      {name:'Caminata progresiva', sets:'37 min', rest:'—', muscle:'Cardio suave', tip:'Puedes empezar a agregar pequeñas subidas'},
+    ]
+  },
+  {
+    key:'postparto-w15-s1', name:'Postparto · S15 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'41 min', level:'Intermedio', week:15,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 41s', rest:'45s', muscle:'Core', tip:'Semana 15: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 15 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w15-s2', name:'Postparto · S15 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'41 min', level:'Intermedio', week:15,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 10 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 15: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w15-s3', name:'Postparto · S15 Ses.3: Glúteos y Postura', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'41 min', level:'Intermedio', week:15,
+    exercises:[
+      {name:'Activación glúteo en decúbito (clamshell)', sets:'3 × 22 reps', rest:'30s', muscle:'Glúteo medio', tip:'No rotar la pelvis — solo la cadera'},
+      {name:'Puente de glúteo con banda elástica', sets:'3 × 15 reps', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La banda añade resistencia al abductor'},
+      {name:'Plancha lateral desde rodillas', sets:'3 × 29s cada lado', rest:'45s', muscle:'Core lateral/oblicuos', tip:'Fortalece los estabilizadores laterales'},
+      {name:'Caminata progresiva', sets:'39 min', rest:'—', muscle:'Cardio suave', tip:'Puedes empezar a agregar pequeñas subidas'},
+    ]
+  },
+  {
+    key:'postparto-w16-s1', name:'Postparto · S16 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'42 min', level:'Intermedio', week:16,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 44s', rest:'45s', muscle:'Core', tip:'Semana 16: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 16 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w16-s2', name:'Postparto · S16 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'42 min', level:'Intermedio', week:16,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 10 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 16: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 16 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w16-s3', name:'Postparto · S16 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'med', duration:'42 min', level:'Intermedio', week:16,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w17-s1', name:'Postparto · S17 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'43 min', level:'Intermedio', week:17,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 47s', rest:'45s', muscle:'Core', tip:'Semana 17: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 16 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w17-s2', name:'Postparto · S17 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'43 min', level:'Intermedio', week:17,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 11 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 17: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 16 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w17-s3', name:'Postparto · S17 Ses.3: Glúteos y Postura', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'43 min', level:'Intermedio', week:17,
+    exercises:[
+      {name:'Activación glúteo en decúbito (clamshell)', sets:'3 × 24 reps', rest:'30s', muscle:'Glúteo medio', tip:'No rotar la pelvis — solo la cadera'},
+      {name:'Puente de glúteo con banda elástica', sets:'3 × 16 reps', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La banda añade resistencia al abductor'},
+      {name:'Plancha lateral desde rodillas', sets:'3 × 33s cada lado', rest:'45s', muscle:'Core lateral/oblicuos', tip:'Fortalece los estabilizadores laterales'},
+      {name:'Caminata progresiva', sets:'43 min', rest:'—', muscle:'Cardio suave', tip:'Puedes empezar a agregar pequeñas subidas'},
+    ]
+  },
+  {
+    key:'postparto-w18-s1', name:'Postparto · S18 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'44 min', level:'Intermedio', week:18,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 50s', rest:'45s', muscle:'Core', tip:'Semana 18: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 17 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w18-s2', name:'Postparto · S18 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'44 min', level:'Intermedio', week:18,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 11 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 18: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 17 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w18-s3', name:'Postparto · S18 Ses.3: Glúteos y Postura', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'44 min', level:'Intermedio', week:18,
+    exercises:[
+      {name:'Activación glúteo en decúbito (clamshell)', sets:'3 × 25 reps', rest:'30s', muscle:'Glúteo medio', tip:'No rotar la pelvis — solo la cadera'},
+      {name:'Puente de glúteo con banda elástica', sets:'3 × 17 reps', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La banda añade resistencia al abductor'},
+      {name:'Plancha lateral desde rodillas', sets:'3 × 35s cada lado', rest:'45s', muscle:'Core lateral/oblicuos', tip:'Fortalece los estabilizadores laterales'},
+      {name:'Caminata progresiva', sets:'45 min', rest:'—', muscle:'Cardio suave', tip:'Puedes empezar a agregar pequeñas subidas'},
+    ]
+  },
+  {
+    key:'postparto-w19-s1', name:'Postparto · S19 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:19,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 53s', rest:'45s', muscle:'Core', tip:'Semana 19: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 17 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w19-s2', name:'Postparto · S19 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:19,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 11 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 19: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 17 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w19-s3', name:'Postparto · S19 Ses.3: Glúteos y Postura', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:19,
+    exercises:[
+      {name:'Activación glúteo en decúbito (clamshell)', sets:'3 × 26 reps', rest:'30s', muscle:'Glúteo medio', tip:'No rotar la pelvis — solo la cadera'},
+      {name:'Puente de glúteo con banda elástica', sets:'3 × 17 reps', rest:'45s', muscle:'Glúteos/suelo pélvico', tip:'La banda añade resistencia al abductor'},
+      {name:'Plancha lateral desde rodillas', sets:'3 × 37s cada lado', rest:'45s', muscle:'Core lateral/oblicuos', tip:'Fortalece los estabilizadores laterales'},
+      {name:'Caminata progresiva', sets:'47 min', rest:'—', muscle:'Cardio suave', tip:'Puedes empezar a agregar pequeñas subidas'},
+    ]
+  },
+  {
+    key:'postparto-w20-s1', name:'Postparto · S20 Ses.1: Core Profundo', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:20,
+    exercises:[
+      {name:'Activación de transverso + respiración', sets:'3 × 12 × 8s', rest:'30s', muscle:'Core profundo', tip:'Sigue siendo la base — ahora más automático'},
+      {name:'Plancha desde rodillas', sets:'3 × 56s', rest:'45s', muscle:'Core', tip:'Semana 20: mantén línea perfecta cabeza-rodillas'},
+      {name:'Puente de glúteo con elevación alterna de pierna', sets:'3 × 18 reps', rest:'45s', muscle:'Glúteos/estabilidad', tip:'No dejes caer la cadera al elevar la pierna'},
+      {name:'Caminata lateral con banda (si disponible)', sets:'3 × 15 pasos cada lado', rest:'30s', muscle:'Abductores/glúteo medio', tip:'Activa el glúteo medio, clave para la estabilidad pélvica'},
+    ]
+  },
+  {
+    key:'postparto-w20-s2', name:'Postparto · S20 Ses.2: Estabilidad', type:'calistenia', emoji:'🤱',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:20,
+    exercises:[
+      {name:'Gato-vaca controlado con respiración', sets:'3 × 10 reps', rest:'30s', muscle:'Columna/core', tip:'Sincroniza respiración con el movimiento'},
+      {name:'Bird-dog (opuesto brazo-pierna)', sets:'3 × 12 cada lado', rest:'45s', muscle:'Core/estabilidad', tip:'Semana 20: 3 segundos en la posición de equilibrio'},
+      {name:'Sentadilla asistida (usando silla)', sets:'3 × 18 reps', rest:'60s', muscle:'Piernas/core', tip:'Progresión clave: empieza a cargar las piernas'},
+      {name:'Estiramiento de cadena posterior', sets:'3 × 30s', rest:'—', muscle:'Isquios/espalda', tip:'Muy importante para compensar la postura de amamantamiento'},
+    ]
+  },
+  {
+    key:'postparto-w20-s3', name:'Postparto · S20 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:20,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w21-s1', name:'Postparto · S21 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:21,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 21: con mancuernas ligeras — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 43s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 12 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w21-s2', name:'Postparto · S21 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:21,
+    exercises:[
+      {name:'Flexiones mancuernas ligeras', sets:'3 × 10 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 10 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 10 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 16 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w21-s3', name:'Postparto · S21 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:21,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 12 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 21: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 10 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'22 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w22-s1', name:'Postparto · S22 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:22,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 22: con mancuernas ligeras — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 46s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 12 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w22-s2', name:'Postparto · S22 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:22,
+    exercises:[
+      {name:'Flexiones mancuernas ligeras', sets:'3 × 10 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 10 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 10 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 17 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w22-s3', name:'Postparto · S22 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:22,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 12 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 22: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 10 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'24 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w23-s1', name:'Postparto · S23 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:23,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 23: con mancuernas ligeras — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 49s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 12 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w23-s2', name:'Postparto · S23 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:23,
+    exercises:[
+      {name:'Flexiones mancuernas ligeras', sets:'3 × 10 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 10 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 10 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 18 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w23-s3', name:'Postparto · S23 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:23,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 12 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 23: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 10 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'26 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w24-s1', name:'Postparto · S24 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:24,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 24: con mancuernas ligeras — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 52s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 13 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w24-s2', name:'Postparto · S24 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:24,
+    exercises:[
+      {name:'Flexiones mancuernas ligeras', sets:'3 × 11 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 11 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 11 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 19 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w24-s3', name:'Postparto · S24 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:24,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Test de fuerza: sentadilla con peso', sets:'5 reps al 70% percibido', rest:'2 min', muscle:'Fuerza general', tip:'Anota el peso y las sensaciones'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w25-s1', name:'Postparto · S25 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:25,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 25: con mancuernas ligeras — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 55s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 13 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w25-s2', name:'Postparto · S25 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:25,
+    exercises:[
+      {name:'Flexiones mancuernas ligeras', sets:'3 × 11 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 11 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 11 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 20 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w25-s3', name:'Postparto · S25 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:25,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 13 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 25: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 11 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'30 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w26-s1', name:'Postparto · S26 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:26,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 26: con mancuernas ligeras — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 58s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 13 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w26-s2', name:'Postparto · S26 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:26,
+    exercises:[
+      {name:'Flexiones mancuernas ligeras', sets:'3 × 11 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 11 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 11 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 21 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w26-s3', name:'Postparto · S26 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:26,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 13 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 26: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 11 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'32 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w27-s1', name:'Postparto · S27 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:27,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 27: con mancuernas ligeras — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 61s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 13 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w27-s2', name:'Postparto · S27 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:27,
+    exercises:[
+      {name:'Flexiones mancuernas ligeras', sets:'3 × 11 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 11 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 11 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 22 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w27-s3', name:'Postparto · S27 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:27,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 13 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 27: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 11 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'34 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w28-s1', name:'Postparto · S28 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:28,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 28: con mancuernas ligeras — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 64s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 14 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w28-s2', name:'Postparto · S28 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:28,
+    exercises:[
+      {name:'Flexiones mancuernas ligeras', sets:'3 × 12 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 12 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 12 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 23 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w28-s3', name:'Postparto · S28 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'med', duration:'45 min', level:'Intermedio', week:28,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Test de fuerza: sentadilla con peso', sets:'5 reps al 70% percibido', rest:'2 min', muscle:'Fuerza general', tip:'Anota el peso y las sensaciones'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w29-s1', name:'Postparto · S29 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:29,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 29: con peso moderado — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 67s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 14 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w29-s2', name:'Postparto · S29 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:29,
+    exercises:[
+      {name:'Flexiones peso moderado', sets:'3 × 12 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 12 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 12 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 24 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w29-s3', name:'Postparto · S29 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:29,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 14 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 29: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 12 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'38 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w30-s1', name:'Postparto · S30 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:30,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 30: con peso moderado — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 70s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 14 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w30-s2', name:'Postparto · S30 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:30,
+    exercises:[
+      {name:'Flexiones peso moderado', sets:'3 × 12 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 12 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 12 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 25 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w30-s3', name:'Postparto · S30 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:30,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 14 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 30: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 12 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'40 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w31-s1', name:'Postparto · S31 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:31,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 31: con peso moderado — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 73s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 14 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w31-s2', name:'Postparto · S31 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:31,
+    exercises:[
+      {name:'Flexiones peso moderado', sets:'3 × 12 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 12 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 12 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 26 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w31-s3', name:'Postparto · S31 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:31,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 14 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 31: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 12 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'42 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w32-s1', name:'Postparto · S32 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:32,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 32: con peso moderado — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 76s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 15 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w32-s2', name:'Postparto · S32 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:32,
+    exercises:[
+      {name:'Flexiones peso moderado', sets:'3 × 13 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 13 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 27 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w32-s3', name:'Postparto · S32 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:32,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Test de fuerza: sentadilla con peso', sets:'5 reps al 70% percibido', rest:'2 min', muscle:'Fuerza general', tip:'Anota el peso y las sensaciones'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w33-s1', name:'Postparto · S33 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:33,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 33: con peso moderado — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 79s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 15 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w33-s2', name:'Postparto · S33 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:33,
+    exercises:[
+      {name:'Flexiones peso moderado', sets:'3 × 13 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 13 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 28 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w33-s3', name:'Postparto · S33 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:33,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 15 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 33: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'46 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w34-s1', name:'Postparto · S34 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:34,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 34: con peso moderado — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 82s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 15 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w34-s2', name:'Postparto · S34 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:34,
+    exercises:[
+      {name:'Flexiones peso moderado', sets:'3 × 13 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 13 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 29 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w34-s3', name:'Postparto · S34 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:34,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 15 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 34: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'48 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w35-s1', name:'Postparto · S35 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:35,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 35: con peso moderado — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 85s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 15 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w35-s2', name:'Postparto · S35 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:35,
+    exercises:[
+      {name:'Flexiones peso moderado', sets:'3 × 13 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 13 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 30 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w35-s3', name:'Postparto · S35 Ses.3: Piernas y Core', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:35,
+    exercises:[
+      {name:'Sentadilla a press de hombros', sets:'3 × 15 reps', rest:'60s', muscle:'Cuerpo completo', tip:'Combina dos movimientos — aumenta el gasto calórico'},
+      {name:'Peso muerto rumano con mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Isquios/glúteos/espalda', tip:'Semana 35: controla la bajada en 3 segundos'},
+      {name:'Remo en T con mancuerna', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda media', tip:'Apoya la rodilla en banco — mantén la espalda recta'},
+      {name:'Caminata o trote suave', sets:'50 min', rest:'—', muscle:'Cardio', tip:'Si hay pérdidas de orina al trotar, vuelve a semanas anteriores de suelo pélvico'},
+    ]
+  },
+  {
+    key:'postparto-w36-s1', name:'Postparto · S36 Ses.1: Fuerza Base', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:36,
+    exercises:[
+      {name:'Sentadilla con peso corporal o mancuernas', sets:'3 × 16 reps', rest:'60s', muscle:'Piernas/glúteos', tip:'Semana 36: con peso moderado — activa el suelo pélvico al subir'},
+      {name:'Zancada estática alternada', sets:'3 × 16 reps', rest:'60s', muscle:'Piernas/equilibrio', tip:'Rodilla delantera no sobrepasa el pie'},
+      {name:'Plancha completa progresiva', sets:'3 × 88s', rest:'45s', muscle:'Core', tip:'Si llega a 90s, pasa a variante con movimiento'},
+      {name:'Puente de glúteo con peso (disco o bebé 😄)', sets:'3 × 16 reps', rest:'45s', muscle:'Glúteos/cadena posterior', tip:'El peso en las caderas aumenta la activación glútea'},
+    ]
+  },
+  {
+    key:'postparto-w36-s2', name:'Postparto · S36 Ses.2: Empuje y Tracción', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:36,
+    exercises:[
+      {name:'Flexiones peso moderado', sets:'3 × 14 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Empezar desde rodillas si es necesario, progresar a completas'},
+      {name:'Remo con mancuerna o banda elástica', sets:'3 × 14 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Clave para compensar la postura de cargada y amamantamiento'},
+      {name:'Press de hombros con mancuernas ligeras', sets:'3 × 14 reps', rest:'60s', muscle:'Hombros', tip:'Activa el core mientras presionas — no hiperextiendas la espalda'},
+      {name:'Elevación de talones + equilibrio', sets:'3 × 31 reps', rest:'30s', muscle:'Pantorrillas/equilibrio', tip:'Activa el suelo pélvico al elevarte'},
+    ]
+  },
+  {
+    key:'postparto-w36-s3', name:'Postparto · S36 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:36,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Test de fuerza: sentadilla con peso', sets:'5 reps al 70% percibido', rest:'2 min', muscle:'Fuerza general', tip:'Anota el peso y las sensaciones'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w37-s1', name:'Postparto · S37 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:37,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'32 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 37: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 11 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w37-s2', name:'Postparto · S37 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:37,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 12 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 37: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 10 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 10 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w37-s3', name:'Postparto · S37 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:37,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 37: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 8 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 15 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'22 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w38-s1', name:'Postparto · S38 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:38,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'34 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 38: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 12 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w38-s2', name:'Postparto · S38 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:38,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 12 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 38: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 10 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 10 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w38-s3', name:'Postparto · S38 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:38,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 38: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 9 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 16 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'24 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w39-s1', name:'Postparto · S39 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:39,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'36 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 39: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 13 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w39-s2', name:'Postparto · S39 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:39,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 13 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 39: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 10 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 10 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w39-s3', name:'Postparto · S39 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:39,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 39: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 9 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 16 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'26 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w40-s1', name:'Postparto · S40 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:40,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'38 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 40: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 14 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w40-s2', name:'Postparto · S40 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:40,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 13 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 40: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 11 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 11 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w40-s3', name:'Postparto · S40 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:40,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Test de fuerza: sentadilla con peso', sets:'5 reps al 70% percibido', rest:'2 min', muscle:'Fuerza general', tip:'Anota el peso y las sensaciones'},
+      {name:'Test cardiovascular: caminar/trotar 10 min', sets:'10 min continuo', rest:'—', muscle:'Cardio', tip:'Evalúa tu recuperación y frecuencia cardíaca'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w41-s1', name:'Postparto · S41 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:41,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'40 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 41: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 15 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w41-s2', name:'Postparto · S41 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:41,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 13 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 41: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 11 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 11 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w41-s3', name:'Postparto · S41 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:41,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 41: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 10 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 17 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'30 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w42-s1', name:'Postparto · S42 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:42,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'42 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 42: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 16 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w42-s2', name:'Postparto · S42 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:42,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 14 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 42: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 11 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 11 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w42-s3', name:'Postparto · S42 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:42,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 42: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 11 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 18 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'32 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w43-s1', name:'Postparto · S43 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:43,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'44 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 43: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 17 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w43-s2', name:'Postparto · S43 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:43,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 14 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 43: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 11 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 11 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w43-s3', name:'Postparto · S43 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:43,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 43: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 11 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 18 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'34 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w44-s1', name:'Postparto · S44 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:44,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'46 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 44: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 16 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 18 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w44-s2', name:'Postparto · S44 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:44,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 14 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 44: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 12 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w44-s3', name:'Postparto · S44 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'med', duration:'50 min', level:'Intermedio', week:44,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Test de fuerza: sentadilla con peso', sets:'5 reps al 70% percibido', rest:'2 min', muscle:'Fuerza general', tip:'Anota el peso y las sensaciones'},
+      {name:'Test cardiovascular: caminar/trotar 10 min', sets:'10 min continuo', rest:'—', muscle:'Cardio', tip:'Evalúa tu recuperación y frecuencia cardíaca'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w45-s1', name:'Postparto · S45 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:45,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'48 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 45: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 16 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 19 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w45-s2', name:'Postparto · S45 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:45,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 15 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 45: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 12 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w45-s3', name:'Postparto · S45 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:45,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 45: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 12 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 19 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'38 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w46-s1', name:'Postparto · S46 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:46,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'50 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 46: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 17 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 20 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w46-s2', name:'Postparto · S46 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:46,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 15 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 46: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 12 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w46-s3', name:'Postparto · S46 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:46,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 46: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 20 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'40 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w47-s1', name:'Postparto · S47 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:47,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'50 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 47: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 17 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 21 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w47-s2', name:'Postparto · S47 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:47,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 15 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 47: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 12 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 12 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w47-s3', name:'Postparto · S47 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:47,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 47: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 13 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 20 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'42 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w48-s1', name:'Postparto · S48 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:48,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'50 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 48: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 18 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 22 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w48-s2', name:'Postparto · S48 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:48,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 16 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 48: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 13 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w48-s3', name:'Postparto · S48 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'med', duration:'55 min', level:'Intermedio', week:48,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Test de fuerza: sentadilla con peso', sets:'5 reps al 70% percibido', rest:'2 min', muscle:'Fuerza general', tip:'Anota el peso y las sensaciones'},
+      {name:'Test cardiovascular: caminar/trotar 10 min', sets:'10 min continuo', rest:'—', muscle:'Cardio', tip:'Evalúa tu recuperación y frecuencia cardíaca'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
+    ]
+  },
+  {
+    key:'postparto-w49-s1', name:'Postparto · S49 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:49,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'50 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 49: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 18 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 23 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w49-s2', name:'Postparto · S49 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:49,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 16 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 49: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 13 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w49-s3', name:'Postparto · S49 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:49,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 49: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 14 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 21 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'46 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w50-s1', name:'Postparto · S50 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:50,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'50 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 50: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 19 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 24 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w50-s2', name:'Postparto · S50 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:50,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 16 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 50: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 13 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w50-s3', name:'Postparto · S50 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:50,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 50: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 22 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'48 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w51-s1', name:'Postparto · S51 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:51,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'50 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 51: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 19 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 25 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w51-s2', name:'Postparto · S51 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:51,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 17 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 51: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 13 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 13 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 15 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w51-s3', name:'Postparto · S51 Ses.3: Potencia y Resistencia', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:51,
+    exercises:[
+      {name:'Circuito AMRAP 15 min (sentadilla+flexión+zancada)', sets:'15 min', rest:'Solo entre ejercicios', muscle:'Cuerpo completo', tip:'Semana 51: completar tantas rondas como puedas con buena técnica'},
+      {name:'Saltos de caja baja (si no hay síntomas)', sets:'3 × 15 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Aterriza suave doblando rodillas — activa suelo pélvico al aterrizar'},
+      {name:'Kettlebell swing o sentadilla dinámica', sets:'4 × 22 reps', rest:'45s', muscle:'Cadena posterior/cardio', tip:'Movimiento explosivo de cadera, no de espalda'},
+      {name:'Trote + vuelta a la calma', sets:'50 min', rest:'—', muscle:'Cardio/recuperación', tip:'Termina los últimos 5 min caminando'},
+    ]
+  },
+  {
+    key:'postparto-w52-s1', name:'Postparto · S52 Ses.1: Cardio Suave', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:52,
+    exercises:[
+      {name:'Trote continuo o caminata rápida', sets:'50 min', rest:'—', muscle:'Cardio/resistencia', tip:'Semana 52: mantén una frecuencia cardíaca de conversación'},
+      {name:'Sentadilla explosiva controlada', sets:'3 × 20 reps', rest:'60s', muscle:'Piernas/potencia', tip:'Baja lento (3s), sube rápido — sin impacto si hay molestias'},
+      {name:'Plancha con toque de hombros alternos', sets:'3 × 26 reps', rest:'45s', muscle:'Core/estabilidad', tip:'Mantén las caderas estables, sin oscilar'},
+      {name:'Estiramiento de cadena posterior completo', sets:'5 min', rest:'—', muscle:'Recuperación', tip:'Siempre terminar con vuelta a la calma'},
+    ]
+  },
+  {
+    key:'postparto-w52-s2', name:'Postparto · S52 Ses.2: Fuerza Completa', type:'calistenia', emoji:'💪',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:52,
+    exercises:[
+      {name:'Sentadilla goblet con mancuerna', sets:'4 × 17 reps', rest:'60s', muscle:'Piernas/core', tip:'Semana 52: aumenta peso si las últimas 2 reps son fáciles'},
+      {name:'Peso muerto convencional con barra o mancuernas', sets:'4 × 14 reps', rest:'90s', muscle:'Cadena posterior', tip:'Rodillas ligeramente dobladas, espalda recta, empuja el suelo'},
+      {name:'Press de banca con mancuernas', sets:'3 × 14 reps', rest:'60s', muscle:'Pecho/tríceps', tip:'Pies firmes en el suelo, activa el core'},
+      {name:'Remo con barra o mancuernas', sets:'3 × 16 reps', rest:'60s', muscle:'Espalda/bíceps', tip:'Mantén el cuerpo paralelo al suelo'},
+    ]
+  },
+  {
+    key:'postparto-w52-s3', name:'Postparto · S52 Ses.3: ✅ Evaluación', type:'calistenia', emoji:'📋',
+    difficulty:'hard', duration:'55 min', level:'Avanzado', week:52,
+    exercises:[
+      {name:'Test de activación de suelo pélvico', sets:'5 contracciones × 10s', rest:'20s', muscle:'Suelo pélvico', tip:'Evalúa si logras contraer y relajar conscientemente'},
+      {name:'Test de plancha isométrica', sets:'Máximo tiempo sostenido', rest:'—', muscle:'Core', tip:'Registra tu tiempo y compara con la evaluación anterior'},
+      {name:'Test de sentadilla controlada', sets:'10 reps cronometradas', rest:'—', muscle:'Piernas/Core', tip:'Evalúa técnica y fatiga'},
+      {name:'Test de equilibrio monopodal', sets:'30s × cada pierna', rest:'20s', muscle:'Estabilidad', tip:'¿Mantuviste el equilibrio sin compensar?'},
+      {name:'Test de fuerza: sentadilla con peso', sets:'5 reps al 70% percibido', rest:'2 min', muscle:'Fuerza general', tip:'Anota el peso y las sensaciones'},
+      {name:'Test cardiovascular: caminar/trotar 10 min', sets:'10 min continuo', rest:'—', muscle:'Cardio', tip:'Evalúa tu recuperación y frecuencia cardíaca'},
+      {name:'Cuestionario de síntomas', sets:'—', rest:'—', muscle:'Evaluación integral', tip:'¿Pérdidas de orina, dolor lumbar, cansancio excesivo? Consulta tu médico si hay síntomas'},
     ]
   },
 
@@ -4533,6 +6102,7 @@ function renderProfile(){
         <div class="settings-item" onclick="if(confirm('¿Eliminar este usuario y sus datos?'))deleteCurrentUser()"><div class="settings-icon" style="background:rgba(255,87,34,0.1);">🗑</div><div class="settings-label" style="color:var(--fire);">Eliminar mi cuenta</div><div class="settings-arrow">›</div></div>
       </div>
 
+      ${isAdminUser()?`
       <div class="section-head"><h2>🔐 Administrador</h2></div>
       <div class="settings-group">
         <div class="settings-item" onclick="openAdminPanel()">
@@ -4545,7 +6115,7 @@ function renderProfile(){
           <div style="flex:1;"><div class="settings-label">Cambiar contraseña admin</div></div>
           <div class="settings-arrow">›</div>
         </div>
-      </div>
+      </div>`:''}
 
       ${isTrainerUser()?`
       <div class="section-head"><h2>🏅 Mi Panel de Entrenador</h2></div>
@@ -4715,12 +6285,19 @@ function openAdminPanel(){
   if(!adminAuthenticated){ openAdminLogin(); return; }
   showScreen('admin');
   document.getElementById('admin-body').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Cargando datos... 🔄</div>';
-  // Sync all users from Firebase first
-  syncAllUsersFromFirebase((synced) => {
-    syncTrainersFromFirebase(() => {
-      renderAdminPanel();
+  // Esperar auth anónimo antes de sincronizar
+  const doSync = () => {
+    syncAllUsersFromFirebase((synced) => {
+      syncTrainersFromFirebase(() => {
+        renderAdminPanel();
+      });
     });
-  });
+  };
+  if(window._fbAuthReady && typeof window._fbAuthReady.then === 'function'){
+    window._fbAuthReady.then(doSync).catch(doSync);
+  } else {
+    doSync();
+  }
 }
 
 function renderAdminPanel(){
@@ -4734,6 +6311,16 @@ function renderAdminPanel(){
   const totalAthletes = myAthletes.length;
   const totalSessions = myAthletes.reduce((s,[,u])=>s+(u.history||[]).length,0);
   const totalStreak = myAthletes.reduce((s,[,u])=>s+(u.streak||0),0);
+
+  // Total de usuarios registrados en la plataforma completa
+  const totalPlatformUsers = Object.keys(db).filter(uid => db[uid] && db[uid].profile).length;
+  const totalPlatformSessions = Object.values(db).reduce((s,u)=>s+(u&&u.history?u.history.length:0),0);
+  // Usuarios activos últimos 7 días
+  const now = Date.now();
+  const week = 7*24*60*60*1000;
+  const activeThisWeek = Object.values(db).filter(u =>
+    u && u.history && u.history.some(h => h.date && (now - h.date) < week)
+  ).length;
 
   const summaryHTML = `
     <div style="padding:0 16px 12px;">
@@ -4749,6 +6336,13 @@ function renderAdminPanel(){
       <!-- STATS -->
       <div style="background:linear-gradient(135deg,rgba(255,87,34,0.1),rgba(255,138,80,0.05));border:1px solid rgba(255,87,34,0.2);border-radius:var(--r);padding:16px;margin-bottom:16px;">
         <div style="font-size:0.65rem;color:var(--fire);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px;">📊 Resumen</div>
+        <div style="font-size:0.62rem;color:var(--muted);margin-bottom:10px;">🌐 Plataforma completa</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-bottom:12px;">
+          <div style="background:rgba(255,87,34,0.1);border-radius:8px;padding:8px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--fire);">${totalPlatformUsers}</div><div style="font-size:0.58rem;color:var(--muted);text-transform:uppercase;">Usuarios total</div></div>
+          <div style="background:rgba(41,182,246,0.1);border-radius:8px;padding:8px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--ice);">${activeThisWeek}</div><div style="font-size:0.58rem;color:var(--muted);text-transform:uppercase;">Activos 7 días</div></div>
+          <div style="background:rgba(76,175,80,0.1);border-radius:8px;padding:8px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--green);">${totalPlatformSessions}</div><div style="font-size:0.58rem;color:var(--muted);text-transform:uppercase;">Sesiones total</div></div>
+        </div>
+        <div style="font-size:0.62rem;color:var(--muted);margin-bottom:10px;">👤 Mis entrenados</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
           <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--white);">${totalAthletes}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Entrenados</div></div>
           <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--fire);">${totalSessions}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Sesiones</div></div>
