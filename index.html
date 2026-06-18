@@ -15576,30 +15576,61 @@ function doLogin(){
   if(!email){ err.textContent='Ingresa tu correo'; return; }
   if(!pass){ err.textContent='Ingresa tu contraseña'; return; }
 
-  // First check local auth
-  const authDB = getAuthDB();
-  let entry = authDB[email];
+  err.textContent='Verificando...';
 
-  if(!entry){
-    // Try syncing auth from Firebase
-    err.textContent='Verificando...';
+  const doVerify = () => {
+    const authDB = getAuthDB();
+    const localEntry = authDB[email];
+
+    // Siempre verificamos contra Firebase primero (fuente de verdad real),
+    // en vez de confiar ciegamente en una copia local que puede estar desactualizada
     try {
-      fbRef('auth/' + email.replace(/\./g,'_dot_'))?.once('value').then(snap => {
-        const fbEntry = snap.val();
-        if(fbEntry && fbEntry.hash === hashPass(pass)){
-          authDB[email] = fbEntry;
-          try { localStorage.setItem(AUTH_DB_KEY, JSON.stringify(authDB)); } catch(e){}
-          loginWithEntry(email, fbEntry, err);
-        } else {
-          err.textContent='❌ No existe cuenta con ese correo';
-        }
-      }).catch(() => { err.textContent='❌ No existe cuenta con ese correo'; });
-    } catch(e){ err.textContent='❌ No existe cuenta con ese correo'; }
-    return;
-  }
+      const ref = fbRef('auth/' + email.replace(/\./g,'_dot_'));
+      if(ref){
+        ref.once('value').then(snap => {
+          const fbEntry = snap.val();
+          if(fbEntry && fbEntry.hash === hashPass(pass)){
+            authDB[email] = fbEntry;
+            try { localStorage.setItem(AUTH_DB_KEY, JSON.stringify(authDB)); } catch(e){}
+            err.textContent='';
+            loginWithEntry(email, fbEntry, err);
+          } else if(localEntry && localEntry.hash === hashPass(pass)){
+            err.textContent='';
+            loginWithEntry(email, localEntry, err);
+          } else if(fbEntry){
+            err.textContent='❌ Contraseña incorrecta';
+          } else {
+            err.textContent='❌ No existe cuenta con ese correo';
+          }
+        }).catch(() => {
+          if(localEntry && localEntry.hash === hashPass(pass)){
+            err.textContent='';
+            loginWithEntry(email, localEntry, err);
+          } else {
+            err.textContent='❌ No existe cuenta con ese correo';
+          }
+        });
+      } else if(localEntry && localEntry.hash === hashPass(pass)){
+        err.textContent='';
+        loginWithEntry(email, localEntry, err);
+      } else {
+        err.textContent='❌ No existe cuenta con ese correo';
+      }
+    } catch(e){
+      if(localEntry && localEntry.hash === hashPass(pass)){
+        err.textContent='';
+        loginWithEntry(email, localEntry, err);
+      } else {
+        err.textContent='❌ No existe cuenta con ese correo';
+      }
+    }
+  };
 
-  if(entry.hash !== hashPass(pass)){ err.textContent='❌ Contraseña incorrecta'; return; }
-  loginWithEntry(email, entry, err);
+  if(window._fbAuthReady && typeof window._fbAuthReady.then === 'function'){
+    window._fbAuthReady.then(doVerify).catch(doVerify);
+  } else {
+    doVerify();
+  }
 }
 
 function loginWithEntry(email, entry, err){
